@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node \"C:\\\\Users\\\\rohit\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-rohit-OneDrive-Desktop-Marketing-Portfolio-Design\\\\b9a5338e-be77-4cca-bbaf-31d6f5b65049\\\\scratchpad\\\\probe.mjs\")",
+      "Bash(node ./probe.mjs)",
+      "Bash(node ./optimize-images.mjs)",
+      "Bash(node -e ' *)",
+      "Bash(npx tsc *)",
+      "Bash(npm run *)",
+      "Bash(curl -s \"http://localhost:8443/src/App.tsx\")"
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "title": "Dhriti Arora | Brand & Marketing Specialist Portfolio",
+  "description": "Portfolio of Dhriti Arora, a Brand & Marketing Specialist with a BBA in Digital Marketing. Experience in brand strategy, content creation, social media management, and campaign execution across Acado.ai, Drone Rangers, and more.",
+  "icons": {
+    "icon": "/favicon.png"
+  },
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
