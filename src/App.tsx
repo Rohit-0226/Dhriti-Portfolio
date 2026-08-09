@@ -286,14 +286,28 @@ function Hero() {
       {/* Main Container */}
       <div style={{ maxWidth: '1180px', width: '100%', margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
         
-        {/* Top Header Block */}
-        <div>
+        {/* Top Header Block - Flex Column enforces vertical stacking on all screen resolutions */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          marginBottom: '1.5rem',
+        }}>
           {/* Centered Rotating Multi-Language Hello Badge */}
           <motion.div
             initial={{ opacity: 0, y: -15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', position: 'relative', marginBottom: '1rem' }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'relative',
+              marginBottom: '1.25rem',
+              width: 'max-content',
+            }}
           >
             <div className="font-display" style={{
               background: '#FFFBFB', border: '1.5px solid #1A0808', padding: '6px 24px', borderRadius: '999px',
@@ -315,26 +329,28 @@ function Hero() {
             </div>
 
             {/* Spark Accents */}
-            <svg style={{ position: 'absolute', right: '-18px', top: '-12px' }} width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <svg style={{ position: 'absolute', right: '-18px', top: '-12px', pointerEvents: 'none' }} width="22" height="22" viewBox="0 0 24 24" fill="none">
               <path d="M12 2v5M6 4l3 4M18 4l-3 4" stroke="#DC2626" strokeWidth="2.5" strokeLinecap="round" />
             </svg>
           </motion.div>
 
-          {/* Main Headline */}
+          {/* Main Headline Block */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            style={{ position: 'relative', display: 'inline-block' }}
+            style={{
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              textAlign: 'center',
+              width: '100%',
+            }}
           >
-            {/* Left Spark Lines */}
-            <svg style={{ position: 'absolute', left: '-50px', top: '25px' }} width="44" height="44" viewBox="0 0 42 42" fill="none">
-              <path d="M10 32C18 20 28 12 34 8M6 22C14 14 24 8 30 4" stroke="#DC2626" strokeWidth="3" strokeLinecap="round" />
-            </svg>
-
             <h1 className="font-display" style={{
-              fontSize: 'clamp(2.8rem, 5.8vw, 4.6rem)', fontWeight: 700, color: '#1A0808',
-              lineHeight: 1.1, margin: 0, letterSpacing: '-0.025em',
+              fontSize: 'clamp(2.4rem, 5.5vw, 4.6rem)', fontWeight: 700, color: '#1A0808',
+              lineHeight: 1.1, margin: 0, letterSpacing: '-0.025em', textAlign: 'center',
             }}>
               I'm <span style={{ color: '#DC2626', fontWeight: 800 }}>Dhriti</span> 👋,<br />
               <span>A Brand &amp; Marketing Specialist</span>
