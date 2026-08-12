@@ -2838,10 +2838,11 @@ function Projects() {
                   name: 'Nupur Choudhary',
                   role: 'Head of Operations @ Learn and Build | PGDM - HR',
                   meta: 'Dec 4, 2025 · Nupur managed Dhriti directly',
+                  degree: '1st Degree Connection',
                   avatar: nupurAvatarImg,
                   badgeBg: '#FFF7ED',
                   badgeColor: '#C2410C',
-                  linkedinUrl: 'https://www.linkedin.com/in/dhriti-pareek-78b17326a/details/recommendations/',
+                  linkedinUrl: 'https://www.linkedin.com/in/nupur-choudhary/',
                   paragraphs: [
                     'I had the pleasure of mentoring Dhriti Arora during her tenure as a Business Development Intern at Learn and Build.',
                     'She showcased a strong ability to understand requirements quickly, communicate clearly, and follow through with tasks efficiently. Her timely execution, proactive approach in outreach activities, made her a valuable contributor to the BD team.',
@@ -2852,10 +2853,11 @@ function Projects() {
                   name: 'DR. MUKTAK VYAS',
                   role: 'Professor, FMC @ Poornima University',
                   meta: "Sep 21, 2025 · Dr. Muktak was Dhriti's teacher",
+                  degree: '1st Degree Connection',
                   avatar: drMuktakAvatarImg,
                   badgeBg: '#ECFDF5',
                   badgeColor: '#047857',
-                  linkedinUrl: 'https://www.linkedin.com/in/dhriti-pareek-78b17326a/details/recommendations/',
+                  linkedinUrl: 'https://www.linkedin.com/in/dr-muktak-vyas-98b82844/',
                   paragraphs: [
                     'It is my privilege to recommend Dhriti Arora, a highly enthusiastic and diligent student who has consistently stood out for her leadership qualities and academic dedication. She has shown remarkable ability to balance her departmental responsibilities alongside her classwork, ensuring excellence in both areas. Her enthusiasm for learning, coupled with her proactive mindset, reflects not only her intellectual maturity but also her strong commitment to personal and professional growth.',
                     'What distinguishes Dhriti is her natural ability to mentor and inspire her peers with a spirit of collaboration and responsibility. She approaches every task with sincerity, determination, and vision, setting an example for those around her. I am confident that Dhriti will bring the same level of integrity, passion, and excellence to all her future endeavors, making her a valuable asset to any institution or organization she becomes a part of.',
@@ -2869,7 +2871,7 @@ function Projects() {
                   avatar: drJitendraAvatarImg,
                   badgeBg: '#EFF6FF',
                   badgeColor: '#1D4ED8',
-                  linkedinUrl: 'https://www.linkedin.com/in/dhriti-pareek-78b17326a/details/recommendations/',
+                  linkedinUrl: 'https://www.linkedin.com/in/dr-jitendra-singh-2207b716b/',
                   paragraphs: [
                     'As far I know Dhriti has been one of those rare students who a standout showing great initiative, hard work, and ambition. I’ve seen her consistently go above and beyond expectations.',
                     'She is a highly motivated learner who doesn’t wait for instructions but actively looks for ways to learn more. She has been representing her class, department and has been an energetic participant. Her ability to take on challenges without being asked is rare and impressive.',
@@ -2894,13 +2896,18 @@ function Projects() {
                   <div>
                     {/* Header: Avatar, Name & Role */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.15rem', gap: '8px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <a
+                        href={rec.linkedinUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none', color: 'inherit' }}
+                      >
                         <img
                           src={rec.avatar}
                           alt={rec.name}
                           style={{
-                            width: '46px',
-                            height: '46px',
+                            width: '48px',
+                            height: '48px',
                             borderRadius: '50%',
                             objectFit: 'cover',
                             border: '2px solid #ffffff',
@@ -2913,7 +2920,7 @@ function Projects() {
                             <h4 className="font-display" style={{ fontWeight: 800, fontSize: '1.05rem', color: '#000000', margin: 0, lineHeight: 1.2 }}>
                               {rec.name}
                             </h4>
-                            <span style={{ color: '#0A66C2', fontSize: '0.85rem', fontWeight: 800 }} title="Verified 1st Connection on LinkedIn">✓</span>
+                            <span style={{ color: '#0A66C2', fontSize: '0.85rem', fontWeight: 800 }} title="Verified Connection on LinkedIn">✓</span>
                           </div>
                           <span style={{ fontSize: '0.74rem', color: '#475569', fontWeight: 600, display: 'block', marginTop: '2px', lineHeight: 1.3 }}>
                             {rec.role}
@@ -2922,7 +2929,7 @@ function Projects() {
                             {rec.meta}
                           </span>
                         </div>
-                      </div>
+                      </a>
                     </div>
 
                     {/* Paragraphs */}
