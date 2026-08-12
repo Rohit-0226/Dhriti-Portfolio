@@ -1153,20 +1153,20 @@ function About() {
               minHeight: isMobile ? 'clamp(360px, 92vw, 470px)' : '460px',
             }}
           >
-            {/* Dark Black Circle Background */}
+            {/* Pure Black Semi-Circle Arch (Dome Arch Background) */}
             <div style={{
               position: 'absolute',
-              bottom: '0px',
-              width: isMobile ? 'min(320px, 82vw)' : '420px',
-              height: isMobile ? 'min(320px, 82vw)' : '420px',
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg, #1A0808 0%, #2A0D0D 50%, #0D0404 100%)',
-              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.4)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
+              bottom: 0,
+              width: isMobile ? 'min(340px, 88vw)' : '460px',
+              height: isMobile ? 'clamp(180px, 46vw, 260px)' : '260px',
+              borderTopLeftRadius: '230px',
+              borderTopRightRadius: '230px',
+              background: '#000000',
+              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.25)',
               zIndex: 1,
             }} />
 
-            {/* Immersive 3D Pop-Out Cutout Image coming out of circle */}
+            {/* Immersive Cutout Image Popping Out of Pure Black Semi-Circle Arch */}
             <img
               src={dhritiAboutImg}
               alt="Dhriti Arora About"
@@ -1175,12 +1175,12 @@ function About() {
               style={{
                 position: 'relative',
                 zIndex: 5,
-                width: isMobile ? 'min(330px, 86vw)' : '440px',
-                height: isMobile ? 'clamp(370px, 94vw, 480px)' : '490px',
+                width: isMobile ? 'min(320px, 82vw)' : '430px',
+                height: isMobile ? 'clamp(360px, 92vw, 470px)' : '480px',
                 objectFit: 'contain',
                 objectPosition: 'bottom center',
-                filter: 'drop-shadow(0 20px 35px rgba(0,0,0,0.35))',
-                marginBottom: '15px',
+                filter: 'drop-shadow(0 15px 30px rgba(0,0,0,0.25))',
+                marginBottom: '0px',
               }}
             />
           </m.div>
