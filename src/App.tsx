@@ -825,35 +825,33 @@ function Hero() {
           alignItems: 'flex-end',
           height: isMobile ? 'clamp(340px, 88vw, 430px)' : isTablet ? '430px' : '480px',
         }}>
-          {/* RIGHT FLANKING HERO TAGLINE — positioned on clean white right background */}
+          {/* RIGHT FLANKING HERO TAGLINE — centered & fitting within screen bounds */}
           {!isMobile && (
             <m.div
               initial={{ opacity: 0, x: 28 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: DUR.slow, ease: EASE, delay: 0.3 }}
               style={{
-                position: 'absolute', right: isTablet ? '-2%' : '-16%', bottom: '26%',
-                maxWidth: isTablet ? '220px' : '360px', textAlign: 'left', zIndex: 15,
+                position: 'absolute', right: '0%', bottom: '22%',
+                maxWidth: isTablet ? '200px' : '300px', textAlign: 'center', zIndex: 15,
               }}
             >
               <div className="font-display" style={{
-                fontSize: isTablet ? '1.8rem' : '2.7rem',
+                fontSize: isTablet ? '1.4rem' : '2.0rem',
                 fontWeight: 800,
                 color: '#1A0808',
-                lineHeight: 1.1,
+                lineHeight: 1.15,
                 letterSpacing: '-0.02em',
-                whiteSpace: 'nowrap',
               }}>
                 IDEAS <span style={{ color: '#DC2626' }}>→</span> EXECUTION
               </div>
               <p className="font-mono" style={{
-                fontSize: isTablet ? '0.78rem' : '0.9rem',
+                fontSize: isTablet ? '0.72rem' : '0.82rem',
                 color: '#DC2626',
                 fontWeight: 700,
                 margin: '8px 0 0',
                 letterSpacing: '0.06em',
                 textTransform: 'uppercase',
-                whiteSpace: 'nowrap',
               }}>
                 Brand • Marketing • Growth
               </p>
