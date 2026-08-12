@@ -1166,7 +1166,7 @@ function About() {
               zIndex: 1,
             }} />
 
-            {/* Immersive Cutout Image Popping Out of Pure Black Semi-Circle Arch */}
+            {/* Immersive Cutout Image - Slightly larger & pushed down to sit flush inside black semi-circle arch */}
             <img
               src={dhritiAboutImg}
               alt="Dhriti Arora About"
@@ -1175,12 +1175,12 @@ function About() {
               style={{
                 position: 'relative',
                 zIndex: 5,
-                width: isMobile ? 'min(320px, 82vw)' : '430px',
-                height: isMobile ? 'clamp(360px, 92vw, 470px)' : '480px',
+                width: isMobile ? 'min(350px, 90vw)' : '470px',
+                height: isMobile ? 'clamp(380px, 94vw, 490px)' : '515px',
                 objectFit: 'contain',
                 objectPosition: 'bottom center',
                 filter: 'drop-shadow(0 15px 30px rgba(0,0,0,0.25))',
-                marginBottom: '0px',
+                transform: 'translateY(18px)',
               }}
             />
           </m.div>
