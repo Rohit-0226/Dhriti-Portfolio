@@ -1139,7 +1139,7 @@ function About() {
             </div>
           </m.div>
 
-          {/* Right Column: Image with Red Semi-Circle Arch */}
+          {/* Right Column: Image embedded inside Pure Black Semi-Circle Arch */}
           <m.div
             initial={{ opacity: 0, x: 28 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -1150,39 +1150,37 @@ function About() {
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'flex-end',
-              minHeight: isMobile ? 'clamp(360px, 92vw, 470px)' : '460px',
             }}
           >
-            {/* Pure Black Semi-Circle Arch (Dome Arch Background) */}
+            {/* Pure Black Semi-Circle Arch (Framing the image inside with overflow hidden) */}
             <div style={{
-              position: 'absolute',
-              bottom: 0,
-              width: isMobile ? 'min(340px, 88vw)' : '460px',
-              height: isMobile ? 'clamp(180px, 46vw, 260px)' : '260px',
-              borderTopLeftRadius: '230px',
-              borderTopRightRadius: '230px',
+              position: 'relative',
+              width: isMobile ? 'min(330px, 86vw)' : '440px',
+              height: isMobile ? 'clamp(320px, 80vw, 420px)' : '440px',
+              borderTopLeftRadius: '220px',
+              borderTopRightRadius: '220px',
               background: '#000000',
-              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.25)',
+              boxShadow: '0 25px 50px rgba(0, 0, 0, 0.35)',
+              overflow: 'hidden',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'flex-end',
               zIndex: 1,
-            }} />
-
-            {/* Immersive Cutout Image - Slightly larger & pushed down to sit flush inside black semi-circle arch */}
-            <img
-              src={dhritiAboutImg}
-              alt="Dhriti Arora About"
-              loading="lazy"
-              decoding="async"
-              style={{
-                position: 'relative',
-                zIndex: 5,
-                width: isMobile ? 'min(350px, 90vw)' : '470px',
-                height: isMobile ? 'clamp(380px, 94vw, 490px)' : '515px',
-                objectFit: 'contain',
-                objectPosition: 'bottom center',
-                filter: 'drop-shadow(0 15px 30px rgba(0,0,0,0.25))',
-                transform: 'translateY(18px)',
-              }}
-            />
+            }}>
+              <img
+                src={dhritiAboutImg}
+                alt="Dhriti Arora About"
+                loading="lazy"
+                decoding="async"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  objectPosition: 'center 10%',
+                  filter: 'drop-shadow(0 15px 30px rgba(0,0,0,0.25))',
+                }}
+              />
+            </div>
           </m.div>
 
         </div>
