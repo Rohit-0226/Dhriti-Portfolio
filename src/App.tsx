@@ -1036,7 +1036,7 @@ function Hero() {
             {/* Pill 1: Top Left - Marketing */}
             <m.div
               {...bob(-8, 4, 0, 0)}
-              style={{ ...pillStyle, top: '28%', left: isMobile ? '-20px' : '-70px' }}
+              style={{ ...pillStyle, top: isMobile ? '8%' : '28%', left: isMobile ? '-30px' : '-70px' }}
             >
               <Megaphone size={pillIcon} strokeWidth={2.25} color="#DC2626" aria-hidden />
               Marketing
@@ -1045,7 +1045,7 @@ function Hero() {
             {/* Pill 2: Bottom Left - Brand Management */}
             <m.div
               {...bob(8, 5, 0.5, 1)}
-              style={{ ...pillStyle, bottom: '18%', left: isMobile ? '-15px' : '-80px' }}
+              style={{ ...pillStyle, bottom: isMobile ? '28%' : '18%', left: isMobile ? '-40px' : '-80px' }}
             >
               <Gem size={pillIcon} strokeWidth={2.25} color="#DC2626" aria-hidden />
               Brand Management
@@ -1054,7 +1054,7 @@ function Hero() {
             {/* Pill 3: Top Right - Personal Branding */}
             <m.div
               {...bob(-10, 4.5, 0.2, 2)}
-              style={{ ...pillStyle, top: '28%', right: isMobile ? '-20px' : isTablet ? '-95px' : '-125px' }}
+              style={{ ...pillStyle, top: isMobile ? '8%' : '28%', right: isMobile ? '-30px' : isTablet ? '-95px' : '-125px' }}
             >
               <Sparkles size={pillIcon} strokeWidth={2.25} color="#DC2626" aria-hidden />
               Personal Branding
@@ -1063,7 +1063,7 @@ function Hero() {
             {/* Pill 4: Bottom Right - Social Media */}
             <m.div
               {...bob(8, 5.5, 0.7, 3)}
-              style={{ ...pillStyle, bottom: '10%', right: isMobile ? '-15px' : '-70px' }}
+              style={{ ...pillStyle, bottom: isMobile ? '20%' : '10%', right: isMobile ? '-30px' : '-70px' }}
             >
               <Share2 size={pillIcon} strokeWidth={2.25} color="#DC2626" aria-hidden />
               Social Media
