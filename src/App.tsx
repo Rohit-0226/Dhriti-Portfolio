@@ -27,6 +27,8 @@ import droneRangersLogoImg from './imports/drone_rangers_logo.jpg'
 import learnAndBuildLogoImg from './imports/learn_and_build_logo.jpg'
 import poornimaLogoImg from './imports/poornima_university_logo.jpg'
 import yougamiLogoImg from './imports/yougami_logo.jpg'
+import nupurAvatarImg from './imports/nupur_avatar.jpg'
+import drMuktakAvatarImg from './imports/dr_muktak_avatar.jpg'
 
 /* ─── Motion System ─────────────────────────────────────────
  * One vocabulary for the whole site. Every entrance uses these
@@ -2832,31 +2834,44 @@ function Projects() {
             }}>
               {[
                 {
-                  name: 'Nupur',
-                  role: 'HR @ Learn and Build (LnB HR)',
-                  initial: 'N',
-                  color: '#EA580C',
+                  name: 'Nupur Choudhary',
+                  role: 'Head of Operations @ Learn and Build | PGDM - HR',
+                  meta: 'Dec 4, 2025 · Nupur managed Dhriti directly',
+                  avatar: nupurAvatarImg,
                   badgeBg: '#FFF7ED',
                   badgeColor: '#C2410C',
-                  text: 'I had the pleasure of mentoring Dhriti Arora during her tenure as a Business Development Intern at Learn and Build. She showcased a strong ability to understand requirements quickly, communicate clearly, and follow through with tasks efficiently. Her timely execution, proactive approach in outreach activities, made her a valuable contributor to the BD team. Dhriti is dependable, disciplined, and shows great potential for future roles in business development.',
+                  linkedinUrl: 'https://www.linkedin.com/in/dhriti-pareek-78b17326a/details/recommendations/',
+                  paragraphs: [
+                    'I had the pleasure of mentoring Dhriti Arora during her tenure as a Business Development Intern at Learn and Build.',
+                    'She showcased a strong ability to understand requirements quickly, communicate clearly, and follow through with tasks efficiently. Her timely execution, proactive approach in outreach activities, made her a valuable contributor to the BD team.',
+                    'Dhriti is dependable, disciplined, and shows great potential for future roles in business development.',
+                  ],
                 },
                 {
-                  name: 'Jitendra',
-                  role: 'Assistant Professor, FMC',
-                  initial: 'J',
-                  color: '#2563EB',
-                  badgeBg: '#EFF6FF',
-                  badgeColor: '#1D4ED8',
-                  text: 'As far I know Dhriti has been one of those rare students who stand out showing great initiative, hard work, and ambition. I’ve seen her consistently go above and beyond expectations. She is a highly motivated learner who doesn’t wait for instructions but actively looks for ways to learn more. She has been representing her class, department and has been an energetic participant. Her ability to take on challenges without being asked is rare and impressive. What makes her truly exceptional is her mix of talent and humility. She’s always engaged in class, offering thoughtful ideas and listening carefully to others. Her questions show a deep understanding and a desire to fully grasp the material, not just finish the task. I’m confident that Dhriti will be a great asset to any program or organization she joins. Her curiosity, strong work ethic, and collaborative nature make her an excellent candidate. I recommend her wholeheartedly.',
-                },
-                {
-                  name: 'Muktak',
-                  role: 'Department Proctor',
-                  initial: 'M',
-                  color: '#059669',
+                  name: 'DR. MUKTAK VYAS',
+                  role: 'Professor, FMC @ Poornima University',
+                  meta: "Sep 21, 2025 · Dr. Muktak was Dhriti's teacher",
+                  avatar: drMuktakAvatarImg,
                   badgeBg: '#ECFDF5',
                   badgeColor: '#047857',
-                  text: 'It is my privilege to recommend Dhriti Arora, a highly enthusiastic and diligent student who has consistently stood out for her leadership qualities and academic dedication. She has shown remarkable ability to balance her departmental responsibilities alongside her classwork, ensuring excellence in both areas. Her enthusiasm for learning, coupled with her proactive mindset, reflects not only her intellectual maturity but also her strong commitment to personal and professional growth.',
+                  linkedinUrl: 'https://www.linkedin.com/in/dhriti-pareek-78b17326a/details/recommendations/',
+                  paragraphs: [
+                    'It is my privilege to recommend Dhriti Arora, a highly enthusiastic and diligent student who has consistently stood out for her leadership qualities and academic dedication. She has shown remarkable ability to balance her departmental responsibilities alongside her classwork, ensuring excellence in both areas. Her enthusiasm for learning, coupled with her proactive mindset, reflects not only her intellectual maturity but also her strong commitment to personal and professional growth.',
+                    'What distinguishes Dhriti is her natural ability to mentor and inspire her peers with a spirit of collaboration and responsibility. She approaches every task with sincerity, determination, and vision, setting an example for those around her. I am confident that Dhriti will bring the same level of integrity, passion, and excellence to all her future endeavors, making her a valuable asset to any institution or organization she becomes a part of.',
+                  ],
+                },
+                {
+                  name: 'Dr. Jitendra Sharma',
+                  role: 'Assistant Professor, FMC @ Poornima University',
+                  meta: "Jul 15, 2025 · Dr. Jitendra was Dhriti's teacher",
+                  avatar: poornimaLogoImg,
+                  badgeBg: '#EFF6FF',
+                  badgeColor: '#1D4ED8',
+                  linkedinUrl: 'https://www.linkedin.com/in/dhriti-pareek-78b17326a/details/recommendations/',
+                  paragraphs: [
+                    'As far I know Dhriti has been one of those rare students who stand out showing great initiative, hard work, and ambition. I’ve seen her consistently go above and beyond expectations. She is a highly motivated learner who doesn’t wait for instructions but actively looks for ways to learn more. She has been representing her class, department and has been an energetic participant. Her ability to take on challenges without being asked is rare and impressive.',
+                    'What makes her truly exceptional is her mix of talent and humility. She’s always engaged in class, offering thoughtful ideas and listening carefully to others. Her questions show a deep understanding and a desire to fully grasp the material, not just finish the task. I’m confident that Dhriti will be a great asset to any program or organization she joins. Her curiosity, strong work ethic, and collaborative nature make her an excellent candidate. I recommend her wholeheartedly.',
+                  ],
                 },
               ].map((rec) => (
                 <div
@@ -2876,47 +2891,67 @@ function Projects() {
                     {/* Header: Avatar, Name & Role */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.15rem', gap: '8px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div style={{
-                          width: '44px',
-                          height: '44px',
-                          borderRadius: '12px',
-                          background: rec.color,
-                          color: '#ffffff',
-                          fontWeight: 800,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '1.1rem',
-                          boxShadow: '0 4px 10px rgba(0,0,0,0.12)',
-                        }}>
-                          {rec.initial}
-                        </div>
+                        <img
+                          src={rec.avatar}
+                          alt={rec.name}
+                          style={{
+                            width: '46px',
+                            height: '46px',
+                            borderRadius: '50%',
+                            objectFit: 'cover',
+                            border: '2px solid #ffffff',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+                            flexShrink: 0,
+                          }}
+                        />
                         <div>
-                          <h4 className="font-display" style={{ fontWeight: 800, fontSize: '1.1rem', color: '#000000', margin: 0, lineHeight: 1.2 }}>
-                            {rec.name}
-                          </h4>
-                          <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600, display: 'block', marginTop: '2px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <h4 className="font-display" style={{ fontWeight: 800, fontSize: '1.05rem', color: '#000000', margin: 0, lineHeight: 1.2 }}>
+                              {rec.name}
+                            </h4>
+                            <span style={{ color: '#0A66C2', fontSize: '0.85rem', fontWeight: 800 }} title="Verified 1st Connection on LinkedIn">✓</span>
+                          </div>
+                          <span style={{ fontSize: '0.74rem', color: '#475569', fontWeight: 600, display: 'block', marginTop: '2px', lineHeight: 1.3 }}>
                             {rec.role}
+                          </span>
+                          <span style={{ fontSize: '0.68rem', color: '#94A3B8', fontWeight: 500, display: 'block', marginTop: '1px' }}>
+                            {rec.meta}
                           </span>
                         </div>
                       </div>
-                      <span style={{ fontSize: '2rem', color: rec.color, fontWeight: 900, lineHeight: 0.8, opacity: 0.8 }}>“</span>
                     </div>
 
-                    {/* Quote Paragraph */}
-                    <p style={{
-                      fontSize: isMobile ? '0.86rem' : '0.9rem',
-                      lineHeight: 1.68,
-                      color: '#334155',
-                      margin: 0,
-                      fontFamily: 'var(--font-body)',
-                    }}>
-                      "{rec.text}"
-                    </p>
+                    {/* Paragraphs */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                      {rec.paragraphs.map((p, idx) => (
+                        <p key={idx} style={{
+                          fontSize: isMobile ? '0.86rem' : '0.89rem',
+                          lineHeight: 1.65,
+                          color: '#334155',
+                          margin: 0,
+                          fontFamily: 'var(--font-body)',
+                        }}>
+                          "{p}"
+                        </p>
+                      ))}
+                    </div>
                   </div>
 
-                  {/* Bottom LinkedIn Verification Tag */}
-                  <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px dashed #F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  {/* Bottom Direct LinkedIn Verification Link */}
+                  <a
+                    href={rec.linkedinUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      marginTop: '1.5rem',
+                      paddingTop: '1rem',
+                      borderTop: '1px dashed #E2E8F0',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      textDecoration: 'none',
+                    }}
+                  >
                     <span style={{
                       background: rec.badgeBg,
                       color: rec.badgeColor,
@@ -2926,12 +2961,12 @@ function Projects() {
                       borderRadius: '999px',
                       fontFamily: 'var(--font-mono)',
                     }}>
-                      LinkedIn Endorsement
+                      1st Degree Connection
                     </span>
-                    <span style={{ fontSize: '0.78rem', color: '#0A66C2', fontWeight: 700 }}>
-                      Verified ✓
+                    <span style={{ fontSize: '0.78rem', color: '#0A66C2', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      Verify on LinkedIn ↗
                     </span>
-                  </div>
+                  </a>
                 </div>
               ))}
             </div>
