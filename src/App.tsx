@@ -314,49 +314,63 @@ function CountUp({ value, duration = 1.4 }: { value: string; duration?: number }
   const ref = useRef<HTMLSpanElement>(null)
   const inView = useInView(ref, { once: true, amount: 0.1 })
 
-  const match = value.match(/^([^\d]*)([\d,.]+)(.*)$/)
-  const prefix = match ? match[1] : ''
-  const rawNum = match ? match[2] : ''
-  const suffix = match ? match[3] : value
-  const target = match ? parseFloat(rawNum.replace(/,/g, '')) : 0
-  const decimals = match && rawNum.includes('.') ? rawNum.split('.')[1].length : 0
-  const grouped = match ? rawNum.includes(',') : false
-
-  const [display, setDisplay] = useState(rawNum)
-
   useEffect(() => {
-    if (!inView || !match || !isFinite(target)) {
+    const el = ref.current
+    if (!el) return
+
+    const match = value.match(/^([^\d]*)([\d,.]+)(.*)$/)
+    if (!match) {
+      el.textContent = value
       return
     }
 
-    let raf = 0
-    const start = performance.now()
-    const tick = (now: number) => {
-      const t = Math.min((now - start) / (duration * 1000), 1)
-      const eased = 1 - Math.pow(1 - t, 3)
+    const prefix = match[1]
+    const rawNum = match[2]
+    const suffix = match[3]
+    const target = parseFloat(rawNum.replace(/,/g, ''))
+    if (!isFinite(target)) {
+      el.textContent = value
+      return
+    }
+
+    const decimals = rawNum.includes('.') ? rawNum.split('.')[1].length : 0
+    const grouped = rawNum.includes(',')
+
+    if (!inView) {
+      el.textContent = value
+      return
+    }
+
+    let animId = 0
+    const startTime = performance.now()
+
+    const updateCounter = (now: number) => {
+      const progress = Math.min((now - startTime) / (duration * 1000), 1)
+      const eased = 1 - Math.pow(1 - progress, 3)
       const current = target * eased
-      const text = current.toFixed(decimals)
-      setDisplay(grouped ? Number(text).toLocaleString('en-US', {
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals,
-      }) : text)
-      if (t < 1) {
-        raf = requestAnimationFrame(tick)
+
+      const formatted = current.toFixed(decimals)
+      const numStr = grouped
+        ? Number(formatted).toLocaleString('en-US', {
+            minimumFractionDigits: decimals,
+            maximumFractionDigits: decimals,
+          })
+        : formatted
+
+      el.textContent = `${prefix}${numStr}${suffix}`
+
+      if (progress < 1) {
+        animId = requestAnimationFrame(updateCounter)
       } else {
-        setDisplay(rawNum)
+        el.textContent = value
       }
     }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
-  }, [inView, match, target, rawNum, decimals, duration, grouped])
 
-  return (
-    <span ref={ref}>
-      {prefix}
-      {display}
-      {suffix}
-    </span>
-  )
+    animId = requestAnimationFrame(updateCounter)
+    return () => cancelAnimationFrame(animId)
+  }, [inView, value, duration])
+
+  return <span ref={ref}>{value}</span>
 }
 
 /**
