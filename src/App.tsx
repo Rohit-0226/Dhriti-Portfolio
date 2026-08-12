@@ -29,6 +29,7 @@ import poornimaLogoImg from './imports/poornima_university_logo.jpg'
 import yougamiLogoImg from './imports/yougami_logo.jpg'
 import nupurAvatarImg from './imports/nupur_avatar.jpg'
 import drMuktakAvatarImg from './imports/dr_muktak_avatar.jpg'
+import drJitendraAvatarImg from './imports/dr_jitendra_avatar.jpg'
 
 /* ─── Motion System ─────────────────────────────────────────
  * One vocabulary for the whole site. Every entrance uses these
@@ -2861,16 +2862,19 @@ function Projects() {
                   ],
                 },
                 {
-                  name: 'Dr. Jitendra Sharma',
-                  role: 'Assistant Professor, FMC @ Poornima University',
-                  meta: "Jul 15, 2025 · Dr. Jitendra was Dhriti's teacher",
-                  avatar: poornimaLogoImg,
+                  name: 'Dr. Jitendra Singh',
+                  role: 'Assistant Professor, College Education-Govt. of Rajasthan | PhD, NET/JRF, SET, MBA, M.Com',
+                  meta: "Sep 21, 2025 · Dr. Jitendra was Dhriti's mentor",
+                  degree: '2nd Degree Connection',
+                  avatar: drJitendraAvatarImg,
                   badgeBg: '#EFF6FF',
                   badgeColor: '#1D4ED8',
                   linkedinUrl: 'https://www.linkedin.com/in/dhriti-pareek-78b17326a/details/recommendations/',
                   paragraphs: [
-                    'As far I know Dhriti has been one of those rare students who stand out showing great initiative, hard work, and ambition. I’ve seen her consistently go above and beyond expectations. She is a highly motivated learner who doesn’t wait for instructions but actively looks for ways to learn more. She has been representing her class, department and has been an energetic participant. Her ability to take on challenges without being asked is rare and impressive.',
-                    'What makes her truly exceptional is her mix of talent and humility. She’s always engaged in class, offering thoughtful ideas and listening carefully to others. Her questions show a deep understanding and a desire to fully grasp the material, not just finish the task. I’m confident that Dhriti will be a great asset to any program or organization she joins. Her curiosity, strong work ethic, and collaborative nature make her an excellent candidate. I recommend her wholeheartedly.',
+                    'As far I know Dhriti has been one of those rare students who a standout showing great initiative, hard work, and ambition. I’ve seen her consistently go above and beyond expectations.',
+                    'She is a highly motivated learner who doesn’t wait for instructions but actively looks for ways to learn more. She has been representing her class, department and has been an energetic participant. Her ability to take on challenges without being asked is rare and impressive.',
+                    'What makes her truly exceptional is her mix of talent and humility. She’s always engaged in class, offering thoughtful ideas and listening carefully to others. Her questions show a deep understanding and a desire to fully grasp the material, not just finish the task.',
+                    'I’m confident that Dhriti will be a great asset to any program or organization she joins. Her curiosity, strong work ethic, and collaborative nature make her an excellent candidate for what she’s applying for, e.g., a post graduate program, internship, leadership role]. I recommend her wholeheartedly.',
                   ],
                 },
               ].map((rec) => (
@@ -2961,7 +2965,7 @@ function Projects() {
                       borderRadius: '999px',
                       fontFamily: 'var(--font-mono)',
                     }}>
-                      1st Degree Connection
+                      {rec.degree || '1st Degree Connection'}
                     </span>
                     <span style={{ fontSize: '0.78rem', color: '#0A66C2', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
                       Verify on LinkedIn ↗
