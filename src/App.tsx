@@ -2132,17 +2132,17 @@ function Projects() {
             </div>
 
             {/* Right Column: Overlapping 3D Polaroid Photo Cards with Paperclips */}
-            <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: isMobile ? '330px' : '380px', width: '100%' }}>
+            <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: isMobile ? '350px' : '420px', width: '100%' }}>
 
-              {/* Polaroid 1 (Tilted Left) */}
+              {/* Polaroid 1 (Tilted Left - Team & VOD Logo Stage) */}
               <m.div
                 whileHover={{ rotate: -2, scale: 1.04, zIndex: 10 }}
                 whileTap={{ rotate: -2, scale: 1.04, zIndex: 10 }}
                 style={{
                   position: 'absolute',
-                  left: isMobile ? '0px' : '10px',
-                  top: isMobile ? '10px' : '20px',
-                  width: isMobile ? 'min(195px, 54vw)' : '250px',
+                  left: isMobile ? '-5px' : '0px',
+                  top: isMobile ? '5px' : '15px',
+                  width: isMobile ? 'min(210px, 58vw)' : '280px',
                   background: '#ffffff',
                   padding: '12px 12px 30px 12px',
                   borderRadius: '4px',
@@ -2172,8 +2172,9 @@ function Projects() {
                   decoding="async"
                   style={{
                     width: '100%',
-                    height: isMobile ? '150px' : '200px',
+                    height: isMobile ? '165px' : '225px',
                     objectFit: 'cover',
+                    objectPosition: '30% center',
                     borderRadius: '2px',
                   }}
                 />
@@ -2182,15 +2183,15 @@ function Projects() {
                 </span>
               </m.div>
 
-              {/* Polaroid 2 (Tilted Right) */}
+              {/* Polaroid 2 (Tilted Right - Award Presentation Stage) */}
               <m.div
                 whileHover={{ rotate: 3, scale: 1.04, zIndex: 10 }}
                 whileTap={{ rotate: 3, scale: 1.04, zIndex: 10 }}
                 style={{
                   position: 'absolute',
-                  right: isMobile ? '0px' : '10px',
-                  bottom: isMobile ? '0px' : '10px',
-                  width: isMobile ? 'min(195px, 54vw)' : '250px',
+                  right: isMobile ? '-5px' : '0px',
+                  bottom: isMobile ? '5px' : '15px',
+                  width: isMobile ? 'min(210px, 58vw)' : '280px',
                   background: '#ffffff',
                   padding: '12px 12px 30px 12px',
                   borderRadius: '4px',
@@ -2220,7 +2221,7 @@ function Projects() {
                   decoding="async"
                   style={{
                     width: '100%',
-                    height: isMobile ? '150px' : '200px',
+                    height: isMobile ? '165px' : '225px',
                     objectFit: 'cover',
                     objectPosition: '74% center',
                     borderRadius: '2px',
