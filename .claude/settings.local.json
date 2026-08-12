@@ -12,7 +12,8 @@
       "Bash(python3 -)",
       "Bash(grep -n \"^\\\\s*about\\\\.$\\\\|^\\\\s*experience\\\\.$\\\\|^\\\\s*skills$\\\\|^\\\\s*tools$\\\\|^\\\\s*education$\\\\|notable <span\\\\|let’s work <span\" src/App.tsx)",
       "Bash(npx vite *)",
-      "Bash(curl -s -o /dev/null -w \"prod server: %{http_code}\\\\n\" http://localhost:4599)"
+      "Bash(curl -s -o /dev/null -w \"prod server: %{http_code}\\\\n\" http://localhost:4599)",
+      "Bash(git diff *)"
     ]
   }
 }

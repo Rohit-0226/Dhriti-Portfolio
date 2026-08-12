@@ -9,9 +9,30 @@ import {
   useSpring,
   useMotionValueEvent,
   useInView,
-  useReducedMotion,
   type Variants,
 } from 'framer-motion'
+import { Megaphone, Gem, Sparkles, Share2 } from 'lucide-react'
+
+/** Instagram glyph — lucide dropped brand icons, so this is inline. */
+function InstagramIcon({ size = 17 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2.2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <rect x="2" y="2" width="20" height="20" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
 import dhritiTransparentImg from './imports/dhriti_transparent.webp'
 import dhritiAboutImg from './imports/dhriti_cutout.jpg'
 import doctorsEventImg1 from './imports/doctors_event_1.jpg'
@@ -30,6 +51,33 @@ import yougamiLogoImg from './imports/yougami_logo.jpg'
 import nupurAvatarImg from './imports/nupur_avatar.jpg'
 import drMuktakAvatarImg from './imports/dr_muktak_avatar.jpg'
 import drJitendraAvatarImg from './imports/dr_jitendra_avatar.jpg'
+
+/* ─── Self-hosted reel assets ───────────────────────────────
+ * Instagram does not allow third-party sites to play Reels inline — its
+ * /embed player sends the viewer to instagram.com — and its thumbnails sit
+ * behind signed, expiring CDN URLs, so neither can be pulled in automatically.
+ *
+ * Drop the real files into `src/imports/reels/` named after the reel's
+ * shortcode and they are picked up here with no code change:
+ *     src/imports/reels/DP1HOi1gV5u.mp4   ← plays inline, muted, on hover
+ *     src/imports/reels/DP1HOi1gV5u.jpg   ← its cover frame
+ * Anything without a local file keeps the current cover and opens Instagram.
+ * ---------------------------------------------------------- */
+const reelVideoFiles = import.meta.glob('./imports/reels/*.{mp4,webm}', {
+  eager: true,
+  import: 'default',
+}) as Record<string, string>
+
+const reelPosterFiles = import.meta.glob('./imports/reels/*.{jpg,jpeg,png,webp}', {
+  eager: true,
+  import: 'default',
+}) as Record<string, string>
+
+/** Match a dropped-in file to a reel by its shortcode. */
+function findReelAsset(files: Record<string, string>, id: string): string | undefined {
+  const key = Object.keys(files).find((k) => k.includes(id))
+  return key ? files[key] : undefined
+}
 
 /* ─── Motion System ─────────────────────────────────────────
  * One vocabulary for the whole site. Every entrance uses these
@@ -80,6 +128,22 @@ const stagger = (each = 0.07, delayChildren = 0): Variants => ({
   hidden: {},
   show: { transition: { staggerChildren: each, delayChildren } },
 })
+
+/**
+ * Hero entrance timeline. Every delay in the hero reads from here so the
+ * sequence stays in step — previously each element carried its own hand-picked
+ * number and the pills had none at all, which is what made it look unsynced.
+ * Order: badge → headline → arch → portrait → tagline → pills → actions.
+ */
+const HERO_T = {
+  badge: 0,
+  headline: 0.1,
+  arch: 0.2,
+  portrait: 0.28,
+  tagline: 0.42,
+  pill: (i: number) => 0.52 + i * 0.09,
+  actions: 0.9,
+} as const
 
 /* ─── Original Data ─────────────────────────────────────── */
 
@@ -181,8 +245,13 @@ function useBreakpoint() {
 }
 
 /**
- * Section headings rise out from behind a clipping mask instead of simply
- * fading. Costs one transform, reads as deliberate rather than decorative.
+ * Section headings rise out from behind a clipping mask.
+ *
+ * Deliberately CSS-driven rather than framer-motion: an `initial` transform
+ * that hides the text leaves the heading permanently invisible if the
+ * animation never completes. Here the hidden state lives inside the keyframe,
+ * so the worst case is an un-animated but perfectly readable title.
+ * IntersectionObserver only unpauses it — it is never load-bearing.
  */
 function RevealHeading({
   children,
@@ -193,19 +262,45 @@ function RevealHeading({
   delay?: number
   style?: React.CSSProperties
 }) {
-  const reduced = useReducedMotion()
+  const ref = useRef<HTMLSpanElement>(null)
+  const [revealing, setRevealing] = useState(false)
+
+  useEffect(() => {
+    let done = false
+
+    const fire = () => {
+      if (done || !ref.current) return
+      // Start a touch before the heading reaches the fold, so the jump to the
+      // animation's first frame happens just off-screen rather than in view.
+      if (ref.current.getBoundingClientRect().top <= window.innerHeight + 40) {
+        done = true
+        setRevealing(true)
+        window.removeEventListener('scroll', fire)
+        window.removeEventListener('resize', fire)
+      }
+    }
+
+    // Plain scroll/resize listeners: no rendering-step callbacks required, so
+    // this behaves the same in every browser and throttling mode.
+    window.addEventListener('scroll', fire, { passive: true })
+    window.addEventListener('resize', fire)
+    fire()
+
+    return () => {
+      window.removeEventListener('scroll', fire)
+      window.removeEventListener('resize', fire)
+    }
+  }, [])
 
   return (
-    <span style={{ display: 'block', overflow: 'hidden', paddingBottom: '0.08em' }}>
-      <m.span
-        initial={reduced ? { opacity: 0 } : { y: '110%' }}
-        whileInView={reduced ? { opacity: 1 } : { y: '0%' }}
-        viewport={VIEWPORT}
-        transition={{ duration: 0.85, ease: EASE, delay }}
-        style={{ display: 'block', willChange: 'transform', ...style }}
+    <span className="reveal-mask">
+      <span
+        ref={ref}
+        className={revealing ? 'reveal-inner is-revealing' : 'reveal-inner'}
+        style={delay ? { animationDelay: `${delay}s`, ...style } : style}
       >
         {children}
-      </m.span>
+      </span>
     </span>
   )
 }
@@ -215,22 +310,22 @@ function RevealHeading({
  * characters off the value ("4,159%" / "50+" / "4.6K++") so the prefix and
  * suffix survive, and animates only the number itself.
  */
-function CountUp({ value, duration = 1.6 }: { value: string; duration?: number }) {
+function CountUp({ value, duration = 1.4 }: { value: string; duration?: number }) {
   const ref = useRef<HTMLSpanElement>(null)
-  const inView = useInView(ref, { once: true, amount: 0.6 })
-  const reduced = useReducedMotion()
+  const inView = useInView(ref, { once: true, amount: 0.1 })
 
   const match = value.match(/^([^\d]*)([\d,.]+)(.*)$/)
-  const [prefix, rawNum, suffix] = match ? [match[1], match[2], match[3]] : ['', '', value]
-  const target = parseFloat(rawNum.replace(/,/g, ''))
-  const decimals = rawNum.includes('.') ? rawNum.split('.')[1].length : 0
-  const grouped = rawNum.includes(',')
+  const prefix = match ? match[1] : ''
+  const rawNum = match ? match[2] : ''
+  const suffix = match ? match[3] : value
+  const target = match ? parseFloat(rawNum.replace(/,/g, '')) : 0
+  const decimals = match && rawNum.includes('.') ? rawNum.split('.')[1].length : 0
+  const grouped = match ? rawNum.includes(',') : false
 
-  const [display, setDisplay] = useState(() => (reduced || !match ? rawNum : '0'))
+  const [display, setDisplay] = useState(rawNum)
 
   useEffect(() => {
-    if (!inView || !match || reduced || !isFinite(target)) {
-      if (match) setDisplay(rawNum)
+    if (!inView || !match || !isFinite(target)) {
       return
     }
 
@@ -238,7 +333,6 @@ function CountUp({ value, duration = 1.6 }: { value: string; duration?: number }
     const start = performance.now()
     const tick = (now: number) => {
       const t = Math.min((now - start) / (duration * 1000), 1)
-      // Ease-out cubic: fast climb, gentle settle onto the final figure.
       const eased = 1 - Math.pow(1 - t, 3)
       const current = target * eased
       const text = current.toFixed(decimals)
@@ -246,12 +340,15 @@ function CountUp({ value, duration = 1.6 }: { value: string; duration?: number }
         minimumFractionDigits: decimals,
         maximumFractionDigits: decimals,
       }) : text)
-      if (t < 1) raf = requestAnimationFrame(tick)
-      else setDisplay(rawNum)
+      if (t < 1) {
+        raf = requestAnimationFrame(tick)
+      } else {
+        setDisplay(rawNum)
+      }
     }
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)
-  }, [inView, match, reduced, target, rawNum, decimals, duration, grouped])
+  }, [inView, match, target, rawNum, decimals, duration, grouped])
 
   return (
     <span ref={ref}>
@@ -677,13 +774,12 @@ const MULTI_LANG_HELLOS = [
 function Hero() {
   const [helloIndex, setHelloIndex] = useState(0)
   const { isMobile, isTablet } = useBreakpoint()
-  const reduced = useReducedMotion()
 
   // The four floating pills loop forever. Left ungated they keep waking the
   // compositor for the whole page, so they idle once the hero scrolls away.
   const stageRef = useRef<HTMLDivElement>(null)
   const stageInView = useInView(stageRef, { amount: 0.1 })
-  const pillsActive = stageInView && !reduced
+  const pillsActive = stageInView
 
   useEffect(() => {
     // The greeting rotator is the same story: no point ticking off-screen.
@@ -696,14 +792,31 @@ function Hero() {
 
   const currentGreeting = MULTI_LANG_HELLOS[helloIndex]
 
-  /** Bob loop for a floating pill, paused when the hero is out of view. */
-  const bob = (distance: number, duration: number, delay = 0) =>
-    pillsActive
-      ? {
-          animate: { y: [0, distance, 0] },
-          transition: { duration, repeat: Infinity, ease: 'easeInOut' as const, delay },
-        }
-      : { animate: { y: 0 }, transition: { duration: DUR.fast, ease: EASE_SOFT } }
+  /**
+   * Pill entrance + idle bob in one. Previously the pills had no entrance at
+   * all, so they snapped in at full opacity while the arch and portrait were
+   * still fading — the most visible desync in the hero. Per-key transitions
+   * let the fade-in land on HERO_T's beat and the bob loop start after it.
+   */
+  const bob = (distance: number, duration: number, loopDelay: number, index: number) => {
+    const enter = HERO_T.pill(index)
+    const appear = { opacity: 1, scale: 1 }
+    const appearT = { duration: DUR.base, ease: EASE, delay: enter }
+
+    return {
+      initial: { opacity: 0, scale: 0.85 },
+      animate: pillsActive ? { ...appear, y: [0, distance, 0] } : { ...appear, y: 0 },
+      transition: pillsActive
+        ? {
+            opacity: appearT,
+            scale: appearT,
+            y: { duration, repeat: Infinity, ease: 'easeInOut' as const, delay: enter + loopDelay },
+          }
+        : { opacity: appearT, scale: appearT, y: { duration: DUR.fast, ease: EASE_SOFT } },
+    }
+  }
+
+  const pillIcon = isMobile ? 15 : 18
 
   const pillStyle: React.CSSProperties = {
     background: '#1A0808',
@@ -798,7 +911,7 @@ function Hero() {
           <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: DUR.slow, ease: EASE, delay: 0.1 }}
+            transition={{ duration: DUR.slow, ease: EASE, delay: HERO_T.headline }}
             style={{
               position: 'relative',
               display: 'flex',
@@ -834,9 +947,9 @@ function Hero() {
             <m.div
               initial={{ opacity: 0, x: 28 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: DUR.slow, ease: EASE, delay: 0.3 }}
+              transition={{ duration: DUR.slow, ease: EASE, delay: HERO_T.tagline }}
               style={{
-                position: 'absolute', right: '0rem', bottom: '22%',
+                position: 'absolute', right: isTablet ? '-1rem' : '-3rem', bottom: '22%',
                 textAlign: 'right', zIndex: 15, pointerEvents: 'none',
               }}
             >
@@ -868,7 +981,7 @@ function Hero() {
           <m.div
             initial={{ scale: 0.85, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: DUR.slow, ease: EASE, delay: 0.2 }}
+            transition={{ duration: DUR.slow, ease: EASE, delay: HERO_T.arch }}
             style={{
               position: 'absolute', bottom: 0,
               width: isMobile ? 'min(400px, 94vw)' : isTablet ? 'min(560px, 82vw)' : '680px',
@@ -891,7 +1004,7 @@ function Hero() {
             <m.img
               initial={{ y: 50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: DUR.slow, ease: EASE, delay: 0.25 }}
+              transition={{ duration: DUR.slow, ease: EASE, delay: HERO_T.portrait }}
               src={dhritiTransparentImg}
               alt="Dhriti Arora"
               decoding="async"
@@ -903,37 +1016,43 @@ function Hero() {
               }}
             />
 
-            {/* FLOATING BLACK PILLS */}
+            {/* FLOATING BLACK PILLS — line icons in the brand red, not emoji.
+                Emoji render differently on every OS and read as decoration;
+                a single-weight icon set keeps the pills looking designed. */}
             {/* Pill 1: Top Left - Marketing */}
             <m.div
-              {...bob(-8, 4)}
+              {...bob(-8, 4, 0, 0)}
               style={{ ...pillStyle, top: '28%', left: isMobile ? '-20px' : '-70px' }}
             >
-              <span style={{ fontSize: isMobile ? '0.95rem' : '1.2rem' }}>📣</span> Marketing
+              <Megaphone size={pillIcon} strokeWidth={2.25} color="#DC2626" aria-hidden />
+              Marketing
             </m.div>
 
             {/* Pill 2: Bottom Left - Brand Management */}
             <m.div
-              {...bob(8, 5, 0.5)}
+              {...bob(8, 5, 0.5, 1)}
               style={{ ...pillStyle, bottom: '18%', left: isMobile ? '-15px' : '-80px' }}
             >
-              <span style={{ fontSize: isMobile ? '0.95rem' : '1.2rem' }}>🌟</span> Brand Management
+              <Gem size={pillIcon} strokeWidth={2.25} color="#DC2626" aria-hidden />
+              Brand Management
             </m.div>
 
             {/* Pill 3: Top Right - Personal Branding */}
             <m.div
-              {...bob(-10, 4.5, 0.2)}
-              style={{ ...pillStyle, top: '28%', right: isMobile ? '-20px' : '-80px' }}
+              {...bob(-10, 4.5, 0.2, 2)}
+              style={{ ...pillStyle, top: '28%', right: isMobile ? '-20px' : isTablet ? '-95px' : '-125px' }}
             >
-              <span style={{ fontSize: isMobile ? '0.95rem' : '1.2rem' }}>✨</span> Personal Branding
+              <Sparkles size={pillIcon} strokeWidth={2.25} color="#DC2626" aria-hidden />
+              Personal Branding
             </m.div>
 
             {/* Pill 4: Bottom Right - Social Media */}
             <m.div
-              {...bob(8, 5.5, 0.7)}
+              {...bob(8, 5.5, 0.7, 3)}
               style={{ ...pillStyle, bottom: '10%', right: isMobile ? '-15px' : '-70px' }}
             >
-              <span style={{ fontSize: isMobile ? '0.95rem' : '1.2rem' }}>🤳</span> Social Media
+              <Share2 size={pillIcon} strokeWidth={2.25} color="#DC2626" aria-hidden />
+              Social Media
             </m.div>
           </div>
 
@@ -944,7 +1063,7 @@ function Hero() {
           <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: DUR.slow, ease: EASE, delay: 0.35 }}
+            transition={{ duration: DUR.slow, ease: EASE, delay: HERO_T.tagline }}
             style={{
               display: 'flex', flexDirection: 'column', gap: '0.4rem',
               textAlign: 'center', marginTop: '1.5rem', width: '100%',
@@ -965,7 +1084,7 @@ function Hero() {
         <m.div
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: DUR.slow, ease: EASE, delay: 0.4 }}
+          transition={{ duration: DUR.slow, ease: EASE, delay: HERO_T.actions }}
           style={{ position: 'relative', zIndex: 25, marginTop: isMobile ? '2rem' : '-20px', marginBottom: '2.5rem', display: 'flex', justifyContent: 'center' }}
         >
           <div style={{
@@ -1059,6 +1178,10 @@ function SlantedTicker() {
 /* ─── About Section ─────────────────────────────────────── */
 function About() {
   const { isMobile, isCompact } = useBreakpoint()
+
+  // Single source of truth for the dome height — the arch, the clipped base
+  // image and the pop-out mask all have to line up on the same edge.
+  const archH = isMobile ? 'clamp(170px, 44vw, 240px)' : '240px'
 
   return (
     <section id="about-detail" style={{
@@ -1157,63 +1280,50 @@ function About() {
               height: isMobile ? 'clamp(360px, 90vw, 460px)' : '460px',
             }}
           >
-            {/* BLACK SEMI-CIRCLE ARCH STAGE (Height 240px - compact dome arch!) */}
+            {/* BLACK SEMI-CIRCLE ARCH — sits behind the portrait as a backdrop.
+                Deliberately a single layer: overlaying a second clipped copy of
+                the photo and cross-fading them double-composites the overlap
+                into a visible washed band across her torso. */}
             <div style={{
               position: 'absolute',
               bottom: 0,
               width: '100%',
-              height: isMobile ? 'clamp(170px, 44vw, 240px)' : '240px',
+              height: archH,
               borderTopLeftRadius: '220px',
               borderTopRightRadius: '220px',
               borderBottomLeftRadius: 0,
               borderBottomRightRadius: 0,
               background: '#000000',
               boxShadow: '0 20px 40px rgba(0, 0, 0, 0.25)',
-              overflow: 'hidden',
-              zIndex: 2,
-            }}>
-              <img
-                src={dhritiAboutImg}
-                alt="Dhriti Arora About Base"
-                loading="lazy"
-                decoding="async"
-                style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  left: '50%',
-                  transform: 'translateX(-50%) translateY(34px)',
-                  width: isMobile ? 'min(350px, 90vw)' : '440px',
-                  height: isMobile ? 'clamp(380px, 94vw, 480px)' : '480px',
-                  objectFit: 'contain',
-                  objectPosition: 'bottom center',
-                }}
-              />
-            </div>
+              zIndex: 1,
+            }} />
 
-            {/* UNCLIPPED TOP HEAD & TORSO (Pops out high above the black arch!) */}
+            {/* PORTRAIT — one image, in front of the dome. Kept narrower than
+                the arch so her silhouette stays inside the dome's curve instead
+                of spilling past its edges. */}
             <div style={{
               position: 'absolute',
               bottom: 0,
               width: '100%',
               height: '100%',
               pointerEvents: 'none',
-              zIndex: 3,
+              zIndex: 2,
             }}>
               <img
                 src={dhritiAboutImg}
-                alt="Dhriti Arora About Popout"
+                alt="Dhriti Arora"
                 loading="lazy"
                 decoding="async"
                 style={{
                   position: 'absolute',
                   bottom: 0,
                   left: '50%',
-                  transform: 'translateX(-50%) translateY(34px)',
-                  width: isMobile ? 'min(350px, 90vw)' : '440px',
-                  height: isMobile ? 'clamp(380px, 94vw, 480px)' : '480px',
+                  transform: 'translateX(-50%)',
+                  width: isMobile ? 'min(280px, 74vw)' : '365px',
+                  height: isMobile ? 'clamp(340px, 86vw, 440px)' : '440px',
                   objectFit: 'contain',
                   objectPosition: 'bottom center',
-                  filter: 'drop-shadow(0 15px 30px rgba(0,0,0,0.25))',
+                  filter: 'drop-shadow(0 18px 34px rgba(0,0,0,0.30))',
                 }}
               />
             </div>
@@ -1640,7 +1750,6 @@ function SkillsToolsEducation() {
 /* ─── Experience Section (Reference Replica) ─────────────────────────── */
 function Experience() {
   const { isMobile } = useBreakpoint()
-  const reduced = useReducedMotion()
 
   const experiences = [
     {
@@ -1800,13 +1909,11 @@ function Experience() {
                       )}
                     </m.div>
 
-                    {/* Connecting Vertical Line — draws downward as it enters view.
-                        The line is structural, so when motion is reduced it renders
-                        plainly rather than depending on an animation to become visible. */}
+                    {/* Connecting Vertical Line — draws downward as it enters view */}
                     {!isLast && (
                       <m.div
-                        initial={reduced ? false : { scaleY: 0 }}
-                        whileInView={reduced ? undefined : { scaleY: 1 }}
+                        initial={{ scaleY: 0 }}
+                        whileInView={{ scaleY: 1 }}
                         viewport={{ once: true, amount: 0.4 }}
                         transition={{ duration: 0.7, ease: EASE, delay: 0.15 }}
                         style={{
@@ -1920,14 +2027,16 @@ function RecommendationCardItem({ rec, isMobile }: { rec: any; isMobile: boolean
     <div
       style={{
         background: '#ffffff',
-        borderRadius: '20px',
-        padding: isMobile ? '1.25rem 1.15rem' : '1.75rem 1.5rem',
+        borderRadius: '18px',
+        padding: isMobile ? '1.1rem 1rem' : '1.35rem 1.25rem',
         boxShadow: '0 8px 24px rgba(0,0,0,0.04)',
         border: '1.5px solid rgba(0,0,0,0.07)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        height: 'fit-content',
+        // Stretch to the tallest card in the row so every box matches; the
+        // longer quotes stay collapsed behind "Read more" until opened.
+        height: '100%',
         transition: 'all 0.25s ease',
       }}
     >
@@ -1944,8 +2053,8 @@ function RecommendationCardItem({ rec, isMobile }: { rec: any; isMobile: boolean
               src={rec.avatar}
               alt={rec.name}
               style={{
-                width: '48px',
-                height: '48px',
+                width: '40px',
+                height: '40px',
                 borderRadius: '50%',
                 objectFit: 'cover',
                 border: '2px solid #ffffff',
@@ -1955,35 +2064,53 @@ function RecommendationCardItem({ rec, isMobile }: { rec: any; isMobile: boolean
             />
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <h4 className="font-display" style={{ fontWeight: 800, fontSize: '1.05rem', color: '#000000', margin: 0, lineHeight: 1.2 }}>
+                <h4 className="font-display" style={{ fontWeight: 800, fontSize: '0.95rem', color: '#000000', margin: 0, lineHeight: 1.2 }}>
                   {rec.name}
                 </h4>
-                <span style={{ color: '#0A66C2', fontSize: '0.85rem', fontWeight: 800 }} title="Verified Connection on LinkedIn">✓</span>
+                <span style={{ color: '#0A66C2', fontSize: '0.8rem', fontWeight: 800 }} title="Verified Connection on LinkedIn">✓</span>
               </div>
-              <span style={{ fontSize: '0.74rem', color: '#475569', fontWeight: 600, display: 'block', marginTop: '2px', lineHeight: 1.3 }}>
+              <span style={{ fontSize: '0.7rem', color: '#475569', fontWeight: 600, display: 'block', marginTop: '2px', lineHeight: 1.3 }}>
                 {rec.role}
               </span>
-              <span style={{ fontSize: '0.68rem', color: '#94A3B8', fontWeight: 500, display: 'block', marginTop: '1px' }}>
+              <span style={{ fontSize: '0.66rem', color: '#94A3B8', fontWeight: 500, display: 'block', marginTop: '1px' }}>
                 {rec.meta}
               </span>
             </div>
           </a>
         </div>
 
-        {/* Paragraphs */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          {(expanded ? rec.paragraphs : rec.paragraphs.slice(0, 2)).map((p: string, idx: number) => (
-            <p key={idx} style={{
-              fontSize: isMobile ? '0.86rem' : '0.89rem',
-              lineHeight: 1.65,
-              color: '#334155',
-              margin: 0,
-              fontFamily: 'var(--font-body)',
-            }}>
-              "{p}"
-            </p>
-          ))}
-        </div>
+        {/* Quote body. Collapsed it is one line-clamped block so every card is
+            the same compact height regardless of how long the reference runs;
+            expanding swaps in the real paragraph breaks. */}
+        {expanded ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.7rem' }}>
+            {rec.paragraphs.map((p: string, idx: number) => (
+              <p key={idx} style={{
+                fontSize: isMobile ? '0.83rem' : '0.85rem',
+                lineHeight: 1.6,
+                color: '#334155',
+                margin: 0,
+                fontFamily: 'var(--font-body)',
+              }}>
+                "{p}"
+              </p>
+            ))}
+          </div>
+        ) : (
+          <p style={{
+            fontSize: isMobile ? '0.83rem' : '0.85rem',
+            lineHeight: 1.6,
+            color: '#334155',
+            margin: 0,
+            fontFamily: 'var(--font-body)',
+            display: '-webkit-box',
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: 6,
+            overflow: 'hidden',
+          }}>
+            "{rec.paragraphs.join(' ')}"
+          </p>
+        )}
 
         {/* Read More / Read Less Toggle */}
         {isLong && (
@@ -1994,7 +2121,7 @@ function RecommendationCardItem({ rec, isMobile }: { rec: any; isMobile: boolean
               border: 'none',
               color: '#0A66C2',
               fontWeight: 700,
-              fontSize: '0.78rem',
+              fontSize: '0.76rem',
               padding: '6px 0 0',
               cursor: 'pointer',
               display: 'inline-flex',
@@ -2004,41 +2131,43 @@ function RecommendationCardItem({ rec, isMobile }: { rec: any; isMobile: boolean
               fontFamily: 'var(--font-body)',
             }}
           >
-            {expanded ? 'Show Less ▴' : `Read Full Recommendation (${rec.paragraphs.length} paragraphs) ▾`}
+            {expanded ? 'Show less ▴' : 'Read more ▾'}
           </button>
         )}
       </div>
 
-      {/* Bottom Direct LinkedIn Verification Link */}
-      <a
-        href={rec.linkedinUrl}
-        target="_blank"
-        rel="noreferrer"
-        style={{
-          marginTop: '1.25rem',
-          paddingTop: '1rem',
-          borderTop: '1px dashed #E2E8F0',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          textDecoration: 'none',
-        }}
-      >
-        <span style={{
-          background: rec.badgeBg,
-          color: rec.badgeColor,
-          fontSize: '0.7rem',
-          fontWeight: 700,
-          padding: '3px 10px',
-          borderRadius: '999px',
-          fontFamily: 'var(--font-mono)',
-        }}>
-          {rec.degree || '1st Degree Connection'}
-        </span>
-        <span style={{ fontSize: '0.78rem', color: '#0A66C2', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
+      {/* Bottom Direct LinkedIn Verification Link — centred, degree badge removed */}
+      <div style={{
+        marginTop: '1.25rem',
+        paddingTop: '1rem',
+        borderTop: '1px dashed #E2E8F0',
+        display: 'flex',
+        justifyContent: 'center',
+      }}>
+        <m.a
+          href={rec.linkedinUrl}
+          target="_blank"
+          rel="noreferrer"
+          whileHover={{ scale: 1.03, backgroundColor: '#0A66C2', color: '#ffffff' }}
+          whileTap={{ scale: 0.97 }}
+          transition={{ duration: DUR.fast, ease: EASE_SOFT }}
+          style={{
+            fontSize: '0.78rem',
+            color: '#0A66C2',
+            fontWeight: 700,
+            fontFamily: 'var(--font-body)',
+            textDecoration: 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '8px 18px',
+            borderRadius: '999px',
+            border: '1.5px solid #0A66C2',
+          }}
+        >
           Verify on LinkedIn ↗
-        </span>
-      </a>
+        </m.a>
+      </div>
     </div>
   )
 }
@@ -2326,8 +2455,11 @@ function Projects() {
 
               {/* Polaroid 1 (Tilted Left - Team & VOD Logo Stage) */}
               <m.div
-                whileHover={{ rotate: -2, scale: 1.04, zIndex: 10 }}
-                whileTap={{ rotate: -2, scale: 1.04, zIndex: 10 }}
+                initial={{ rotate: -7 }}
+                animate={{ rotate: -7 }}
+                whileHover={{ rotate: -4, scale: 1.04, zIndex: 10 }}
+                whileTap={{ rotate: -4, scale: 1.04, zIndex: 10 }}
+                transition={{ duration: 0.25, ease: EASE }}
                 style={{
                   position: 'absolute',
                   left: isMobile ? '-5px' : '0px',
@@ -2337,7 +2469,6 @@ function Projects() {
                   padding: '12px 12px 30px 12px',
                   borderRadius: '4px',
                   boxShadow: '0 14px 35px rgba(0,0,0,0.12)',
-                  transform: 'rotate(-7deg)',
                   zIndex: 2,
                   border: '1px solid rgba(0,0,0,0.06)',
                 }}
@@ -2375,8 +2506,11 @@ function Projects() {
 
               {/* Polaroid 2 (Tilted Right - Award Presentation Stage) */}
               <m.div
+                initial={{ rotate: 6 }}
+                animate={{ rotate: 6 }}
                 whileHover={{ rotate: 3, scale: 1.04, zIndex: 10 }}
                 whileTap={{ rotate: 3, scale: 1.04, zIndex: 10 }}
+                transition={{ duration: 0.25, ease: EASE }}
                 style={{
                   position: 'absolute',
                   right: isMobile ? '-5px' : '0px',
@@ -2386,7 +2520,6 @@ function Projects() {
                   padding: '12px 12px 30px 12px',
                   borderRadius: '4px',
                   boxShadow: '0 14px 35px rgba(0,0,0,0.14)',
-                  transform: 'rotate(6deg)',
                   zIndex: 3,
                   border: '1px solid rgba(0,0,0,0.06)',
                 }}
@@ -2518,7 +2651,9 @@ function Projects() {
               display: isMobile ? 'flex' : 'grid',
               gridTemplateColumns: isCompact ? 'repeat(3, 1fr)' : 'repeat(5, 1fr)',
               gap: isMobile ? '0.75rem' : '1.25rem',
-              alignItems: 'center',
+              // 'start' so the margin-based zig-zag actually displaces the
+              // cards; 'center' would re-centre each one and cancel it out.
+              alignItems: isCompact ? 'center' : 'start',
               maxWidth: '1000px',
               margin: '0 auto',
               ...(isMobile && {
@@ -2534,6 +2669,8 @@ function Projects() {
             }}>
               {droneReels.map((reel, index) => {
                 const isInline = inlineReelId === reel.id
+                const localVideo = findReelAsset(reelVideoFiles, reel.id)
+                const localPoster = findReelAsset(reelPosterFiles, reel.id) ?? reel.img
 
                 return (
                   <m.div
@@ -2544,9 +2681,16 @@ function Projects() {
                     transition={{ duration: DUR.base, ease: EASE, delay: index * (isMobile ? 0.05 : 0.1) }}
                     whileHover={{ scale: 1.04, y: -5, zIndex: 10 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => setActiveReelModal(reel)}
+                    // A self-hosted clip plays right here; only reels without a
+                    // local file still have to hand off to Instagram.
+                    onClick={() => { if (!localVideo) setActiveReelModal(reel) }}
                     style={{
-                      transform: isCompact ? 'none' : `translateY(${reel.offset})`,
+                      // The zig-zag is done with margins, not `transform`.
+                      // framer-motion owns `transform` for whileHover, so an
+                      // inline translateY here gets overwritten and the whole
+                      // stagger silently flattens out.
+                      marginTop: isCompact ? 0 : index % 2 === 0 ? 0 : '52px',
+                      marginBottom: isCompact ? 0 : index % 2 === 0 ? '52px' : 0,
                       position: 'relative',
                       borderRadius: isMobile ? '18px' : '24px',
                       overflow: 'hidden',
@@ -2595,20 +2739,44 @@ function Projects() {
                       </div>
                     ) : (
                       <>
-                        {/* Background Cover Image */}
-                        <img
-                          src={reel.img}
-                          alt={reel.title}
-                          loading="lazy"
-                          decoding="async"
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                            filter: 'brightness(0.9)',
-                            transition: 'transform 0.4s ease',
-                          }}
-                        />
+                        {/* Cover: a real self-hosted clip when one exists —
+                            silent hover preview, exactly like Instagram's grid
+                            — otherwise the static cover image. */}
+                        {localVideo ? (
+                          <video
+                            src={localVideo}
+                            poster={localPoster}
+                            muted
+                            loop
+                            playsInline
+                            preload="metadata"
+                            onMouseEnter={(e) => { void e.currentTarget.play().catch(() => {}) }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.pause()
+                              e.currentTarget.currentTime = 0
+                            }}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover',
+                              filter: 'brightness(0.9)',
+                            }}
+                          />
+                        ) : (
+                          <img
+                            src={localPoster}
+                            alt={reel.title}
+                            loading="lazy"
+                            decoding="async"
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover',
+                              filter: 'brightness(0.9)',
+                              transition: 'transform 0.4s ease',
+                            }}
+                          />
+                        )}
 
                         {/* Gradient Overlay */}
                         <div style={{
@@ -2671,25 +2839,22 @@ function Projects() {
                               {reel.title}
                             </span>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
-                              <span
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  setInlineReelId(reel.id)
-                                }}
-                                style={{
+                              {localVideo ? (
+                                <span style={{
                                   fontSize: '0.65rem',
                                   color: '#ffffff',
                                   background: 'rgba(255,255,255,0.25)',
                                   padding: '2px 8px',
                                   borderRadius: '999px',
                                   fontWeight: 700,
-                                }}
-                              >
-                                ▶ Play Inline
-                              </span>
-                              <span style={{ fontSize: '0.65rem', color: '#FCA5A5', fontWeight: 600 }}>
-                                • Tap to Watch
-                              </span>
+                                }}>
+                                  ▶ {isMobile ? 'Tap to play' : 'Hover to play'}
+                                </span>
+                              ) : (
+                                <span style={{ fontSize: '0.65rem', color: '#FCA5A5', fontWeight: 600 }}>
+                                  ↗ View on Instagram
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -2774,41 +2939,41 @@ function Projects() {
           {[
             {
               category: '1. RESEARCH & INNOVATION',
+              badgeBg: '#FEF3C7',
+              badgeColor: '#B45309',
               title: 'Best Research Paper Award',
               date: 'Mar 2024',
               icon: '🏆',
-              badgeBg: '#FEF3C7',
-              badgeColor: '#B45309',
               desc: 'Awarded Best Research Paper for “Learning for Legacy: How Sustainable Education Shapes the Future of Bharat” at the National Conference on Innovation & Knowledge Management, Poornima University, Jaipur.',
               tags: ['Research', 'Innovation', 'Sustainability'],
             },
             {
               category: '2. LEADERSHIP & EXCELLENCE',
+              badgeBg: '#FEE2E2',
+              badgeColor: '#B91C1C',
               title: 'Fascinating Student',
               date: 'Apr 2025',
               icon: '🌟',
-              badgeBg: '#F3E8FF',
-              badgeColor: '#7E22CE',
               desc: 'Recognised as a Fascinating Student in the Faculty of Management & Commerce for leadership, creativity, organisational skills and commitment to excellence.',
               tags: ['Leadership', 'Creativity', 'Excellence'],
             },
             {
               category: '3. SOCIAL IMPACT & RESEARCH',
+              badgeBg: '#DBEAFE',
+              badgeColor: '#1D4ED8',
               title: 'Viksit Bharat Research Initiative',
               date: 'Dec 2024',
               icon: '🌐',
-              badgeBg: '#CCFBF1',
-              badgeColor: '#0F766E',
               desc: 'Presented research on “Healthcare Access and Socio-Economic Implications of PMJAY: Opportunities & Challenges” at the National Conference on Healthcare & Socio-Economic Research.',
               tags: ['Research', 'Critical Thinking', 'Social Impact'],
             },
             {
               category: '4. CULTURE & DISCIPLINE',
+              badgeBg: '#DCFCE7',
+              badgeColor: '#15803D',
               title: 'Gold Medal — District Level Kathak',
               date: 'Aug 2023',
               icon: '🥇',
-              badgeBg: '#FFE4E6',
-              badgeColor: '#BE123C',
               desc: 'Secured 1st Position in the District Level Kathak Dance Competition in Bundi, Rajasthan.',
               tags: ['Kathak', 'Discipline', 'Cultural Excellence'],
             },
@@ -2963,17 +3128,16 @@ function Projects() {
               display: 'grid',
               gridTemplateColumns: isCompact ? '1fr' : 'repeat(3, 1fr)',
               gap: isMobile ? '1.25rem' : '1.75rem',
-              alignItems: 'start',
+              // 'stretch' (the default) is what lets every card match the
+              // tallest in the row — 'start' was sizing each to its own content.
+              alignItems: 'stretch',
             }}>
               {[
                 {
                   name: 'Nupur Choudhary',
                   role: 'Head of Operations @ Learn and Build | PGDM - HR',
-                  meta: 'Dec 4, 2025 · Nupur managed Dhriti directly',
-                  degree: '1st Degree Connection',
+                  meta: 'Dec 4, 2025',
                   avatar: nupurAvatarImg,
-                  badgeBg: '#FFF7ED',
-                  badgeColor: '#C2410C',
                   linkedinUrl: 'https://www.linkedin.com/in/nupur-choudhary/',
                   paragraphs: [
                     'I had the pleasure of mentoring Dhriti Arora during her tenure as a Business Development Intern at Learn and Build.',
@@ -2984,11 +3148,8 @@ function Projects() {
                 {
                   name: 'DR. MUKTAK VYAS',
                   role: 'Professor, FMC @ Poornima University',
-                  meta: "Sep 21, 2025 · Dr. Muktak was Dhriti's teacher",
-                  degree: '1st Degree Connection',
+                  meta: 'Sep 21, 2025',
                   avatar: drMuktakAvatarImg,
-                  badgeBg: '#ECFDF5',
-                  badgeColor: '#047857',
                   linkedinUrl: 'https://www.linkedin.com/in/dr-muktak-vyas-98b82844/',
                   paragraphs: [
                     'It is my privilege to recommend Dhriti Arora, a highly enthusiastic and diligent student who has consistently stood out for her leadership qualities and academic dedication. She has shown remarkable ability to balance her departmental responsibilities alongside her classwork, ensuring excellence in both areas. Her enthusiasm for learning, coupled with her proactive mindset, reflects not only her intellectual maturity but also her strong commitment to personal and professional growth.',
@@ -2998,11 +3159,8 @@ function Projects() {
                 {
                   name: 'Dr. Jitendra Singh',
                   role: 'Assistant Professor, College Education-Govt. of Rajasthan | PhD, NET/JRF, SET, MBA, M.Com',
-                  meta: "Sep 21, 2025 · Dr. Jitendra was Dhriti's mentor",
-                  degree: '2nd Degree Connection',
+                  meta: 'Sep 21, 2025',
                   avatar: drJitendraAvatarImg,
-                  badgeBg: '#EFF6FF',
-                  badgeColor: '#1D4ED8',
                   linkedinUrl: 'https://www.linkedin.com/in/dr-jitendra-singh-2207b716b/',
                   paragraphs: [
                     'As far I know Dhriti has been one of those rare students who a standout showing great initiative, hard work, and ambition. I’ve seen her consistently go above and beyond expectations.',
@@ -3801,6 +3959,30 @@ function Contact() {
               >
                 <span>in</span> Connect on LinkedIn ↗
               </m.a>
+
+              <m.a
+                href="https://www.instagram.com/a.dhritii"
+                target="_blank"
+                rel="noreferrer"
+                whileHover={{ scale: 1.03, filter: 'brightness(1.12)' }}
+                whileTap={{ scale: 0.97 }}
+                style={{
+                  background: 'linear-gradient(90deg, #F58529 0%, #DD2A7B 50%, #8134AF 100%)',
+                  color: '#ffffff',
+                  padding: '14px 24px',
+                  borderRadius: '14px',
+                  fontWeight: 800,
+                  fontSize: '0.9rem',
+                  textDecoration: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.6rem',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                <InstagramIcon size={17} /> Follow on Instagram ↗
+              </m.a>
             </div>
           </m.div>
 
@@ -3873,12 +4055,12 @@ export default function App() {
      * full `motion` bundle. `strict` makes the build fail loudly if a plain
      * `motion.*` component ever sneaks back in and silently undoes the saving.
      *
-     * MotionConfig sets the house transition once, and `reducedMotion="user"`
-     * lets framer-motion drop transform/layout animation for people who ask
-     * for it — keeping opacity fades — instead of a blunt CSS override.
+     * MotionConfig sets the house transition once. `reducedMotion="never"` is
+     * deliberate: the OS-level Reduce Motion flag would otherwise strip every
+     * transform animation on this site, and the motion is the design here.
      */
     <LazyMotion features={domAnimation} strict>
-      <MotionConfig reducedMotion="user" transition={{ duration: DUR.base, ease: EASE }}>
+      <MotionConfig reducedMotion="never" transition={{ duration: DUR.base, ease: EASE }}>
         <div style={{ fontFamily: 'var(--font-body)' }}>
           <ScrollProgress />
           <Navbar />

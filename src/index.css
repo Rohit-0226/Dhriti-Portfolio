@@ -49,18 +49,13 @@ img, svg, video, canvas {
   html { scroll-padding-top: 76px; }
 }
 
-/* Respect reduced motion, but scoped — a blanket `* { animation-duration: 0.01ms }`
-   freezes the marquee mid-scroll and reads as a broken strip. Entrance/decorative
-   motion is calmed; the ticker keeps running as the section's core visual. */
+/* The OS Reduce Motion flag is intentionally not honoured for the decorative
+   animation on this site — the motion is the design, and suppressing it made
+   the page look broken. Only smooth-scroll is relaxed, which affects nothing
+   visual. To respect the flag again, restore the rules here and flip
+   MotionConfig back to reducedMotion="user" in App.tsx. */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .animate-float-bob,
-  .pulse-glow {
-    animation: none;
-  }
-  .card-lift {
-    transition: none;
-  }
 }
 
 ::-webkit-scrollbar { width: 6px; }
@@ -91,6 +86,36 @@ img, svg, video, canvas {
 }
 .animate-marquee:hover {
   animation-play-state: paused;
+}
+
+/* ── Heading mask reveal ─────────────────────────────────────────────
+   Built so the *resting* state is visible. The hidden start lives only in
+   the keyframe's `from`, held by `animation-fill-mode: both` while paused.
+   If animations are unavailable, disabled, or never triggered, the heading
+   simply shows — it can never get stranded behind the mask. */
+@keyframes revealUp {
+  from { transform: translateY(110%); }
+  to   { transform: translateY(0); }
+}
+
+.reveal-mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+}
+
+/* Base state is the FINAL state: readable, untransformed, no animation — and
+   there is no `animation-fill-mode`, so the hidden `from` frame exists only
+   for the 0.85s the animation is actually running. If the trigger never
+   fires, or CSS animations are unavailable, the heading is simply visible.
+   A title can no longer be stranded behind the mask by a failed animation. */
+.reveal-inner {
+  display: block;
+}
+
+.reveal-inner.is-revealing {
+  will-change: transform;
+  animation: revealUp 0.85s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Horizontal snap trays (mobile reel row) — hide the scrollbar chrome */
