@@ -2222,6 +2222,7 @@ function Projects() {
                     width: '100%',
                     height: isMobile ? '150px' : '200px',
                     objectFit: 'cover',
+                    objectPosition: '74% center',
                     borderRadius: '2px',
                   }}
                 />
