@@ -2022,8 +2022,8 @@ function Projects() {
             
             {/* Left Column: Role & Deliverables */}
             <div>
-              {/* Role Chip */}
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', marginBottom: '1.5rem' }}>
+              {/* Role Chip & Logo */}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
                 <span className="font-display" style={{
                   background: '#DC2626',
                   color: '#ffffff',
@@ -2035,40 +2035,58 @@ function Projects() {
                 }}>
                   Event Head Coordinator
                 </span>
-                <span style={{ fontSize: '0.85rem', color: '#718096', fontWeight: 600, fontFamily: 'var(--font-body)' }}>
-                  July 2024 – Sept 2024
+                <span style={{
+                  background: '#1E293B',
+                  color: '#ffffff',
+                  fontSize: '0.82rem',
+                  fontWeight: 700,
+                  padding: '5px 14px',
+                  borderRadius: '999px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}>
+                  🩺 Voice of Doctors
                 </span>
               </div>
 
               {/* Title & Description */}
               <h4 className="font-display" style={{
-                fontSize: 'clamp(1.8rem, 3vw, 2.4rem)',
+                fontSize: 'clamp(1.8rem, 3vw, 2.5rem)',
                 fontWeight: 800,
                 color: '#1A0808',
                 margin: '0 0 1rem',
-                lineHeight: 1.25,
+                lineHeight: 1.2,
+                letterSpacing: '-0.02em',
               }}>
-                Managing Healthcare Dialogues &amp; National Medical Series
+                50+ Voices. One Seamless Experience.
               </h4>
 
               <div style={{ marginBottom: isMobile ? '1.25rem' : '2rem' }}>
-                <ExpandableText
-                  text="Spearheaded end-to-end event strategy, virtual session broadcasts, medical speaker onboarding, and stage coordination for Voice of Doctors (Season 2). Oversaw multi-channel promotion across social media and doctor communities."
-                  clamp={isMobile}
-                  lines={3}
-                  style={{
-                    fontSize: isMobile ? '0.9rem' : '1rem',
-                    lineHeight: 1.65,
-                    color: '#4A5568',
-                    fontFamily: 'var(--font-body)',
-                  }}
-                />
+                <p style={{
+                  fontSize: isMobile ? '0.92rem' : '1rem',
+                  lineHeight: 1.7,
+                  color: '#334155',
+                  fontFamily: 'var(--font-body)',
+                  margin: '0 0 0.85rem',
+                }}>
+                  Led the end-to-end coordination of Voice of Doctors Season 2, bringing together doctors, speakers and project teams across virtual sessions and on-ground events.
+                </p>
+                <p style={{
+                  fontSize: isMobile ? '0.92rem' : '1rem',
+                  lineHeight: 1.7,
+                  color: '#334155',
+                  fontFamily: 'var(--font-body)',
+                  margin: 0,
+                }}>
+                  Managed speaker coordination, stakeholder communication, scheduling, documentation and team alignment, ensuring smooth execution from planning to delivery.
+                </p>
               </div>
 
               {/* Highlight Metrics Grid */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: isMobile ? '0.6rem' : '1rem', marginBottom: isMobile ? '1.25rem' : '2rem' }}>
                 <div style={{ background: '#ffffff', padding: '1rem 1.25rem', borderRadius: '14px', border: '1px solid rgba(0,0,0,0.06)' }}>
-                  <span className="font-display" style={{ fontSize: '1.6rem', fontWeight: 800, color: '#DC2626', display: 'block' }}>
+                  <span className="font-display" style={{ fontSize: '1.75rem', fontWeight: 800, color: '#DC2626', display: 'block' }}>
                     <CountUp value="50+" />
                   </span>
                   <span style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: 600 }}>
@@ -2076,24 +2094,30 @@ function Projects() {
                   </span>
                 </div>
                 <div style={{ background: '#ffffff', padding: '1rem 1.25rem', borderRadius: '14px', border: '1px solid rgba(0,0,0,0.06)' }}>
-                  <span className="font-display" style={{ fontSize: '1.6rem', fontWeight: 800, color: '#000000', display: 'block' }}>
+                  <span className="font-display" style={{ fontSize: '1.75rem', fontWeight: 800, color: '#000000', display: 'block' }}>
                     <CountUp value="100%" />
                   </span>
                   <span style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: 600 }}>
-                    Seamless Event Execution
+                    Event Execution
                   </span>
                 </div>
               </div>
 
               {/* Deliverable Tags */}
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                {['Event Operations', 'Speaker Onboarding', 'Reels & Media Promo', 'Stakeholder Comms'].map((tag) => (
+                {[
+                  'Event Operations',
+                  'Speaker Coordination',
+                  'Stakeholder Management',
+                  'Virtual Events',
+                  'On-ground Execution',
+                ].map((tag) => (
                   <span
                     key={tag}
                     style={{
                       fontSize: '0.78rem',
                       fontWeight: 600,
-                      color: '#475569',
+                      color: '#334155',
                       background: '#ffffff',
                       border: '1px solid #E2E8F0',
                       padding: '4px 12px',
