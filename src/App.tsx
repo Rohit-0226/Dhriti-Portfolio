@@ -445,7 +445,7 @@ function Navbar() {
           whileHover={{ scale: 1.03 }}
           className="font-display"
           style={{
-            fontSize: isMobile ? '1.15rem' : scrolled ? '1.3rem' : '1.45rem',
+            fontSize: isMobile ? '1.35rem' : scrolled ? '1.5rem' : '1.7rem',
             fontWeight: 800,
             fontStyle: 'italic',
             cursor: 'pointer',
@@ -514,7 +514,7 @@ function Navbar() {
                 whileHover={{ y: -2, color: '#DC2626' }}
                 style={{
                   color: '#1F2937',
-                  fontSize: scrolled ? '0.84rem' : '0.88rem',
+                  fontSize: scrolled ? '0.94rem' : '1.02rem',
                   fontWeight: 700,
                   fontFamily: 'var(--font-body)',
                   textDecoration: 'none',
@@ -534,10 +534,10 @@ function Navbar() {
               style={{
                 background: '#DC2626',
                 color: '#ffffff',
-                padding: scrolled ? '7px 18px' : '9px 22px',
+                padding: scrolled ? '8px 22px' : '10px 26px',
                 borderRadius: '999px',
                 fontFamily: 'var(--font-mono)',
-                fontSize: '0.72rem',
+                fontSize: '0.82rem',
                 letterSpacing: '0.08em',
                 textTransform: 'uppercase',
                 textDecoration: 'none',
@@ -825,22 +825,37 @@ function Hero() {
           alignItems: 'flex-end',
           height: isMobile ? 'clamp(340px, 88vw, 430px)' : isTablet ? '430px' : '480px',
         }}>
-          {/* RIGHT FLANKING METRIC — desktop/tablet only */}
+          {/* RIGHT FLANKING HERO TAGLINE — desktop/tablet only */}
           {!isMobile && (
             <m.div
               initial={{ opacity: 0, x: 28 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: DUR.slow, ease: EASE, delay: 0.3 }}
               style={{
-                position: 'absolute', right: '2%', bottom: '25%',
-                maxWidth: isTablet ? '160px' : '210px', textAlign: 'left', zIndex: 15,
+                position: 'absolute', right: '-1%', bottom: '24%',
+                maxWidth: isTablet ? '220px' : '340px', textAlign: 'left', zIndex: 15,
               }}
             >
-              <div className="font-display" style={{ fontSize: isTablet ? '2.4rem' : '3.2rem', fontWeight: 800, color: '#1A0808', lineHeight: 1 }}>
-                BBA 2025
+              <div className="font-display" style={{
+                fontSize: isTablet ? '1.8rem' : '2.6rem',
+                fontWeight: 800,
+                color: '#1A0808',
+                lineHeight: 1.1,
+                letterSpacing: '-0.02em',
+                whiteSpace: 'nowrap',
+              }}>
+                IDEAS <span style={{ color: '#DC2626' }}>→</span> EXECUTION
               </div>
-              <p className="font-mono" style={{ fontSize: '0.78rem', color: '#5C2C2C', margin: '8px 0 0', lineHeight: 1.4, fontWeight: 500 }}>
-                in Brand &amp; Marketing Experience
+              <p className="font-mono" style={{
+                fontSize: isTablet ? '0.78rem' : '0.88rem',
+                color: '#DC2626',
+                fontWeight: 700,
+                margin: '8px 0 0',
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                whiteSpace: 'nowrap',
+              }}>
+                Brand • Marketing • Growth
               </p>
             </m.div>
           )}
@@ -882,11 +897,11 @@ function Hero() {
               }}
             />
 
-            {/* FLOATING BLACK PILLS */}
+            {/* FLOATING BLACK PILLS - Adjusted outward to NEVER overlap Dhriti's cutout portrait */}
             {/* Pill 1: Top Left - Marketing */}
             <m.div
               {...bob(-8, 4)}
-              style={{ ...pillStyle, top: '28%', left: isMobile ? '-28px' : '-50px' }}
+              style={{ ...pillStyle, top: '16%', left: isMobile ? '-35px' : '-115px' }}
             >
               <span style={{ fontSize: isMobile ? '0.95rem' : '1.2rem' }}>📣</span> Marketing
             </m.div>
@@ -894,7 +909,7 @@ function Hero() {
             {/* Pill 2: Bottom Left - Brand Management */}
             <m.div
               {...bob(8, 5, 0.5)}
-              style={{ ...pillStyle, bottom: '20%', left: isMobile ? '-20px' : '-45px' }}
+              style={{ ...pillStyle, bottom: '24%', left: isMobile ? '-35px' : '-130px' }}
             >
               <span style={{ fontSize: isMobile ? '0.95rem' : '1.2rem' }}>🌟</span> Brand Management
             </m.div>
@@ -902,7 +917,7 @@ function Hero() {
             {/* Pill 3: Top Right - Personal Branding */}
             <m.div
               {...bob(-10, 4.5, 0.2)}
-              style={{ ...pillStyle, top: '38%', right: isMobile ? '-24px' : '-55px' }}
+              style={{ ...pillStyle, top: '22%', right: isMobile ? '-35px' : '-130px' }}
             >
               <span style={{ fontSize: isMobile ? '0.95rem' : '1.2rem' }}>✨</span> Personal Branding
             </m.div>
@@ -910,7 +925,7 @@ function Hero() {
             {/* Pill 4: Bottom Right - Social Media */}
             <m.div
               {...bob(8, 5.5, 0.7)}
-              style={{ ...pillStyle, bottom: '11%', right: isMobile ? '-28px' : '-35px' }}
+              style={{ ...pillStyle, bottom: '14%', right: isMobile ? '-35px' : '-115px' }}
             >
               <span style={{ fontSize: isMobile ? '0.95rem' : '1.2rem' }}>🤳</span> Social Media
             </m.div>
@@ -918,23 +933,23 @@ function Hero() {
 
         </div>
 
-        {/* MOBILE: credential restacked beneath the portrait */}
+        {/* MOBILE: tagline restacked beneath the portrait */}
         {isMobile && (
           <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: DUR.slow, ease: EASE, delay: 0.35 }}
             style={{
-              display: 'flex', flexDirection: 'column', gap: '1rem',
+              display: 'flex', flexDirection: 'column', gap: '0.4rem',
               textAlign: 'center', marginTop: '1.5rem', width: '100%',
             }}
           >
             <div>
-              <div className="font-display" style={{ fontSize: '2.6rem', fontWeight: 800, color: '#1A0808', lineHeight: 1 }}>
-                BBA 2025
+              <div className="font-display" style={{ fontSize: '1.9rem', fontWeight: 800, color: '#1A0808', lineHeight: 1.1 }}>
+                IDEAS <span style={{ color: '#DC2626' }}>→</span> EXECUTION
               </div>
-              <p className="font-mono" style={{ fontSize: '0.78rem', color: '#5C2C2C', margin: '8px 0 0', lineHeight: 1.4, fontWeight: 500 }}>
-                in Brand &amp; Marketing Experience
+              <p className="font-mono" style={{ fontSize: '0.8rem', color: '#DC2626', margin: '6px 0 0', lineHeight: 1.4, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                Brand • Marketing • Growth
               </p>
             </div>
           </m.div>
