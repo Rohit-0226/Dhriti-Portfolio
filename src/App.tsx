@@ -1241,107 +1241,91 @@ function SkillsToolsEducation() {
 
   const toolCategories = [
     {
-      title: 'Brand & Visual Design',
+      title: 'Visual Design & Presentation',
       renderLogos: () => (
         <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
-          {/* Canva / Creative */}
+          {/* Canva */}
           <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#ECFEFF', border: '1px solid #CFFAFE', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-            <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0891B2' }}>C</span>
+            <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0891B2' }}>C</span>
           </div>
-          {/* Adobe */}
+          {/* Presentation Design */}
           <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#FFF1F2', border: '1px solid #FECDD3', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M14.5 4H19v16h-4.5L14.5 4zM9.5 4L5 20h4.5l1.2-4.5h4.6L9.5 4z" fill="#E11D48"/>
+              <path d="M4 5h16a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1z" stroke="#E11D48" strokeWidth="2"/>
+              <path d="M12 17v4M8 21h8" stroke="#E11D48" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M8 10l3 3 5-5" stroke="#E11D48" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
-          {/* Figma */}
+          {/* Visual Communication */}
           <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#F8FAFC', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-            <svg width="20" height="30" viewBox="0 0 38 57" fill="none">
-              <path d="M19 28.5C19 23.2533 23.2533 19 28.5 19C33.7467 19 38 23.2533 38 28.5C38 33.7467 33.7467 38 28.5 38C23.2533 38 19 33.7467 19 28.5Z" fill="#1ABCFE"/>
-              <path d="M0 47.5C0 42.2533 4.25329 38 9.5 38H19V47.5C19 52.7467 14.7467 57 9.5 57C4.25329 57 0 52.7467 0 47.5Z" fill="#0ACF83"/>
-              <path d="M19 0V19H28.5C33.7467 19 38 14.7467 38 9.5C38 4.25329 33.7467 0 28.5 0H19Z" fill="#FF7262"/>
-              <path d="M0 9.5C0 14.7467 4.25329 19 9.5 19H19V0H9.5C4.25329 0 0 4.25329 0 9.5Z" fill="#F24E1E"/>
-              <path d="M0 28.5C0 33.7467 4.25329 38 9.5 38H19V19H9.5C4.25329 19 0 23.2533 0 28.5Z" fill="#A259FF"/>
+            <span style={{ fontSize: '1.2rem' }}>🎨</span>
+          </div>
+        </div>
+      ),
+      tools: ['Canva', 'Presentation Design', 'Visual Communication'],
+    },
+    {
+      title: 'Productivity & Office Suites',
+      renderLogos: () => (
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
+          {/* Microsoft Office */}
+          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#FFF1F2', border: '1px solid #FECDD3', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="3" width="8" height="8" rx="1.5" fill="#E11D48"/>
+              <rect x="13" y="3" width="8" height="8" rx="1.5" fill="#10B981"/>
+              <rect x="3" y="13" width="8" height="8" rx="1.5" fill="#3B82F6"/>
+              <rect x="13" y="13" width="8" height="8" rx="1.5" fill="#F59E0B"/>
+            </svg>
+          </div>
+          {/* Google Workspace */}
+          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#F8FAFC', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" stroke="#4285F4" strokeWidth="2" strokeLinejoin="round"/>
+              <path d="M12 12L3 7M12 12l9-5M12 12v10" stroke="#EA4335" strokeWidth="2" strokeLinejoin="round"/>
             </svg>
           </div>
         </div>
       ),
-      tools: ['Canva', 'Figma', 'Adobe Creative Suite'],
+      tools: ['Microsoft Office (Excel, PowerPoint, Word)', 'Google Workspace (Docs, Sheets, Slides, Drive)'],
     },
     {
-      title: 'Content & Reel Production',
+      title: 'Content & Marketing Tech',
       renderLogos: () => (
         <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
-          {/* CapCut */}
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#09090B', border: '1px solid #27272A', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M7 7l5 5-5 5V7zM17 7l-5 5 5 5V7z" fill="#FFFFFF"/>
-            </svg>
-          </div>
-          {/* AI Tools */}
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#F0FDF4', border: '1px solid #BBF7D0', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-            <span style={{ fontSize: '1.1rem' }}>✨</span>
-          </div>
-          {/* Newsletters */}
+          {/* Mailchimp */}
           <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#FEFCE8', border: '1px solid #FEF08A', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-            <span style={{ fontSize: '1.1rem' }}>✉️</span>
+            <span style={{ fontSize: '1.2rem' }}>🐵</span>
+          </div>
+          {/* WATI WhatsApp API */}
+          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#F0FDF4', border: '1px solid #BBF7D0', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.08L2 22l5.05-1.33A9.94 9.94 0 0012 22c5.52 0 10-4.48 10-10S17.52 2 12 2z" fill="#25D366"/>
+              <path d="M8.5 9.5c.2-.4.5-.4.8-.4h.5c.2 0 .4.1.5.4.3.7.8 1.8.9 2 .1.2.1.3 0 .5-.1.2-.2.3-.4.5-.1.1-.3.3-.2.5.3.6.9 1.5 1.7 2.1.8.6 1.6.9 2.2 1.1.2.1.4 0 .5-.2.2-.3.6-.8.8-1 .1-.2.3-.2.5-.1.2.1 1.4.7 1.6.8.2.1.4.2.4.4 0 .6-.4 1.4-1 1.6-.6.2-1.4.3-3.8-.6-2.9-1.2-4.8-4.2-5-4.4-.2-.2-1.3-1.7-1.3-3.2 0-1.5.8-2.3 1.1-2.6z" fill="#FFFFFF"/>
+            </svg>
+          </div>
+          {/* Storytelling */}
+          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#FAF5FF', border: '1px solid #F3E8FF', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
+            <span style={{ fontSize: '1.2rem' }}>✍️</span>
           </div>
         </div>
       ),
-      tools: ['CapCut & Reel Editing', 'AI Content Generators', 'Newsletter Publishing'],
+      tools: ['Content Strategy & Storytelling', 'Ghostwriting', 'Mailchimp', 'WATI (WhatsApp Business API)'],
     },
     {
-      title: 'Performance & Analytics',
+      title: 'Management & Strategy',
       renderLogos: () => (
         <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
-          {/* Google Analytics */}
+          {/* Event Management */}
           <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#FFF7ED', border: '1px solid #FFEDD5', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-              <rect x="5" y="11" width="3.5" height="8" rx="1" fill="#F97316"/>
-              <rect x="10.5" y="6" width="3.5" height="13" rx="1" fill="#EA580C"/>
-              <circle cx="17.5" cy="5.5" r="2.5" fill="#EAB308"/>
-            </svg>
+            <span style={{ fontSize: '1.2rem' }}>🎟️</span>
           </div>
-          {/* Meta Ads */}
+          {/* Social Media Management */}
           <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#EFF6FF', border: '1px solid #BFDBFE', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M16.8 7.2c-1.3 0-2.5.8-3.4 2-1-1.2-2.1-2-3.4-2-2.3 0-4 1.8-4 4.3 0 2.8 2.2 5.3 4.8 5.3 1.4 0 2.5-.7 3.3-1.8.8 1.1 2 1.8 3.3 1.8 2.6 0 4.8-2.5 4.8-5.3 0-2.5-1.7-4.3-4-4.3zm-7.4 7.4c-1.4 0-2.6-1.5-2.6-3.1 0-1.4.9-2.5 2.1-2.5.9 0 1.8.7 2.4 1.7-.6 2.3-1.2 3.9-1.9 3.9zm7.4 0c-.7 0-1.3-1.6-1.9-3.9.6-1 1.5-1.7 2.4-1.7 1.2 0 2.1 1.1 2.1 2.5 0 1.6-1.2 3.1-2.6 3.1z" fill="#0668E1"/>
-            </svg>
-          </div>
-          {/* Google Ads */}
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#FEFCE8', border: '1px solid #FEF08A', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M15.3 3.6L6.5 18.8c-.4.7-.2 1.6.5 2s1.6.2 2-.5l8.8-15.2c.4-.7.2-1.6-.5-2s-1.6-.2-2 .5z" fill="#FBBC04"/>
-              <path d="M8.5 20.3l-4.5-2.6c-.7-.4-.9-1.3-.5-2l8.8-15.2c.4-.7 1.3-.9 2-.5l4.5 2.6c.7.4.9 1.3.5 2l-8.8 15.2c-.4.7-1.3.9-2 .5z" fill="#4285F4"/>
-              <circle cx="6" cy="18" r="2.5" fill="#34A853"/>
-            </svg>
+            <span style={{ fontSize: '1.2rem' }}>📣</span>
           </div>
         </div>
       ),
-      tools: ['Google Analytics', 'Meta Ads Manager', 'Google Ads'],
-    },
-    {
-      title: 'Operations & Execution',
-      renderLogos: () => (
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
-          {/* MS Office */}
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#FFF1F2', border: '1px solid #FECDD3', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <rect x="4" y="4" width="16" height="16" rx="3" fill="#E11D48"/>
-              <path d="M9 8h6v8H9z" fill="#FFFFFF"/>
-            </svg>
-          </div>
-          {/* Workspace */}
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#F8FAFC', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-            <span style={{ fontSize: '1.1rem' }}>💼</span>
-          </div>
-          {/* WATI */}
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#F0FDF4', border: '1px solid #BBF7D0', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-            <span style={{ fontSize: '1.1rem' }}>💬</span>
-          </div>
-        </div>
-      ),
-      tools: ['MS Excel & PowerPoint', 'Google Workspace', 'WATI (WhatsApp API)'],
+      tools: ['Event Management', 'Social Media Management'],
     },
   ]
 
