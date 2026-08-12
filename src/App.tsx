@@ -1227,16 +1227,16 @@ function SkillsToolsEducation() {
   const { isMobile, isCompact } = useBreakpoint()
 
   const skillPillsLine1 = [
-    'Brand Strategy',
+    'Brand Management',
     'Growth Marketing',
     'Social Media Management',
-    'B2B & B2C Strategy',
+    'Ghostwriting',
   ]
   const skillPillsLine2 = [
     'Content Creation',
     'Campaign Execution',
-    'Performance Ads',
-    'Relationship Management',
+    'Market Research',
+    'Personal Branding',
   ]
 
   const toolCategories = [
