@@ -1459,7 +1459,7 @@ function SkillsToolsEducation() {
           display: 'grid',
           gridTemplateColumns: isCompact ? '1fr' : '1.1fr 0.9fr',
           gap: isMobile ? '1.5rem' : '2.5rem',
-          alignItems: 'stretch',
+          alignItems: 'start',
         }}>
           
           {/* LEFT CARD: tools. */}
@@ -1547,6 +1547,7 @@ function SkillsToolsEducation() {
               border: '1px solid rgba(0, 0, 0, 0.07)',
               display: 'flex',
               flexDirection: 'column',
+              height: 'fit-content',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '2px', marginBottom: '2.5rem' }}>
