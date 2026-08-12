@@ -968,7 +968,9 @@ function Hero() {
             boxShadow: '0 12px 36px rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.15)',
           }}>
             <m.a
-              href="#contact"
+              href="https://drive.google.com/file/d/1mQAwcemebkcWtThhc86C3kij1MQHsa22/view?usp=drivesdk"
+              target="_blank"
+              rel="noopener noreferrer"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               style={{
