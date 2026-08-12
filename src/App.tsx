@@ -4021,9 +4021,6 @@ function Contact() {
             }}>
               Dhriti <span style={{ color: '#DC2626' }}>Arora</span>
             </span>
-            <div style={{ fontSize: '0.75rem', color: '#9CA3AF', marginTop: '4px', fontFamily: 'var(--font-mono)' }}>
-              BBA Digital Marketing (2021–2025)
-            </div>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
