@@ -892,8 +892,9 @@ function Hero() {
               decoding="async"
               fetchPriority="high"
               style={{
-                width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top',
-                filter: 'drop-shadow(0 15px 30px rgba(0,0,0,0.25))',
+                width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 15%',
+                filter: 'drop-shadow(0 15px 30px rgba(0,0,0,0.35))',
+                borderRadius: '24px',
               }}
             />
 
