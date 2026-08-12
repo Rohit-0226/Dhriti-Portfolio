@@ -1911,6 +1911,61 @@ function Experience() {
 /* ─── Projects Section ───────────────────────────────────── */
 function Projects() {
   const { isMobile, isCompact } = useBreakpoint()
+  const [activeReelModal, setActiveReelModal] = useState<{
+    id: string
+    url: string
+    embedUrl: string
+    title: string
+  } | null>(null)
+  const [inlineReelId, setInlineReelId] = useState<string | null>(null)
+
+  const droneReels = [
+    {
+      id: 'DP1HOi1gV5u',
+      url: 'https://www.instagram.com/reel/DP1HOi1gV5u/',
+      embedUrl: 'https://www.instagram.com/reel/DP1HOi1gV5u/embed',
+      img: reelImg1,
+      title: 'FPV Flight Shoot',
+      views: '32.4k',
+      offset: '-24px',
+    },
+    {
+      id: 'DL1gZxruAuW',
+      url: 'https://www.instagram.com/reel/DL1gZxruAuW/',
+      embedUrl: 'https://www.instagram.com/reel/DL1gZxruAuW/embed',
+      img: reelImg2,
+      title: 'Brand Presenter',
+      views: '48.1k',
+      offset: '24px',
+    },
+    {
+      id: 'DKbq4CTBITl',
+      url: 'https://www.instagram.com/reel/DKbq4CTBITl/',
+      embedUrl: 'https://www.instagram.com/reel/DKbq4CTBITl/embed',
+      img: reelImg3,
+      title: 'City Aerial Shoot',
+      views: '54.9k',
+      offset: '-24px',
+    },
+    {
+      id: 'DKJkYa-MA3o',
+      url: 'https://www.instagram.com/reel/DKJkYa-MA3o/',
+      embedUrl: 'https://www.instagram.com/reel/DKJkYa-MA3o/embed',
+      img: reelImg4,
+      title: 'Behind The Scenes',
+      views: '29.3k',
+      offset: '24px',
+    },
+    {
+      id: 'DIGzp7kBxAX',
+      url: 'https://www.instagram.com/reel/DIGzp7kBxAX/',
+      embedUrl: 'https://www.instagram.com/reel/DIGzp7kBxAX/embed',
+      img: reelImg5,
+      title: 'Drone Unboxing',
+      views: '41.8k',
+      offset: '-24px',
+    },
+  ]
 
   return (
     <section id="projects" style={{ background: '#FFFBFB', paddingBottom: isMobile ? '70px' : '100px' }}>
@@ -2342,120 +2397,172 @@ function Projects() {
                 paddingInline: '1.25rem',
               }),
             }}>
-              {[
-                { img: reelImg1, title: 'FPV Flight Shoot', views: '32.4k', offset: '-24px' },
-                { img: reelImg2, title: 'Brand Presenter', views: '48.1k', offset: '24px' },
-                { img: reelImg3, title: 'City Aerial Shoot', views: '54.9k', offset: '-24px' },
-                { img: reelImg4, title: 'Behind The Scenes', views: '29.3k', offset: '24px' },
-                { img: reelImg5, title: 'Drone Unboxing', views: '41.8k', offset: '-24px' },
-              ].map((reel, index) => (
-                <m.div
-                  key={reel.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={VIEWPORT}
-                  transition={{ duration: DUR.base, ease: EASE, delay: index * (isMobile ? 0.05 : 0.1) }}
-                  whileHover={{ scale: 1.05, y: -5, zIndex: 10 }}
-                  whileTap={{ scale: 1.05, y: -5, zIndex: 10 }}
-                  style={{
-                    // The alternating vertical stagger only reads well in a single row
-                    transform: isCompact ? 'none' : `translateY(${reel.offset})`,
-                    position: 'relative',
-                    borderRadius: isMobile ? '18px' : '24px',
-                    overflow: 'hidden',
-                    background: '#18181B',
-                    boxShadow: '0 14px 35px rgba(0,0,0,0.18)',
-                    aspectRatio: '9/16',
-                    cursor: 'pointer',
-                    border: '2px solid rgba(255,255,255,0.8)',
-                    ...(isMobile && {
-                      flex: '0 0 46%',
-                      scrollSnapAlign: 'center',
-                    }),
-                  }}
-                >
-                  {/* Background Reel Cover Image */}
-                  <img
-                    src={reel.img}
-                    alt={reel.title}
-                    loading="lazy"
-                    decoding="async"
+              {droneReels.map((reel, index) => {
+                const isInline = inlineReelId === reel.id
+
+                return (
+                  <m.div
+                    key={reel.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={VIEWPORT}
+                    transition={{ duration: DUR.base, ease: EASE, delay: index * (isMobile ? 0.05 : 0.1) }}
+                    whileHover={{ scale: 1.04, y: -5, zIndex: 10 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setActiveReelModal(reel)}
                     style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                      filter: 'brightness(0.9)',
-                      transition: 'transform 0.4s ease',
+                      transform: isCompact ? 'none' : `translateY(${reel.offset})`,
+                      position: 'relative',
+                      borderRadius: isMobile ? '18px' : '24px',
+                      overflow: 'hidden',
+                      background: '#09090B',
+                      boxShadow: '0 14px 35px rgba(0,0,0,0.18)',
+                      aspectRatio: '9/16',
+                      cursor: 'pointer',
+                      border: '2px solid rgba(255,255,255,0.8)',
+                      ...(isMobile && {
+                        flex: '0 0 46%',
+                        scrollSnapAlign: 'center',
+                      }),
                     }}
-                  />
+                  >
+                    {isInline ? (
+                      <div style={{ width: '100%', height: '100%', position: 'relative', background: '#000000' }}>
+                        <iframe
+                          src={reel.embedUrl}
+                          title={reel.title}
+                          style={{ width: '100%', height: '100%', border: 'none' }}
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setInlineReelId(null)
+                          }}
+                          style={{
+                            position: 'absolute',
+                            top: '8px',
+                            right: '8px',
+                            background: 'rgba(0,0,0,0.75)',
+                            color: '#ffffff',
+                            border: 'none',
+                            borderRadius: '50%',
+                            width: '26px',
+                            height: '26px',
+                            cursor: 'pointer',
+                            fontSize: '0.75rem',
+                            zIndex: 20,
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        {/* Background Cover Image */}
+                        <img
+                          src={reel.img}
+                          alt={reel.title}
+                          loading="lazy"
+                          decoding="async"
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            filter: 'brightness(0.9)',
+                            transition: 'transform 0.4s ease',
+                          }}
+                        />
 
-                  {/* Gradient Overlay */}
-                  <div style={{
-                    position: 'absolute',
-                    inset: 0,
-                    background: 'linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.85) 100%)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    padding: '1rem 0.85rem',
-                  }}>
-                    {/* Top Engagement Badge */}
-                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                      <span style={{
-                        background: 'rgba(0,0,0,0.5)',
-                        backdropFilter: 'blur(8px)',
-                        color: '#ffffff',
-                        fontSize: '0.7rem',
-                        fontWeight: 700,
-                        padding: '3px 8px',
-                        borderRadius: '999px',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                      }}>
-                        ❤️ {reel.views}
-                      </span>
-                    </div>
+                        {/* Gradient Overlay */}
+                        <div style={{
+                          position: 'absolute',
+                          inset: 0,
+                          background: 'linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.88) 100%)',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'space-between',
+                          padding: '1rem 0.85rem',
+                        }}>
+                          {/* Top Engagement Badge */}
+                          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <span style={{
+                              background: 'rgba(0,0,0,0.6)',
+                              backdropFilter: 'blur(8px)',
+                              color: '#ffffff',
+                              fontSize: '0.7rem',
+                              fontWeight: 700,
+                              padding: '3px 8px',
+                              borderRadius: '999px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                            }}>
+                              ❤️ {reel.views}
+                            </span>
+                          </div>
 
-                    {/* Center Play Button Icon */}
-                    <div style={{
-                      alignSelf: 'center',
-                      width: '42px',
-                      height: '42px',
-                      borderRadius: '50%',
-                      background: 'rgba(255,255,255,0.25)',
-                      backdropFilter: 'blur(8px)',
-                      border: '1.5px solid rgba(255,255,255,0.6)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: '#ffffff',
-                      boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
-                    }}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M8 5v14l11-7z"/>
-                      </svg>
-                    </div>
+                          {/* Center Play Button Icon */}
+                          <div style={{
+                            alignSelf: 'center',
+                            width: '46px',
+                            height: '46px',
+                            borderRadius: '50%',
+                            background: 'rgba(220, 38, 38, 0.9)',
+                            backdropFilter: 'blur(8px)',
+                            border: '2px solid rgba(255,255,255,0.9)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#ffffff',
+                            boxShadow: '0 6px 20px rgba(220,38,38,0.4)',
+                          }}>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M8 5v14l11-7z"/>
+                            </svg>
+                          </div>
 
-                    {/* Bottom Title Label */}
-                    <div>
-                      <span className="font-display" style={{
-                        fontSize: '0.85rem',
-                        fontWeight: 800,
-                        color: '#ffffff',
-                        display: 'block',
-                        lineHeight: 1.25,
-                        textShadow: '0 2px 4px rgba(0,0,0,0.6)',
-                      }}>
-                        {reel.title}
-                      </span>
-                      <span className="font-mono" style={{ fontSize: '0.62rem', color: '#FCA5A5', marginTop: '2px', display: 'block' }}>
-                        ▶ Auto-Playing Reel
-                      </span>
-                    </div>
-                  </div>
-                </m.div>
-              ))}
+                          {/* Bottom Title Label & Action */}
+                          <div>
+                            <span className="font-display" style={{
+                              fontSize: '0.85rem',
+                              fontWeight: 800,
+                              color: '#ffffff',
+                              display: 'block',
+                              lineHeight: 1.25,
+                              textShadow: '0 2px 4px rgba(0,0,0,0.6)',
+                            }}>
+                              {reel.title}
+                            </span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+                              <span
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setInlineReelId(reel.id)
+                                }}
+                                style={{
+                                  fontSize: '0.65rem',
+                                  color: '#ffffff',
+                                  background: 'rgba(255,255,255,0.25)',
+                                  padding: '2px 8px',
+                                  borderRadius: '999px',
+                                  fontWeight: 700,
+                                }}
+                              >
+                                ▶ Play Inline
+                              </span>
+                              <span style={{ fontSize: '0.65rem', color: '#FCA5A5', fontWeight: 600 }}>
+                                • Tap to Watch
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </m.div>
+                )
+              })}
             </div>
           </div>
 
@@ -2791,6 +2898,99 @@ function Projects() {
         </m.div>
 
       </div>
+
+      {/* Interactive Playable Reel Video Player Modal Overlay */}
+      <AnimatePresence>
+        {activeReelModal && (
+          <m.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setActiveReelModal(null)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 99999,
+              background: 'rgba(0, 0, 0, 0.85)',
+              backdropFilter: 'blur(12px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '1rem',
+            }}
+          >
+            <m.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                position: 'relative',
+                width: isMobile ? 'min(360px, 94vw)' : '380px',
+                height: isMobile ? 'min(640px, 85vh)' : '660px',
+                background: '#000000',
+                borderRadius: '24px',
+                overflow: 'hidden',
+                boxShadow: '0 25px 60px rgba(0,0,0,0.6)',
+                border: '1px solid rgba(255,255,255,0.15)',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              {/* Modal Top Bar */}
+              <div style={{
+                padding: '12px 16px',
+                background: '#121214',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                borderBottom: '1px solid rgba(255,255,255,0.1)',
+                zIndex: 10,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '1rem' }}>🎥</span>
+                  <span className="font-display" style={{ color: '#ffffff', fontSize: '0.9rem', fontWeight: 700 }}>
+                    {activeReelModal.title}
+                  </span>
+                </div>
+                <button
+                  onClick={() => setActiveReelModal(null)}
+                  style={{
+                    background: 'rgba(255,255,255,0.15)',
+                    border: 'none',
+                    color: '#ffffff',
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '1rem',
+                    fontWeight: 700,
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Live Playable Instagram Reel Iframe */}
+              <iframe
+                src={activeReelModal.embedUrl}
+                title={activeReelModal.title}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  border: 'none',
+                  background: '#000000',
+                }}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
+            </m.div>
+          </m.div>
+        )}
+      </AnimatePresence>
     </section>
   )
 }
