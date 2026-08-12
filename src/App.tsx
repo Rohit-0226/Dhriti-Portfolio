@@ -13,6 +13,7 @@ import {
   type Variants,
 } from 'framer-motion'
 import dhritiTransparentImg from './imports/dhriti_transparent.webp'
+import dhritiAboutImg from './imports/dhriti_cutout.jpg'
 import doctorsEventImg1 from './imports/doctors_event_1.jpg'
 import doctorsEventImg2 from './imports/doctors_event_2.jpg'
 import reelImg1 from './imports/reel_1.jpg'
@@ -1126,32 +1127,33 @@ function About() {
               minHeight: isMobile ? 'clamp(360px, 92vw, 470px)' : '460px',
             }}
           >
-            {/* Solid Clean Red/Coral Semi-Circle Arch (Matching Reference Screenshot) */}
+            {/* Glowing Red Circle Background */}
             <div style={{
               position: 'absolute',
-              bottom: 0,
-              width: isMobile ? 'min(340px, 88vw)' : '460px',
-              height: isMobile ? 'clamp(180px, 46vw, 260px)' : '260px',
-              borderTopLeftRadius: '230px',
-              borderTopRightRadius: '230px',
-              background: '#F87171',
+              bottom: '10px',
+              width: isMobile ? 'min(300px, 80vw)' : '400px',
+              height: isMobile ? 'min(300px, 80vw)' : '400px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #DC2626 0%, #EF4444 60%, #9B1C1C 100%)',
+              boxShadow: '0 20px 50px rgba(220, 38, 38, 0.28)',
               zIndex: 1,
             }} />
 
-            {/* Transparent Cutout Image */}
+            {/* Immersive 3D Pop-Out Cutout Image */}
             <img
-              src={dhritiTransparentImg}
+              src={dhritiAboutImg}
               alt="Dhriti Arora About"
               loading="lazy"
               decoding="async"
               style={{
                 position: 'relative',
                 zIndex: 5,
-                width: isMobile ? 'min(280px, 72vw)' : '370px',
-                height: isMobile ? 'clamp(360px, 92vw, 470px)' : '470px',
-                objectFit: 'cover',
-                objectPosition: 'top',
-                filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.08))',
+                width: isMobile ? 'min(350px, 90vw)' : '480px',
+                height: isMobile ? 'clamp(380px, 94vw, 490px)' : '510px',
+                objectFit: 'contain',
+                objectPosition: 'bottom center',
+                filter: 'drop-shadow(0 20px 35px rgba(0,0,0,0.25))',
+                transform: 'translateY(-18px) scale(1.08)',
               }}
             />
           </m.div>
