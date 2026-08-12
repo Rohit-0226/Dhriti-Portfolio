@@ -2568,334 +2568,191 @@ function Projects() {
 
         </m.div>
 
-        {/* Project 03 Card: Personal Branding & What Others Say */}
+        {/* Section Heading: * Honor and Achievements (Same style as * skills.) */}
         <m.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={VIEWPORT}
-          transition={{ duration: DUR.slow, ease: EASE, delay: 0.3 }}
-          style={{
-            background: '#FAFBF4',
-            borderRadius: isMobile ? '22px' : '28px',
-            overflow: 'hidden',
-            boxShadow: '0 16px 48px rgba(0,0,0,0.06)',
-            border: '1px solid rgba(0,0,0,0.08)',
-            marginTop: isMobile ? '2rem' : '4rem',
-          }}
+          transition={{ duration: DUR.slow, ease: EASE }}
+          style={{ textAlign: 'center', margin: isMobile ? '3.5rem 0 2rem' : '6rem 0 3.5rem', position: 'relative' }}
         >
-          {/* Header Ribbon: 03. Projects | Personal Branding & Recommendations */}
-          <div style={{
-            background: '#D9CB9E',
-            padding: isMobile ? '1.15rem 1.4rem' : '1.5rem 3rem',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: isMobile ? 'flex-start' : 'center',
-            flexDirection: isMobile ? 'column' : 'row',
-            flexWrap: 'wrap',
-            gap: isMobile ? '0.35rem' : '1rem',
-            borderBottom: '1px solid rgba(0,0,0,0.08)',
-          }}>
-            <h3 className="font-display" style={{
-              fontSize: 'clamp(1.8rem, 3.5vw, 2.5rem)',
-              fontWeight: 800,
-              color: '#000000',
-              margin: 0,
-              letterSpacing: '-0.03em',
-            }}>
-              03. Projects
-            </h3>
-            <span style={{
-              fontSize: isMobile ? '0.95rem' : '1.2rem',
-              fontWeight: 800,
-              color: '#000000',
-              fontFamily: 'var(--font-display)',
-              letterSpacing: '-0.02em',
-            }}>
-              Personal Branding &amp; Recommendations
-            </span>
-          </div>
+          <div style={{ position: 'relative', display: 'inline-block', maxWidth: '100%' }}>
+            {/* Left Radiating Curved Arcs */}
+            {!isMobile && (
+              <svg style={{ position: 'absolute', left: '-60px', top: '-25px' }} width="50" height="50" viewBox="0 0 50 50" fill="none">
+                <path d="M42 45C30 40 18 36 6 38" stroke="#DC2626" strokeWidth="3.5" strokeLinecap="round" />
+                <path d="M45 28C28 22 14 18 4 20" stroke="#DC2626" strokeWidth="3.5" strokeLinecap="round" />
+                <path d="M48 10C36 18 28 30 30 42" stroke="#DC2626" strokeWidth="3.5" strokeLinecap="round" />
+              </svg>
+            )}
 
-          {/* Card Body Container */}
-          <div style={{ padding: isMobile ? '2rem 1.25rem 2.5rem' : '3.5rem 2.5rem 4.5rem', display: 'flex', flexDirection: 'column', gap: isMobile ? '2rem' : '4rem' }}>
-            
-            {/* ─── SLIDE 1: PERSONAL BRANDING ─── */}
-            <div style={{
-              background: '#ffffff',
-              borderRadius: isMobile ? '18px' : '24px',
-              padding: isMobile ? '1.75rem 1.15rem' : '3rem 2.5rem',
-              border: '1px solid rgba(0,0,0,0.06)',
-              boxShadow: '0 8px 30px rgba(0,0,0,0.03)',
-            }}>
-              {/* Slide 1 Header */}
-              <h4 className="font-display" style={{
-                fontSize: 'clamp(1.6rem, 3.5vw, 2.8rem)',
+            {/* Right Radiating Curved Arcs */}
+            {!isMobile && (
+              <svg style={{ position: 'absolute', right: '-60px', top: '-25px' }} width="50" height="50" viewBox="0 0 50 50" fill="none">
+                <path d="M8 45C20 40 32 36 44 38" stroke="#DC2626" strokeWidth="3.5" strokeLinecap="round" />
+                <path d="M5 28C22 22 36 18 46 20" stroke="#DC2626" strokeWidth="3.5" strokeLinecap="round" />
+                <path d="M2 10C14 18 22 30 20 42" stroke="#DC2626" strokeWidth="3.5" strokeLinecap="round" />
+              </svg>
+            )}
+
+            {/* Title with Hand-Drawn Doodle Star SVG & Red Period Accent */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <svg width={isMobile ? 32 : 44} height={isMobile ? 32 : 44} viewBox="0 0 40 40" fill="none" style={{ marginTop: '-6px', flexShrink: 0 }}>
+                <path
+                  d="M20 2 C20.8 11.2, 22.5 18, 38 20 C22.5 22, 20.8 28.8, 20 38 C19.2 28.8, 17.5 22, 2 20 C17.5 18, 19.2 11.2, 20 2 Z"
+                  fill="#000000"
+                />
+                <path d="M9 9L31 31M31 9L9 31" stroke="#000000" strokeWidth="2.5" strokeLinecap="round" />
+              </svg>
+
+              <h2 className="font-display" style={{
+                fontSize: 'clamp(2.4rem, 5vw, 4.5rem)',
                 fontWeight: 800,
                 color: '#000000',
-                textAlign: 'center',
-                marginBottom: isMobile ? '1.5rem' : '2.5rem',
-                letterSpacing: '-0.03em',
+                letterSpacing: '-0.04em',
+                lineHeight: 1.0,
+                margin: 0,
+                display: 'inline',
               }}>
-                Personal Branding
-              </h4>
+                <RevealHeading>Honor and Achievements</RevealHeading>
+              </h2>
 
-              <div style={{ display: 'grid', gridTemplateColumns: isCompact ? '1fr' : '1fr 1.1fr', gap: isMobile ? '1.5rem' : '2.5rem', alignItems: 'center' }}>
-                
-                {/* Left Card: OBJECTIVES, MY SCOPE, STRATEGY */}
-                <div style={{
-                  background: '#F8FAFC',
-                  borderRadius: '20px',
-                  padding: isMobile ? '1.5rem 1.25rem' : '2.25rem 2rem',
-                  border: '1px solid #E2E8F0',
-                }}>
-                  {/* OBJECTIVES */}
-                  <div style={{ marginBottom: isMobile ? '1.25rem' : '1.75rem' }}>
-                    <h5 className="font-display" style={{ fontSize: isMobile ? '1.05rem' : '1.2rem', fontWeight: 900, color: '#000000', margin: '0 0 0.5rem', letterSpacing: '-0.02em' }}>
-                      OBJECTIVES
-                    </h5>
-                    <ExpandableText
-                      text="Career-focused personal branding & community growth strategy by creating valuable content, fostering audience engagement, and building digital authority across TikTok, LinkedIn, and Instagram."
-                      clamp={isMobile}
-                      lines={3}
-                      style={{ fontSize: isMobile ? '0.88rem' : '0.92rem', lineHeight: 1.6, color: '#475569', margin: 0, fontFamily: 'var(--font-body)' }}
-                    />
-                  </div>
-
-                  {/* MY SCOPE */}
-                  <div style={{ marginBottom: isMobile ? '1.25rem' : '1.75rem' }}>
-                    <h5 className="font-display" style={{ fontSize: isMobile ? '1.05rem' : '1.2rem', fontWeight: 900, color: '#000000', margin: '0 0 0.5rem', letterSpacing: '-0.02em' }}>
-                      MY SCOPE
-                    </h5>
-                    <ul style={{ margin: 0, paddingLeft: '1.2rem', color: '#334155', fontSize: isMobile ? '0.85rem' : '0.9rem', lineHeight: isMobile ? 1.55 : 1.7, fontFamily: 'var(--font-body)' }}>
-                      <li>Ads Strategy and Optimization</li>
-                      <li>Visual Ad Content and Creative Direction</li>
-                      <li>Campaign Execution and Management</li>
-                      <li>Analytics and Performance Optimization</li>
-                    </ul>
-                  </div>
-
-                  {/* STRATEGY */}
-                  <div>
-                    <h5 className="font-display" style={{ fontSize: isMobile ? '1.05rem' : '1.2rem', fontWeight: 900, color: '#000000', margin: '0 0 0.5rem', letterSpacing: '-0.02em' }}>
-                      STRATEGY
-                    </h5>
-                    <ul style={{ margin: 0, paddingLeft: '1.2rem', color: '#334155', fontSize: isMobile ? '0.85rem' : '0.9rem', lineHeight: isMobile ? 1.55 : 1.7, fontFamily: 'var(--font-body)' }}>
-                      <li>Conducted end-to-end research to understand audience needs and industry trends.</li>
-                      <li>Designed and implemented a structured content strategy for consistent growth and engagement.</li>
-                    </ul>
-                  </div>
-                </div>
-
-                {/* Right Side: Device Mockup & RESULT Metrics */}
-                <div>
-                  {/* Laptop & Mobile Device Dashboard Mockup */}
-                  <div style={{
-                    position: 'relative',
-                    borderRadius: '16px',
-                    overflow: 'hidden',
-                    boxShadow: '0 12px 32px rgba(0,0,0,0.12)',
-                    marginBottom: isMobile ? '1.25rem' : '2rem',
-                    border: '1px solid rgba(0,0,0,0.1)',
-                  }}>
-                    <img
-                      src={personalBrandingImg}
-                      alt="Personal Branding Analytics Dashboard"
-                      loading="lazy"
-                      decoding="async"
-                      style={{ width: '100%', height: isMobile ? '170px' : '240px', objectFit: 'cover' }}
-                    />
-                    <div style={{
-                      position: 'absolute',
-                      top: '12px',
-                      right: '12px',
-                      background: '#3B82F6',
-                      color: '#ffffff',
-                      fontSize: '0.75rem',
-                      fontWeight: 800,
-                      padding: '4px 10px',
-                      borderRadius: '999px',
-                      fontFamily: 'var(--font-mono)',
-                    }}>
-                      02 · Growth Verified
-                    </div>
-                  </div>
-
-                  {/* RESULT Metrics Bar */}
-                  <div style={{
-                    background: '#FAF6ED',
-                    borderRadius: '18px',
-                    padding: '1.25rem 1.5rem',
-                    border: '1px solid rgba(0,0,0,0.06)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    flexWrap: 'wrap',
-                    gap: '1rem',
-                  }}>
-                    <span className="font-display" style={{ fontSize: '1.25rem', fontWeight: 900, color: '#000000', letterSpacing: '-0.02em' }}>
-                      RESULT
-                    </span>
-
-                    <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                      {/* Metric 1 */}
-                      <div style={{ background: '#ffffff', padding: '8px 14px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.05)' }}>
-                        <span style={{ fontSize: '0.7rem', color: '#64748B', display: 'block', fontWeight: 600 }}>Organic Followers</span>
-                        <span className="font-display" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#10B981' }}><CountUp value="4.6K++" /> ↑</span>
-                      </div>
-
-                      {/* Metric 2 */}
-                      <div style={{ background: '#ffffff', padding: '8px 14px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.05)' }}>
-                        <span style={{ fontSize: '0.7rem', color: '#64748B', display: 'block', fontWeight: 600 }}>Impressions</span>
-                        <span className="font-display" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#10B981' }}><CountUp value="500K" /> ↑</span>
-                      </div>
-
-                      {/* Metric 3 */}
-                      <div style={{ background: '#ffffff', padding: '8px 14px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.05)' }}>
-                        <span style={{ fontSize: '0.7rem', color: '#64748B', display: 'block', fontWeight: 600 }}>Profile Views</span>
-                        <span className="font-display" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#10B981' }}><CountUp value="4,159%" /> ↑</span>
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
-
-              </div>
+              <span style={{
+                display: 'inline-block',
+                width: '12px',
+                height: '12px',
+                background: '#DC2626',
+                borderRadius: '2px',
+                marginLeft: '4px',
+                marginTop: '1.2rem',
+              }} />
             </div>
+          </div>
+        </m.div>
 
-            {/* ─── SLIDE 2: WHAT OTHERS SAY (LINKEDIN RECOMMENDATIONS) ─── */}
-            <div style={{
-              background: '#ffffff',
-              borderRadius: isMobile ? '18px' : '24px',
-              padding: isMobile ? '1.75rem 1.15rem' : '3rem 2.5rem',
-              border: '1px solid rgba(0,0,0,0.06)',
-              boxShadow: '0 8px 30px rgba(0,0,0,0.03)',
-            }}>
-              {/* Slide 2 Header */}
-              <h4 className="font-display" style={{
-                fontSize: 'clamp(1.6rem, 3.5vw, 2.8rem)',
-                fontWeight: 800,
-                color: '#000000',
-                textAlign: 'center',
-                marginBottom: isMobile ? '1.5rem' : '2.5rem',
-                letterSpacing: '-0.03em',
-              }}>
-                What others Say!
-              </h4>
-
-              <div style={{ display: 'grid', gridTemplateColumns: isCompact ? '1fr' : '1.25fr 0.75fr', gap: isMobile ? '1.5rem' : '2.5rem', alignItems: 'center' }}>
-                
-                {/* Left Card: LinkedIn Recommendations Quotes Container */}
-                <div style={{
-                  background: '#FAF6ED',
-                  borderRadius: '20px',
-                  padding: isMobile ? '1.25rem 1rem' : '2.25rem 2rem',
-                  border: '2px solid #8B5CF6',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: isMobile ? '0.85rem' : '1.5rem',
-                  boxShadow: '0 8px 24px rgba(139,92,246,0.08)',
-                }}>
-                  {/* Quote 1 */}
-                  <div style={{ background: '#ffffff', borderRadius: '14px', padding: isMobile ? '0.9rem 1rem' : '1.25rem 1.5rem', boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#F97316', color: '#ffffff', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' }}>
-                          M
-                        </div>
-                        <div>
-                          <span style={{ fontWeight: 800, fontSize: '0.92rem', color: '#000000', display: 'block' }}>Mathius</span>
-                          <span style={{ fontSize: '0.72rem', color: '#64748B' }}>Full Stack Lead &amp; Mentor</span>
-                        </div>
-                      </div>
-                      <span style={{ fontSize: '1.8rem', color: '#F97316', fontWeight: 900, lineHeight: 1 }}>“</span>
-                    </div>
-                    <p style={{ fontSize: '0.88rem', lineHeight: 1.6, color: '#334155', margin: 0, fontFamily: 'var(--font-body)' }}>
-                      "Dhriti is expressive, quick to adapt, and a strategic marketer. She manages campaign direction with unmatched enthusiasm and brings genuine authenticity to brand messaging."
-                    </p>
-                  </div>
-
-                  {/* Quote 2 */}
-                  <div style={{ background: '#ffffff', borderRadius: '14px', padding: isMobile ? '0.9rem 1rem' : '1.25rem 1.5rem', boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#3B82F6', color: '#ffffff', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' }}>
-                          A
-                        </div>
-                        <div>
-                          <span style={{ fontWeight: 800, fontSize: '0.92rem', color: '#000000', display: 'block' }}>Adnan Mahardika</span>
-                          <span style={{ fontSize: '0.72rem', color: '#64748B' }}>Growth Marketing Strategist</span>
-                        </div>
-                      </div>
-                      <span style={{ fontSize: '1.8rem', color: '#3B82F6', fontWeight: 900, lineHeight: 1 }}>“</span>
-                    </div>
-                    <p style={{ fontSize: '0.88rem', lineHeight: 1.6, color: '#334155', margin: 0, fontFamily: 'var(--font-body)' }}>
-                      "Working alongside Dhriti was an exceptional experience. Her dedication to performance marketing, audience analytics, and brand positioning is truly top-tier."
-                    </p>
-                  </div>
-
-                  {/* Quote 3 */}
-                  <div style={{ background: '#ffffff', borderRadius: '14px', padding: isMobile ? '0.9rem 1rem' : '1.25rem 1.5rem', boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#059669', color: '#ffffff', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' }}>
-                          T
-                        </div>
-                        <div>
-                          <span style={{ fontWeight: 800, fontSize: '0.92rem', color: '#000000', display: 'block' }}>Theresa Diana P</span>
-                          <span style={{ fontSize: '0.72rem', color: '#64748B' }}>Digital Marketing Lead</span>
-                        </div>
-                      </div>
-                      <span style={{ fontSize: '1.8rem', color: '#059669', fontWeight: 900, lineHeight: 1 }}>“</span>
-                    </div>
-                    <p style={{ fontSize: '0.88rem', lineHeight: 1.6, color: '#334155', margin: 0, fontFamily: 'var(--font-body)' }}>
-                      "From a digital marketing perspective, Dhriti has an extraordinary ability to execute multi-channel campaigns, optimize SEO &amp; social algorithms, and drive measurable ROI."
-                    </p>
-                  </div>
+        {/* 4 Honors & Achievements Cards Grid */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: isCompact ? '1fr' : '1fr 1fr',
+          gap: isMobile ? '1.25rem' : '2rem',
+        }}>
+          {[
+            {
+              category: '1. RESEARCH & INNOVATION',
+              title: 'Best Research Paper Award',
+              date: 'Mar 2024',
+              icon: '🏆',
+              badgeBg: '#FEF3C7',
+              badgeColor: '#B45309',
+              desc: 'Awarded Best Research Paper for “Learning for Legacy: How Sustainable Education Shapes the Future of Bharat” at the National Conference on Innovation & Knowledge Management, Poornima University, Jaipur.',
+              tags: ['Research', 'Innovation', 'Sustainability'],
+            },
+            {
+              category: '2. LEADERSHIP & EXCELLENCE',
+              title: 'Fascinating Student',
+              date: 'Apr 2025',
+              icon: '🌟',
+              badgeBg: '#F3E8FF',
+              badgeColor: '#7E22CE',
+              desc: 'Recognised as a Fascinating Student in the Faculty of Management & Commerce for leadership, creativity, organisational skills and commitment to excellence.',
+              tags: ['Leadership', 'Creativity', 'Excellence'],
+            },
+            {
+              category: '3. SOCIAL IMPACT & RESEARCH',
+              title: 'Viksit Bharat Research Initiative',
+              date: 'Dec 2024',
+              icon: '🌐',
+              badgeBg: '#CCFBF1',
+              badgeColor: '#0F766E',
+              desc: 'Presented research on “Healthcare Access and Socio-Economic Implications of PMJAY: Opportunities & Challenges” at the National Conference on Healthcare & Socio-Economic Research.',
+              tags: ['Research', 'Critical Thinking', 'Social Impact'],
+            },
+            {
+              category: '4. CULTURE & DISCIPLINE',
+              title: 'Gold Medal — District Level Kathak',
+              date: 'Aug 2023',
+              icon: '🥇',
+              badgeBg: '#FFE4E6',
+              badgeColor: '#BE123C',
+              desc: 'Secured 1st Position in the District Level Kathak Dance Competition in Bundi, Rajasthan.',
+              tags: ['Kathak', 'Discipline', 'Cultural Excellence'],
+            },
+          ].map((item, i) => (
+            <m.div
+              key={item.title}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={VIEWPORT}
+              transition={{ duration: DUR.base, ease: EASE, delay: i * 0.1 }}
+              whileHover={{ y: -6, boxShadow: '0 20px 40px rgba(0,0,0,0.08)', borderColor: '#DC2626' }}
+              style={{
+                background: '#ffffff',
+                borderRadius: isMobile ? '20px' : '24px',
+                padding: isMobile ? '1.5rem 1.25rem' : '2.25rem 2rem',
+                border: '1.5px solid rgba(0,0,0,0.08)',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.04)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                transition: 'border-color 0.25s, transform 0.25s, box-shadow 0.25s',
+              }}
+            >
+              <div>
+                {/* Category Chip & Date */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', marginBottom: '1rem', flexWrap: 'wrap' }}>
+                  <span className="font-mono" style={{
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    background: item.badgeBg,
+                    color: item.badgeColor,
+                    padding: '4px 12px',
+                    borderRadius: '999px',
+                    letterSpacing: '0.04em',
+                  }}>
+                    {item.category}
+                  </span>
+                  <span style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: 600, fontFamily: 'var(--font-body)' }}>
+                    {item.date}
+                  </span>
                 </div>
 
-                {/* Right Side: Title Callout matching user draft */}
-                <div style={{ textAlign: 'center', padding: '1rem' }}>
-                  <h5 className="font-display" style={{
-                    fontSize: 'clamp(2.2rem, 4vw, 3.2rem)',
-                    fontWeight: 800,
-                    color: '#000000',
-                    lineHeight: 1.2,
-                    margin: '0 0 1.5rem',
-                    letterSpacing: '-0.03em',
-                  }}>
-                    my linkedin<br />recommendations
-                  </h5>
+                {/* Title */}
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '0.75rem' }}>
+                  <span style={{ fontSize: '1.4rem', lineHeight: 1 }}>{item.icon}</span>
+                  <h4 className="font-display" style={{ fontSize: isMobile ? '1.25rem' : '1.45rem', fontWeight: 800, color: '#1A0808', margin: 0, lineHeight: 1.25 }}>
+                    {item.title}
+                  </h4>
+                </div>
 
-                  <a
-                    href="https://www.linkedin.com/in/dhriti-pareek-78b17326a/"
-                    target="_blank"
-                    rel="noreferrer"
+                {/* Description */}
+                <p style={{ fontSize: isMobile ? '0.88rem' : '0.94rem', lineHeight: 1.65, color: '#475569', margin: '0 0 1.5rem', fontFamily: 'var(--font-body)' }}>
+                  {item.desc}
+                </p>
+              </div>
+
+              {/* Skill Tags */}
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', paddingTop: '1rem', borderTop: '1px dashed #F1F5F9' }}>
+                {item.tags.map((t) => (
+                  <span
+                    key={t}
                     style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      background: '#0A66C2',
-                      color: '#ffffff',
-                      fontSize: '0.95rem',
-                      fontWeight: 700,
-                      padding: '12px 24px',
-                      borderRadius: '999px',
-                      textDecoration: 'none',
-                      boxShadow: '0 6px 20px rgba(10,102,194,0.3)',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      color: '#1E293B',
+                      background: '#F8FAFC',
+                      border: '1px solid #E2E8F0',
+                      padding: '3px 10px',
+                      borderRadius: '6px',
+                      fontFamily: 'var(--font-body)',
                     }}
                   >
-                    <span>LinkedIn Profile</span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <path d="M7 17L17 7M17 7H7M17 7V17"/>
-                    </svg>
-                  </a>
-                </div>
-
+                    • {t}
+                  </span>
+                ))}
               </div>
-            </div>
-
-          </div>
-
-        </m.div>
+            </m.div>
+          ))}
+        </div>
 
       </div>
 
