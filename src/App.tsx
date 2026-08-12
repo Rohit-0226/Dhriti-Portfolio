@@ -704,15 +704,16 @@ function Hero() {
   const pillStyle: React.CSSProperties = {
     background: '#1A0808',
     color: '#fff',
-    padding: isMobile ? '6px 12px' : '8px 20px',
+    padding: isMobile ? '8px 16px' : '11px 24px',
     borderRadius: '999px',
     fontFamily: 'var(--font-display)',
-    fontSize: isMobile ? '0.68rem' : '0.82rem',
-    fontWeight: 600,
+    fontSize: isMobile ? '0.78rem' : '0.94rem',
+    fontWeight: 700,
     display: 'flex',
     alignItems: 'center',
-    gap: isMobile ? '5px' : '8px',
-    boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
+    gap: isMobile ? '6px' : '10px',
+    boxShadow: '0 12px 32px rgba(0,0,0,0.35)',
+    border: '1px solid rgba(255,255,255,0.12)',
     whiteSpace: 'nowrap',
     zIndex: 20,
     position: 'absolute',
@@ -824,26 +825,7 @@ function Hero() {
           alignItems: 'flex-end',
           height: isMobile ? 'clamp(340px, 88vw, 430px)' : isTablet ? '430px' : '480px',
         }}>
-
-          {/* LEFT FLANKING CALLOUT — desktop/tablet only, restacked below on mobile */}
-          {!isMobile && (
-            <m.div
-              initial={{ opacity: 0, x: -28 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: DUR.slow, ease: EASE, delay: 0.3 }}
-              style={{
-                position: 'absolute', left: '0%', bottom: '22%',
-                maxWidth: isTablet ? '200px' : '270px', textAlign: 'left', zIndex: 15,
-              }}
-            >
-              <span style={{ fontSize: '2.8rem', lineHeight: 0.8, color: '#1A0808', fontFamily: 'serif', display: 'block', fontWeight: 700, marginBottom: '6px' }}>“</span>
-              <p style={{ fontSize: isTablet ? '0.8rem' : '0.88rem', lineHeight: 1.6, color: '#4A2020', margin: 0, fontFamily: 'var(--font-body)', fontWeight: 500 }}>
-                working under Dhriti, and I can confidently say she is an exceptional marketer and brand strategist
-              </p>
-            </m.div>
-          )}
-
-          {/* RIGHT FLANKING METRIC — desktop/tablet only, restacked below on mobile */}
+          {/* RIGHT FLANKING METRIC — desktop/tablet only */}
           {!isMobile && (
             <m.div
               initial={{ opacity: 0, x: 28 }}
@@ -879,7 +861,7 @@ function Hero() {
             }}
           />
 
-          {/* PURE TRANSPARENT CUTOUT PORTRAIT (No background rectangle!) */}
+          {/* PURE TRANSPARENT CUTOUT PORTRAIT & FLOATING PILLS */}
           <div style={{
             position: 'relative', zIndex: 5,
             width: isMobile ? 'min(270px, 68vw)' : isTablet ? '360px' : '420px',
@@ -904,56 +886,49 @@ function Hero() {
             {/* Pill 1: Top Left - Marketing */}
             <m.div
               {...bob(-8, 4)}
-              style={{ ...pillStyle, top: '32%', left: isMobile ? '-22px' : '-30px' }}
+              style={{ ...pillStyle, top: '28%', left: isMobile ? '-28px' : '-50px' }}
             >
-              <span>📣</span> Marketing
+              <span style={{ fontSize: isMobile ? '0.95rem' : '1.2rem' }}>📣</span> Marketing
             </m.div>
 
-            {/* Pill 2: Bottom Left - Brand */}
+            {/* Pill 2: Bottom Left - Brand Management */}
             <m.div
               {...bob(8, 5, 0.5)}
-              style={{ ...pillStyle, bottom: '22%', left: isMobile ? '-14px' : '-10px' }}
+              style={{ ...pillStyle, bottom: '20%', left: isMobile ? '-20px' : '-45px' }}
             >
-              <span>🌟</span> Brand
+              <span style={{ fontSize: isMobile ? '0.95rem' : '1.2rem' }}>🌟</span> Brand Management
             </m.div>
 
-            {/* Pill 3: Top Right - Ads */}
+            {/* Pill 3: Top Right - Personal Branding */}
             <m.div
               {...bob(-10, 4.5, 0.2)}
-              style={{ ...pillStyle, top: '42%', right: isMobile ? '-20px' : '-35px' }}
+              style={{ ...pillStyle, top: '38%', right: isMobile ? '-24px' : '-55px' }}
             >
-              <span>🚀</span> Ads
+              <span style={{ fontSize: isMobile ? '0.95rem' : '1.2rem' }}>✨</span> Personal Branding
             </m.div>
 
             {/* Pill 4: Bottom Right - Social Media */}
             <m.div
               {...bob(8, 5.5, 0.7)}
-              style={{ ...pillStyle, bottom: '13%', right: isMobile ? '-24px' : '-25px' }}
+              style={{ ...pillStyle, bottom: '11%', right: isMobile ? '-28px' : '-35px' }}
             >
-              <span>🤳</span> Social Media
+              <span style={{ fontSize: isMobile ? '0.95rem' : '1.2rem' }}>🤳</span> Social Media
             </m.div>
           </div>
 
         </div>
 
-        {/* MOBILE: quote + credential restacked beneath the portrait */}
+        {/* MOBILE: credential restacked beneath the portrait */}
         {isMobile && (
           <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: DUR.slow, ease: EASE, delay: 0.35 }}
             style={{
-              display: 'flex', flexDirection: 'column', gap: '1.5rem',
-              textAlign: 'left', marginTop: '2rem', width: '100%',
+              display: 'flex', flexDirection: 'column', gap: '1rem',
+              textAlign: 'center', marginTop: '1.5rem', width: '100%',
             }}
           >
-            <div>
-              <span style={{ fontSize: '2.4rem', lineHeight: 0.8, color: '#1A0808', fontFamily: 'serif', display: 'block', fontWeight: 700, marginBottom: '6px' }}>“</span>
-              <p style={{ fontSize: '0.9rem', lineHeight: 1.6, color: '#4A2020', margin: 0, fontFamily: 'var(--font-body)', fontWeight: 500 }}>
-                working under Dhriti, and I can confidently say she is an exceptional marketer and brand strategist
-              </p>
-            </div>
-
             <div>
               <div className="font-display" style={{ fontSize: '2.6rem', fontWeight: 800, color: '#1A0808', lineHeight: 1 }}>
                 BBA 2025
