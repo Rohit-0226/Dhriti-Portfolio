@@ -832,12 +832,12 @@ function Hero() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: DUR.slow, ease: EASE, delay: 0.3 }}
               style={{
-                position: 'absolute', right: '-1%', bottom: '24%',
-                maxWidth: isTablet ? '220px' : '340px', textAlign: 'left', zIndex: 15,
+                position: 'absolute', right: '-4%', top: '14%',
+                maxWidth: isTablet ? '220px' : '360px', textAlign: 'right', zIndex: 15,
               }}
             >
               <div className="font-display" style={{
-                fontSize: isTablet ? '1.8rem' : '2.6rem',
+                fontSize: isTablet ? '1.8rem' : '2.7rem',
                 fontWeight: 800,
                 color: '#1A0808',
                 lineHeight: 1.1,
