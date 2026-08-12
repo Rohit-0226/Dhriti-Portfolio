@@ -1084,31 +1084,57 @@ function About() {
             transition={{ duration: DUR.slow, ease: EASE }}
           >
             <h2 className="font-display" style={{
-              fontSize: 'clamp(4rem, 8vw, 6rem)',
+              fontSize: 'clamp(3.8rem, 7vw, 5.4rem)',
               fontWeight: 800,
               color: '#000000',
               letterSpacing: '-0.04em',
-              marginBottom: '2rem',
+              marginBottom: '1rem',
               lineHeight: 0.95,
             }}>
               <RevealHeading>about.</RevealHeading>
             </h2>
 
-            <div style={{ fontSize: '1.05rem', lineHeight: 1.85, color: '#374151', fontFamily: 'var(--font-body)' }}>
-              <p style={{ marginBottom: '1.5rem' }}>
-                Call me Dhriti, I am a fresh graduate with a passion for creating business strategies, marketing strategies, growth marketing, and other business or brand activities.{' '}
-                <span style={{ borderBottom: '3px solid #DC2626', fontWeight: 700, color: '#000000', paddingBottom: '2px' }}>
-                  With hands-on professional internship experience
-                </span>
-                , I honed my skills in business development and strategy, B2B and B2C strategy, brand strategy, content production, and relationship management.
+            {/* Premium Styled Subheading */}
+            <div className="font-display" style={{
+              fontSize: 'clamp(1.3rem, 2.4vw, 1.9rem)',
+              fontWeight: 800,
+              color: '#DC2626',
+              letterSpacing: '-0.02em',
+              lineHeight: 1.3,
+              marginBottom: '1.75rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+            }}>
+              <span style={{ display: 'inline-block', width: '28px', height: '3px', background: '#DC2626', borderRadius: '99px', flexShrink: 0 }} />
+              <span>Just a curious kid with too many ideas.</span>
+            </div>
+
+            {/* Premium Editorial Body Paragraphs */}
+            <div style={{ fontSize: '1.04rem', lineHeight: 1.8, color: '#374151', fontFamily: 'var(--font-body)' }}>
+              <p style={{ marginBottom: '1.35rem', fontWeight: 700, color: '#1A0808', fontSize: '1.14rem', lineHeight: 1.6 }}>
+                I'm Dhriti — a brand &amp; marketing creative who is fascinated by why people notice, remember and connect with things.
               </p>
 
-              <p style={{ marginBottom: '1.5rem' }}>
-                I am experienced in social media strategy, brand strategy, marketing, campaign execution, Ads performance, and relationship fields in various industries and companies such as Acado.ai (AI technology) and Learn and Build.
+              <p style={{ marginBottom: '1.35rem', color: '#4A2020' }}>
+                I love exploring the space where creativity, communication, culture and strategy meet — from understanding brand analytics and human psychology to crafting stories, building personal brands and creating content that actually feels like something.
               </p>
 
-              <p style={{ margin: 0 }}>
-                I am deeply committed to transforming ideas into results, whether it's crafting marketing and business strategies, brand campaigns, and optimizing audience growth performance.
+              <p style={{ marginBottom: '1.35rem', color: '#4A2020' }}>
+                I'm naturally drawn to <span style={{ fontWeight: 700, color: '#1A0808', borderBottom: '2px solid #FCA5A5' }}>Brand Management, Marketing, Personal Branding, Content Creation and Ghostwriting</span>. I enjoy taking an idea, making sense of it, giving it a personality and figuring out how it can create a real result.
+              </p>
+
+              <p style={{
+                margin: 0,
+                fontStyle: 'italic',
+                color: '#5C2C2C',
+                background: '#FFF5F5',
+                padding: '14px 20px',
+                borderRadius: '14px',
+                borderLeft: '4px solid #DC2626',
+                fontWeight: 500,
+              }}>
+                You'll probably find me journaling, dancing Kathak, exploring a new skill or getting lost in some random idea. ✨
               </p>
             </div>
           </m.div>
