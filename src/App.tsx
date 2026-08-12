@@ -825,23 +825,24 @@ function Hero() {
           alignItems: 'flex-end',
           height: isMobile ? 'clamp(340px, 88vw, 430px)' : isTablet ? '430px' : '480px',
         }}>
-          {/* RIGHT FLANKING HERO TAGLINE — centered & fitting within screen bounds */}
+          {/* RIGHT FLANKING HERO TAGLINE — Single horizontal line for IDEAS -> EXECUTION */}
           {!isMobile && (
             <m.div
               initial={{ opacity: 0, x: 28 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: DUR.slow, ease: EASE, delay: 0.3 }}
               style={{
-                position: 'absolute', right: '0%', bottom: '22%',
-                maxWidth: isTablet ? '200px' : '300px', textAlign: 'center', zIndex: 15,
+                position: 'absolute', right: '2%', bottom: '18%',
+                textAlign: 'center', zIndex: 15, pointerEvents: 'none',
               }}
             >
               <div className="font-display" style={{
-                fontSize: isTablet ? '1.4rem' : '2.0rem',
+                fontSize: isTablet ? '1.3rem' : '1.85rem',
                 fontWeight: 800,
                 color: '#1A0808',
-                lineHeight: 1.15,
+                lineHeight: 1.1,
                 letterSpacing: '-0.02em',
+                whiteSpace: 'nowrap',
               }}>
                 IDEAS <span style={{ color: '#DC2626' }}>→</span> EXECUTION
               </div>
@@ -849,9 +850,10 @@ function Hero() {
                 fontSize: isTablet ? '0.72rem' : '0.82rem',
                 color: '#DC2626',
                 fontWeight: 700,
-                margin: '8px 0 0',
+                margin: '6px 0 0',
                 letterSpacing: '0.06em',
                 textTransform: 'uppercase',
+                whiteSpace: 'nowrap',
               }}>
                 Brand • Marketing • Growth
               </p>
