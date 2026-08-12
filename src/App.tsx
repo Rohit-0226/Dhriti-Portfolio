@@ -2754,6 +2754,153 @@ function Projects() {
           ))}
         </div>
 
+        {/* What people say about me: LINKEDIN RECOMMENDATIONS */}
+        <m.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={VIEWPORT}
+          transition={{ duration: DUR.slow, ease: EASE, delay: 0.2 }}
+          style={{
+            background: '#FAFBF4',
+            borderRadius: isMobile ? '22px' : '28px',
+            overflow: 'hidden',
+            boxShadow: '0 16px 48px rgba(0,0,0,0.06)',
+            border: '1px solid rgba(0,0,0,0.08)',
+            marginTop: isMobile ? '2.5rem' : '4.5rem',
+          }}
+        >
+          {/* Header Ribbon: What people say about me | LINKEDIN RECOMMENDATIONS */}
+          <div style={{
+            background: '#D9CB9E',
+            padding: isMobile ? '1.15rem 1.4rem' : '1.5rem 3rem',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: isMobile ? 'flex-start' : 'center',
+            flexDirection: isMobile ? 'column' : 'row',
+            flexWrap: 'wrap',
+            gap: isMobile ? '0.35rem' : '1rem',
+            borderBottom: '1px solid rgba(0,0,0,0.08)',
+          }}>
+            <h3 className="font-display" style={{
+              fontSize: 'clamp(1.6rem, 3.2vw, 2.3rem)',
+              fontWeight: 800,
+              color: '#000000',
+              margin: 0,
+              letterSpacing: '-0.03em',
+            }}>
+              What people say about me
+            </h3>
+            <span style={{
+              fontSize: isMobile ? '0.85rem' : '1.1rem',
+              fontWeight: 800,
+              color: '#000000',
+              fontFamily: 'var(--font-display)',
+              letterSpacing: '-0.02em',
+            }}>
+              LINKEDIN RECOMMENDATION
+            </span>
+          </div>
+
+          {/* Recommendations Card Body Container */}
+          <div style={{ padding: isMobile ? '2rem 1.25rem 2.5rem' : '3.5rem 2.5rem 4.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isCompact ? '1fr' : '1.25fr 0.75fr', gap: isMobile ? '1.5rem' : '2.5rem', alignItems: 'center' }}>
+              
+              {/* Left Column: 3 Recommendation Cards */}
+              <div style={{
+                background: '#FAF6ED',
+                borderRadius: '20px',
+                padding: isMobile ? '1.25rem 1rem' : '2.25rem 2rem',
+                border: '2px solid #8B5CF6',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: isMobile ? '1rem' : '1.5rem',
+                boxShadow: '0 8px 24px rgba(139,92,246,0.08)',
+              }}>
+                {[
+                  {
+                    name: 'Nupur',
+                    role: 'HR @ Learn and Build (LnB HR)',
+                    initial: 'N',
+                    color: '#F97316',
+                    text: 'I had the pleasure of mentoring Dhriti Arora during her tenure as a Business Development Intern at Learn and Build. She showcased a strong ability to understand requirements quickly, communicate clearly, and follow through with tasks efficiently. Her timely execution, proactive approach in outreach activities, made her a valuable contributor to the BD team. Dhriti is dependable, disciplined, and shows great potential for future roles in business development.',
+                  },
+                  {
+                    name: 'Jitendra',
+                    role: 'Assistant Professor, FMC',
+                    initial: 'J',
+                    color: '#3B82F6',
+                    text: 'As far I know Dhriti has been one of those rare students who stand out showing great initiative, hard work, and ambition. I’ve seen her consistently go above and beyond expectations. She is a highly motivated learner who doesn’t wait for instructions but actively looks for ways to learn more. She has been representing her class, department and has been an energetic participant. Her ability to take on challenges without being asked is rare and impressive. What makes her truly exceptional is her mix of talent and humility. She’s always engaged in class, offering thoughtful ideas and listening carefully to others. Her questions show a deep understanding and a desire to fully grasp the material, not just finish the task. I’m confident that Dhriti will be a great asset to any program or organization she joins. Her curiosity, strong work ethic, and collaborative nature make her an excellent candidate. I recommend her wholeheartedly.',
+                  },
+                  {
+                    name: 'Muktak',
+                    role: 'Department Proctor',
+                    initial: 'M',
+                    color: '#059669',
+                    text: 'It is my privilege to recommend Dhriti Arora, a highly enthusiastic and diligent student who has consistently stood out for her leadership qualities and academic dedication. She has shown remarkable ability to balance her departmental responsibilities alongside her classwork, ensuring excellence in both areas. Her enthusiasm for learning, coupled with her proactive mindset, reflects not only her intellectual maturity but also her strong commitment to personal and professional growth.',
+                  },
+                ].map((rec) => (
+                  <div key={rec.name} style={{ background: '#ffffff', borderRadius: '16px', padding: isMobile ? '1rem' : '1.25rem 1.5rem', boxShadow: '0 4px 14px rgba(0,0,0,0.03)', border: '1px solid rgba(0,0,0,0.05)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: rec.color, color: '#ffffff', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem' }}>
+                          {rec.initial}
+                        </div>
+                        <div>
+                          <span style={{ fontWeight: 800, fontSize: '0.95rem', color: '#000000', display: 'block' }}>{rec.name}</span>
+                          <span style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: 600 }}>{rec.role}</span>
+                        </div>
+                      </div>
+                      <span style={{ fontSize: '1.8rem', color: rec.color, fontWeight: 900, lineHeight: 1 }}>“</span>
+                    </div>
+                    <p style={{ fontSize: isMobile ? '0.86rem' : '0.9rem', lineHeight: 1.65, color: '#334155', margin: 0, fontFamily: 'var(--font-body)' }}>
+                      "{rec.text}"
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Right Column: Title Callout & Button */}
+              <div style={{ textAlign: 'center', padding: '1rem' }}>
+                <h4 className="font-display" style={{
+                  fontSize: 'clamp(2rem, 4vw, 3.2rem)',
+                  fontWeight: 800,
+                  color: '#000000',
+                  lineHeight: 1.2,
+                  margin: '0 0 1.5rem',
+                  letterSpacing: '-0.03em',
+                }}>
+                  my linkedin<br />recommendations
+                </h4>
+
+                <a
+                  href="https://www.linkedin.com/in/dhriti-pareek-78b17326a/"
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    background: '#0A66C2',
+                    color: '#ffffff',
+                    fontSize: '0.95rem',
+                    fontWeight: 700,
+                    padding: '12px 24px',
+                    borderRadius: '999px',
+                    textDecoration: 'none',
+                    boxShadow: '0 6px 20px rgba(10,102,194,0.3)',
+                  }}
+                >
+                  <span>LinkedIn Profile</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                  </svg>
+                </a>
+              </div>
+
+            </div>
+          </div>
+        </m.div>
+
       </div>
 
       {/* Interactive Playable Reel Video Player Modal Overlay */}
