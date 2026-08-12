@@ -19,8 +19,15 @@
 
 * { box-sizing: border-box; }
 
+/* overflow-x must be clamped on BOTH html and body — setting it on body
+   alone still lets the document element scroll sideways. */
 html {
   scroll-behavior: smooth;
+  /* Anchor links must clear the fixed navbar */
+  scroll-padding-top: 90px;
+  -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 body {
@@ -28,6 +35,32 @@ body {
   background: #FFFBFB;
   color: #1A0808;
   overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  position: relative;
+}
+
+/* Nothing may push the page wider than the viewport */
+img, svg, video, canvas {
+  max-width: 100%;
+}
+
+@media (max-width: 767px) {
+  html { scroll-padding-top: 76px; }
+}
+
+/* Respect reduced motion, but scoped — a blanket `* { animation-duration: 0.01ms }`
+   freezes the marquee mid-scroll and reads as a broken strip. Entrance/decorative
+   motion is calmed; the ticker keeps running as the section's core visual. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .animate-float-bob,
+  .pulse-glow {
+    animation: none;
+  }
+  .card-lift {
+    transition: none;
+  }
 }
 
 ::-webkit-scrollbar { width: 6px; }
@@ -54,9 +87,23 @@ body {
 
 .animate-marquee {
   animation: marquee 32s linear infinite;
+  will-change: transform;
 }
 .animate-marquee:hover {
   animation-play-state: paused;
+}
+
+/* Horizontal snap trays (mobile reel row) — hide the scrollbar chrome */
+.snap-tray::-webkit-scrollbar { display: none; height: 0; }
+.snap-tray { -ms-overflow-style: none; }
+
+/* Mobile nav panel */
+.mobile-nav-panel {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.13);
 }
 
 .animate-float-bob {

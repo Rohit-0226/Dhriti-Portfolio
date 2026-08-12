@@ -1,5 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { motion, useScroll, useTransform, useMotionValueEvent, AnimatePresence } from 'framer-motion'
+import {
+  LazyMotion,
+  domAnimation,
+  m,
+  MotionConfig,
+  AnimatePresence,
+  useScroll,
+  useSpring,
+  useMotionValueEvent,
+  useInView,
+  useReducedMotion,
+  type Variants,
+} from 'framer-motion'
 import dhritiTransparentImg from './imports/dhriti_transparent.webp'
 import doctorsEventImg1 from './imports/doctors_event_1.jpg'
 import doctorsEventImg2 from './imports/doctors_event_2.jpg'
@@ -14,6 +26,56 @@ import droneRangersLogoImg from './imports/drone_rangers_logo.jpg'
 import learnAndBuildLogoImg from './imports/learn_and_build_logo.jpg'
 import poornimaLogoImg from './imports/poornima_university_logo.jpg'
 import yougamiLogoImg from './imports/yougami_logo.jpg'
+
+/* ─── Motion System ─────────────────────────────────────────
+ * One vocabulary for the whole site. Every entrance uses these
+ * tokens so sections feel like they belong to the same page
+ * instead of each having its own hand-tuned timing.
+ * ---------------------------------------------------------- */
+
+/** Expo-out: quick departure, long soft landing. The site's signature curve. */
+const EASE = [0.16, 1, 0.3, 1] as const
+/** Gentler curve for small UI moves (hovers, taps, toggles). */
+const EASE_SOFT = [0.33, 1, 0.68, 1] as const
+
+const DUR = {
+  fast: 0.28,
+  base: 0.5,
+  slow: 0.7,
+} as const
+
+/** Shared whileInView config — fires slightly before the element is centred. */
+const VIEWPORT = { once: true, amount: 0.15, margin: '0px 0px -60px 0px' } as const
+
+/**
+ * Entrance variants. Distances stay small (16–28px) — large travel is what
+ * makes scroll animations feel sluggish and janky on mid-range phones.
+ */
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { duration: DUR.slow, ease: EASE } },
+}
+
+const fadeIn: Variants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { duration: DUR.slow, ease: EASE } },
+}
+
+const fadeLeft: Variants = {
+  hidden: { opacity: 0, x: -28 },
+  show: { opacity: 1, x: 0, transition: { duration: DUR.slow, ease: EASE } },
+}
+
+const fadeRight: Variants = {
+  hidden: { opacity: 0, x: 28 },
+  show: { opacity: 1, x: 0, transition: { duration: DUR.slow, ease: EASE } },
+}
+
+/** Parent that releases its children in sequence. */
+const stagger = (each = 0.07, delayChildren = 0): Variants => ({
+  hidden: {},
+  show: { transition: { staggerChildren: each, delayChildren } },
+})
 
 /* ─── Original Data ─────────────────────────────────────── */
 
@@ -90,13 +152,198 @@ const LEADERSHIP = [
 
 const MARQUEE = ['Brand Strategy', '·', 'Content Creation', '·', 'Social Media', '·', 'Event Management', '·', 'Ghostwriting', '·', 'Canva', '·', 'Mailchimp', '·', 'WATI', '·', 'Campaign Design', '·', 'Storytelling', '·']
 
+/* ─── Responsive helpers ────────────────────────────────── */
+function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(() =>
+    typeof window !== 'undefined' ? window.matchMedia(query).matches : false,
+  )
+
+  useEffect(() => {
+    const mql = window.matchMedia(query)
+    const onChange = () => setMatches(mql.matches)
+    onChange()
+    mql.addEventListener('change', onChange)
+    return () => mql.removeEventListener('change', onChange)
+  }, [query])
+
+  return matches
+}
+
+/** Single source of truth for layout breakpoints. */
+function useBreakpoint() {
+  const isMobile = useMediaQuery('(max-width: 767px)')
+  const isTablet = useMediaQuery('(min-width: 768px) and (max-width: 1023px)')
+  return { isMobile, isTablet, isCompact: isMobile || isTablet }
+}
+
+/**
+ * Section headings rise out from behind a clipping mask instead of simply
+ * fading. Costs one transform, reads as deliberate rather than decorative.
+ */
+function RevealHeading({
+  children,
+  delay = 0,
+  style,
+}: {
+  children: React.ReactNode
+  delay?: number
+  style?: React.CSSProperties
+}) {
+  const reduced = useReducedMotion()
+
+  return (
+    <span style={{ display: 'block', overflow: 'hidden', paddingBottom: '0.08em' }}>
+      <m.span
+        initial={reduced ? { opacity: 0 } : { y: '110%' }}
+        whileInView={reduced ? { opacity: 1 } : { y: '0%' }}
+        viewport={VIEWPORT}
+        transition={{ duration: 0.85, ease: EASE, delay }}
+        style={{ display: 'block', willChange: 'transform', ...style }}
+      >
+        {children}
+      </m.span>
+    </span>
+  )
+}
+
+/**
+ * Counts a metric up when it scrolls into view. Parses the surrounding
+ * characters off the value ("4,159%" / "50+" / "4.6K++") so the prefix and
+ * suffix survive, and animates only the number itself.
+ */
+function CountUp({ value, duration = 1.6 }: { value: string; duration?: number }) {
+  const ref = useRef<HTMLSpanElement>(null)
+  const inView = useInView(ref, { once: true, amount: 0.6 })
+  const reduced = useReducedMotion()
+
+  const match = value.match(/^([^\d]*)([\d,.]+)(.*)$/)
+  const [prefix, rawNum, suffix] = match ? [match[1], match[2], match[3]] : ['', '', value]
+  const target = parseFloat(rawNum.replace(/,/g, ''))
+  const decimals = rawNum.includes('.') ? rawNum.split('.')[1].length : 0
+  const grouped = rawNum.includes(',')
+
+  const [display, setDisplay] = useState(() => (reduced || !match ? rawNum : '0'))
+
+  useEffect(() => {
+    if (!inView || !match || reduced || !isFinite(target)) {
+      if (match) setDisplay(rawNum)
+      return
+    }
+
+    let raf = 0
+    const start = performance.now()
+    const tick = (now: number) => {
+      const t = Math.min((now - start) / (duration * 1000), 1)
+      // Ease-out cubic: fast climb, gentle settle onto the final figure.
+      const eased = 1 - Math.pow(1 - t, 3)
+      const current = target * eased
+      const text = current.toFixed(decimals)
+      setDisplay(grouped ? Number(text).toLocaleString('en-US', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      }) : text)
+      if (t < 1) raf = requestAnimationFrame(tick)
+      else setDisplay(rawNum)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [inView, match, reduced, target, rawNum, decimals, duration, grouped])
+
+  return (
+    <span ref={ref}>
+      {prefix}
+      {display}
+      {suffix}
+    </span>
+  )
+}
+
+/**
+ * Long body copy clamped to a few lines on phones with a tap-to-expand toggle.
+ * Full text is always in the DOM, so nothing is lost for search or screen readers.
+ */
+function ExpandableText({
+  text,
+  clamp = true,
+  lines = 3,
+  style,
+}: {
+  text: string
+  clamp?: boolean
+  lines?: number
+  style?: React.CSSProperties
+}) {
+  const [expanded, setExpanded] = useState(false)
+
+  if (!clamp) return <p style={style}>{text}</p>
+
+  return (
+    <div>
+      <p
+        style={{
+          ...style,
+          display: '-webkit-box',
+          WebkitBoxOrient: 'vertical',
+          WebkitLineClamp: expanded ? 'none' : lines,
+          overflow: 'hidden',
+          margin: 0,
+        }}
+      >
+        {text}
+      </p>
+      <m.button
+        onClick={() => setExpanded((v) => !v)}
+        whileTap={{ scale: 0.96 }}
+        style={{
+          background: 'none',
+          border: 'none',
+          padding: '6px 0 0',
+          margin: 0,
+          color: '#DC2626',
+          fontFamily: 'var(--font-body)',
+          fontSize: '0.8rem',
+          fontWeight: 700,
+          cursor: 'pointer',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '4px',
+        }}
+      >
+        {expanded ? 'Show less' : 'Read more'}
+        <m.span
+          animate={{ rotate: expanded ? 180 : 0 }}
+          transition={{ duration: DUR.fast, ease: EASE }}
+          style={{ display: 'inline-block', fontSize: '0.7rem' }}
+        >
+          ▾
+        </m.span>
+      </m.button>
+    </div>
+  )
+}
+
+const NAV_LINKS = [
+  { name: 'About', href: '#about' },
+  { name: 'Experience', href: '#experience' },
+  { name: 'Skills & Tools', href: '#skills-tools' },
+  { name: 'Projects', href: '#projects' },
+]
+
 /* ─── Scroll Progress Bar ───────────────────────────────── */
 function ScrollProgress() {
   const { scrollYProgress } = useScroll()
+  // Raw scroll maps 1:1 to the bar and inherits every jitter of a trackpad or
+  // momentum scroll. A spring damps it into a continuous glide.
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 140,
+    damping: 28,
+    restDelta: 0.001,
+  })
+
   return (
-    <motion.div
+    <m.div
       style={{
-        scaleX: scrollYProgress,
+        scaleX,
         transformOrigin: '0%',
         position: 'fixed',
         top: 0,
@@ -115,7 +362,10 @@ function ScrollProgress() {
 /* ─── Navbar ─────────────────────────────────────────────── */
 function Navbar() {
   const [scrolled, setScrolled] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const { isMobile } = useBreakpoint()
   const { scrollY } = useScroll()
+
   useMotionValueEvent(scrollY, 'change', (latest) => {
     setScrolled((prev) => {
       if (!prev && latest > 48) return true
@@ -123,6 +373,21 @@ function Navbar() {
       return prev
     })
   })
+
+  // Close the drawer if the viewport grows back to desktop
+  useEffect(() => {
+    if (!isMobile) setMenuOpen(false)
+  }, [isMobile])
+
+  // Lock body scroll while the drawer is open
+  useEffect(() => {
+    if (!menuOpen) return
+    const previous = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = previous
+    }
+  }, [menuOpen])
 
   return (
     <header
@@ -134,33 +399,41 @@ function Navbar() {
         zIndex: 1000,
         display: 'flex',
         justifyContent: 'center',
-        padding: scrolled ? '14px 1.5rem' : '0 2.5rem',
+        padding: isMobile ? '10px 1rem' : scrolled ? '14px 1.5rem' : '0 2.5rem',
         pointerEvents: 'none',
         transition: 'padding 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
       }}
     >
-      <motion.nav
+      <m.nav
         initial={{ y: -60, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: DUR.slow, ease: EASE }}
         style={{
           pointerEvents: 'auto',
-          width: scrolled ? 'min(860px, 92vw)' : '100%',
-          height: scrolled ? '56px' : '66px',
-          borderRadius: scrolled ? '999px' : '0px',
-          padding: scrolled ? '0 1.75rem' : '0 0rem',
+          position: 'relative',
+          width: isMobile ? '100%' : scrolled ? 'min(860px, 92vw)' : '100%',
+          height: isMobile ? '58px' : scrolled ? '56px' : '66px',
+          borderRadius: isMobile ? '20px' : scrolled ? '999px' : '0px',
+          padding: isMobile ? '0 0.6rem 0 1.1rem' : scrolled ? '0 1.75rem' : '0 0rem',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          background: scrolled ? 'rgba(255, 255, 255, 0.88)' : 'rgba(255, 255, 255, 0.78)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          borderTop: `1px solid rgba(0, 0, 0, ${scrolled ? 0.08 : 0})`,
-          borderLeft: `1px solid rgba(0, 0, 0, ${scrolled ? 0.08 : 0})`,
-          borderRight: `1px solid rgba(0, 0, 0, ${scrolled ? 0.08 : 0})`,
-          borderBottom: scrolled ? '1px solid rgba(0, 0, 0, 0.08)' : '1px solid rgba(0, 0, 0, 0.07)',
-          boxShadow: `0 16px 40px rgba(0, 0, 0, ${scrolled ? 0.08 : 0})`,
+          background: isMobile
+            ? 'rgba(255, 255, 255, 0.72)'
+            : scrolled
+              ? 'rgba(255, 255, 255, 0.88)'
+              : 'rgba(255, 255, 255, 0.78)',
+          backdropFilter: 'blur(16px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(16px) saturate(180%)',
+          borderTop: `1px solid rgba(0, 0, 0, ${isMobile || scrolled ? 0.08 : 0})`,
+          borderLeft: `1px solid rgba(0, 0, 0, ${isMobile || scrolled ? 0.08 : 0})`,
+          borderRight: `1px solid rgba(0, 0, 0, ${isMobile || scrolled ? 0.08 : 0})`,
+          borderBottom: isMobile || scrolled ? '1px solid rgba(0, 0, 0, 0.08)' : '1px solid rgba(0, 0, 0, 0.07)',
+          boxShadow: `0 16px 40px rgba(0, 0, 0, ${isMobile || scrolled ? 0.08 : 0})`,
+          // Promote to its own layer so the blur isn't re-sampled against the
+          // whole page, and isolate the morph so it can't reflow the document.
           willChange: 'width, height, padding, border-radius',
+          contain: 'layout style',
           transition:
             'width 0.5s cubic-bezier(0.16, 1, 0.3, 1), height 0.5s cubic-bezier(0.16, 1, 0.3, 1), ' +
             'padding 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-radius 0.5s cubic-bezier(0.16, 1, 0.3, 1), ' +
@@ -168,72 +441,218 @@ function Navbar() {
         }}
       >
         {/* Brand Logo with Space: Dhriti Arora */}
-        <motion.div
+        <m.div
           whileHover={{ scale: 1.03 }}
           className="font-display"
           style={{
-            fontSize: scrolled ? '1.3rem' : '1.45rem',
+            fontSize: isMobile ? '1.15rem' : scrolled ? '1.3rem' : '1.45rem',
             fontWeight: 800,
             fontStyle: 'italic',
             cursor: 'pointer',
             color: '#000000',
             letterSpacing: '-0.02em',
+            whiteSpace: 'nowrap',
             transition: 'font-size 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
           }}
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          onClick={() => {
+            setMenuOpen(false)
+            window.scrollTo({ top: 0, behavior: 'smooth' })
+          }}
         >
           Dhriti <span style={{ color: '#DC2626' }}>Arora</span>
-        </motion.div>
+        </m.div>
 
-        {/* Connected Section Anchor Links */}
-        <div style={{ display: 'flex', gap: scrolled ? '1.8rem' : '2.2rem', alignItems: 'center', transition: 'gap 0.5s cubic-bezier(0.16, 1, 0.3, 1)' }}>
-          {[
-            { name: 'About', href: '#about' },
-            { name: 'Experience', href: '#experience' },
-            { name: 'Skills & Tools', href: '#skills-tools' },
-            { name: 'Projects', href: '#projects' },
-          ].map((item) => (
-            <motion.a
-              key={item.name}
-              href={item.href}
-              whileHover={{ y: -2, color: '#DC2626' }}
-              style={{
-                color: '#1F2937',
-                fontSize: scrolled ? '0.84rem' : '0.88rem',
-                fontWeight: 700,
-                fontFamily: 'var(--font-body)',
-                textDecoration: 'none',
-                transition: 'color 0.2s ease, font-size 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
-              }}
-            >
-              {item.name}
-            </motion.a>
-          ))}
-
-          {/* Primary Action Button */}
-          <motion.a
-            href="#contact"
-            whileHover={{ scale: 1.05, backgroundColor: '#B91C1C' }}
-            whileTap={{ scale: 0.95 }}
+        {isMobile ? (
+          /* Hamburger Toggle */
+          <m.button
+            onClick={() => setMenuOpen((v) => !v)}
+            whileTap={{ scale: 0.92 }}
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={menuOpen}
             style={{
-              background: '#DC2626',
-              color: '#ffffff',
-              padding: scrolled ? '7px 18px' : '9px 22px',
-              borderRadius: '999px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.72rem',
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              textDecoration: 'none',
-              fontWeight: 700,
-              boxShadow: '0 4px 16px rgba(220,38,38,0.22)',
-              transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+              width: '42px',
+              height: '42px',
+              borderRadius: '14px',
+              background: menuOpen ? '#DC2626' : 'rgba(255,255,255,0.6)',
+              border: `1px solid ${menuOpen ? '#DC2626' : 'rgba(0,0,0,0.1)'}`,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '5px',
+              cursor: 'pointer',
+              flexShrink: 0,
+              padding: 0,
+              transition: 'background-color 0.3s ease, border-color 0.3s ease',
             }}
           >
-            Hire Me →
-          </motion.a>
-        </div>
-      </motion.nav>
+            {[0, 1].map((i) => (
+              <m.span
+                key={i}
+                animate={
+                  menuOpen
+                    ? { rotate: i === 0 ? 45 : -45, y: i === 0 ? 3.5 : -3.5, width: 18 }
+                    : { rotate: 0, y: 0, width: i === 0 ? 18 : 12 }
+                }
+                transition={{ duration: DUR.fast, ease: EASE }}
+                style={{
+                  height: '2px',
+                  borderRadius: '2px',
+                  background: menuOpen ? '#ffffff' : '#1A0808',
+                  display: 'block',
+                }}
+              />
+            ))}
+          </m.button>
+        ) : (
+          /* Desktop: Connected Section Anchor Links */
+          <div style={{ display: 'flex', gap: scrolled ? '1.8rem' : '2.2rem', alignItems: 'center', transition: 'gap 0.5s cubic-bezier(0.16, 1, 0.3, 1)' }}>
+            {NAV_LINKS.map((item) => (
+              <m.a
+                key={item.name}
+                href={item.href}
+                whileHover={{ y: -2, color: '#DC2626' }}
+                style={{
+                  color: '#1F2937',
+                  fontSize: scrolled ? '0.84rem' : '0.88rem',
+                  fontWeight: 700,
+                  fontFamily: 'var(--font-body)',
+                  textDecoration: 'none',
+                  whiteSpace: 'nowrap',
+                  transition: 'color 0.2s ease, font-size 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+                }}
+              >
+                {item.name}
+              </m.a>
+            ))}
+
+            {/* Primary Action Button */}
+            <m.a
+              href="#contact"
+              whileHover={{ scale: 1.05, backgroundColor: '#B91C1C' }}
+              whileTap={{ scale: 0.95 }}
+              style={{
+                background: '#DC2626',
+                color: '#ffffff',
+                padding: scrolled ? '7px 18px' : '9px 22px',
+                borderRadius: '999px',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.72rem',
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                textDecoration: 'none',
+                fontWeight: 700,
+                whiteSpace: 'nowrap',
+                boxShadow: '0 4px 16px rgba(220,38,38,0.22)',
+                transition: 'padding 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+              }}
+            >
+              Let's Connect →
+            </m.a>
+          </div>
+        )}
+
+        {/* Mobile Glass Dropdown Panel */}
+        <AnimatePresence>
+          {isMobile && menuOpen && (
+            <m.div
+              className="mobile-nav-panel"
+              initial={{ opacity: 0, y: -12, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -12, scale: 0.97 }}
+              transition={{ duration: DUR.fast, ease: EASE }}
+              style={{
+                position: 'absolute',
+                top: 'calc(100% + 10px)',
+                left: 0,
+                right: 0,
+                borderRadius: '22px',
+                padding: '0.6rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '2px',
+                transformOrigin: 'top center',
+              }}
+            >
+              {NAV_LINKS.map((item, i) => (
+                <m.a
+                  key={item.name}
+                  href={item.href}
+                  onClick={() => setMenuOpen(false)}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: DUR.fast, ease: EASE, delay: 0.06 + i * 0.05 }}
+                  whileTap={{ scale: 0.98, backgroundColor: 'rgba(220,38,38,0.08)' }}
+                  style={{
+                    color: '#1A0808',
+                    fontSize: '1rem',
+                    fontWeight: 700,
+                    fontFamily: 'var(--font-body)',
+                    textDecoration: 'none',
+                    padding: '0.85rem 1rem',
+                    borderRadius: '14px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  {item.name}
+                  <span style={{ color: '#DC2626', fontSize: '0.9rem' }}>→</span>
+                </m.a>
+              ))}
+
+              <m.a
+                href="#contact"
+                onClick={() => setMenuOpen(false)}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: DUR.fast, ease: EASE, delay: 0.28 }}
+                whileTap={{ scale: 0.97 }}
+                style={{
+                  background: '#DC2626',
+                  color: '#ffffff',
+                  padding: '0.9rem 1rem',
+                  marginTop: '6px',
+                  borderRadius: '14px',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.75rem',
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  textDecoration: 'none',
+                  fontWeight: 700,
+                  textAlign: 'center',
+                  boxShadow: '0 8px 22px rgba(220,38,38,0.28)',
+                }}
+              >
+                Let's Connect →
+              </m.a>
+            </m.div>
+          )}
+        </AnimatePresence>
+      </m.nav>
+
+      {/* Tap-away backdrop */}
+      <AnimatePresence>
+        {isMobile && menuOpen && (
+          <m.div
+            onClick={() => setMenuOpen(false)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: DUR.fast, ease: EASE }}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              top: '76px',
+              background: 'rgba(26, 8, 8, 0.28)',
+              backdropFilter: 'blur(2px)',
+              WebkitBackdropFilter: 'blur(2px)',
+              pointerEvents: 'auto',
+              zIndex: -1,
+            }}
+          />
+        )}
+      </AnimatePresence>
     </header>
   )
 }
@@ -253,25 +672,61 @@ const MULTI_LANG_HELLOS = [
 /* ─── Hero ───────────────────────────────────────────────── */
 function Hero() {
   const [helloIndex, setHelloIndex] = useState(0)
+  const { isMobile, isTablet } = useBreakpoint()
+  const reduced = useReducedMotion()
+
+  // The four floating pills loop forever. Left ungated they keep waking the
+  // compositor for the whole page, so they idle once the hero scrolls away.
+  const stageRef = useRef<HTMLDivElement>(null)
+  const stageInView = useInView(stageRef, { amount: 0.1 })
+  const pillsActive = stageInView && !reduced
 
   useEffect(() => {
+    // The greeting rotator is the same story: no point ticking off-screen.
+    if (!stageInView) return
     const timer = setInterval(() => {
       setHelloIndex((prev) => (prev + 1) % MULTI_LANG_HELLOS.length)
     }, 2200)
     return () => clearInterval(timer)
-  }, [])
+  }, [stageInView])
 
   const currentGreeting = MULTI_LANG_HELLOS[helloIndex]
 
+  /** Bob loop for a floating pill, paused when the hero is out of view. */
+  const bob = (distance: number, duration: number, delay = 0) =>
+    pillsActive
+      ? {
+          animate: { y: [0, distance, 0] },
+          transition: { duration, repeat: Infinity, ease: 'easeInOut' as const, delay },
+        }
+      : { animate: { y: 0 }, transition: { duration: DUR.fast, ease: EASE_SOFT } }
+
+  const pillStyle: React.CSSProperties = {
+    background: '#1A0808',
+    color: '#fff',
+    padding: isMobile ? '6px 12px' : '8px 20px',
+    borderRadius: '999px',
+    fontFamily: 'var(--font-display)',
+    fontSize: isMobile ? '0.68rem' : '0.82rem',
+    fontWeight: 600,
+    display: 'flex',
+    alignItems: 'center',
+    gap: isMobile ? '5px' : '8px',
+    boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
+    whiteSpace: 'nowrap',
+    zIndex: 20,
+    position: 'absolute',
+  }
+
   return (
     <section id="about" style={{
-      minHeight: '100vh',
+      minHeight: isMobile ? 'auto' : '100vh',
       background: '#FFFBFB',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '100px 1.5rem 0px',
+      padding: isMobile ? '84px 1.1rem 0px' : '100px 1.5rem 0px',
       position: 'relative',
       overflow: 'hidden',
     }}>
@@ -296,10 +751,10 @@ function Hero() {
           marginBottom: '1.5rem',
         }}>
           {/* Centered Rotating Multi-Language Hello Badge */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: -15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: DUR.base, ease: EASE }}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -315,16 +770,16 @@ function Hero() {
               minWidth: '140px', textAlign: 'center', height: '38px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <AnimatePresence mode="wait">
-                <motion.span
+                <m.span
                   key={currentGreeting.word}
                   initial={{ y: 8, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   exit={{ y: -8, opacity: 0 }}
-                  transition={{ duration: 0.25 }}
+                  transition={{ duration: DUR.fast, ease: EASE }}
                   style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                 >
                   {currentGreeting.word} {currentGreeting.flag}
-                </motion.span>
+                </m.span>
               </AnimatePresence>
             </div>
 
@@ -332,13 +787,13 @@ function Hero() {
             <svg style={{ position: 'absolute', right: '-18px', top: '-12px', pointerEvents: 'none' }} width="22" height="22" viewBox="0 0 24 24" fill="none">
               <path d="M12 2v5M6 4l3 4M18 4l-3 4" stroke="#DC2626" strokeWidth="2.5" strokeLinecap="round" />
             </svg>
-          </motion.div>
+          </m.div>
 
           {/* Main Headline Block */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
+            transition={{ duration: DUR.slow, ease: EASE, delay: 0.1 }}
             style={{
               position: 'relative',
               display: 'flex',
@@ -353,53 +808,70 @@ function Hero() {
               lineHeight: 1.1, margin: 0, letterSpacing: '-0.025em', textAlign: 'center',
             }}>
               I'm <span style={{ color: '#DC2626', fontWeight: 800 }}>Dhriti</span> 👋,<br />
-              <span>A Brand &amp; Marketing Specialist</span>
+              <span>Brand &amp; Marketing Creative</span>
             </h1>
-          </motion.div>
+          </m.div>
         </div>
 
         {/* Central Graphic Area with Huge Red Arch & Cutout Image */}
-        <div style={{ position: 'relative', width: '100%', maxWidth: '1050px', margin: '0 auto', display: 'flex', justifyContent: 'center', alignItems: 'flex-end', height: '480px' }}>
-          
-          {/* LEFT FLANKING CALLOUT */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-            style={{
-              position: 'absolute', left: '0%', bottom: '22%', maxWidth: '270px', textAlign: 'left', zIndex: 15,
-            }}
-          >
-            <span style={{ fontSize: '2.8rem', lineHeight: 0.8, color: '#1A0808', fontFamily: 'serif', display: 'block', fontWeight: 700, marginBottom: '6px' }}>“</span>
-            <p style={{ fontSize: '0.88rem', lineHeight: 1.6, color: '#4A2020', margin: 0, fontFamily: 'var(--font-body)', fontWeight: 500 }}>
-              working under Dhriti, and I can confidently say she is an exceptional marketer and brand strategist
-            </p>
-          </motion.div>
+        <div ref={stageRef} style={{
+          position: 'relative',
+          width: '100%',
+          maxWidth: '1050px',
+          margin: '0 auto',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'flex-end',
+          height: isMobile ? 'clamp(340px, 88vw, 430px)' : isTablet ? '430px' : '480px',
+        }}>
 
-          {/* RIGHT FLANKING METRIC */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-            style={{
-              position: 'absolute', right: '2%', bottom: '25%', maxWidth: '210px', textAlign: 'left', zIndex: 15,
-            }}
-          >
-            <div className="font-display" style={{ fontSize: '3.2rem', fontWeight: 800, color: '#1A0808', lineHeight: 1 }}>
-              BBA 2025
-            </div>
-            <p className="font-mono" style={{ fontSize: '0.78rem', color: '#5C2C2C', margin: '8px 0 0', lineHeight: 1.4, fontWeight: 500 }}>
-              in Brand &amp; Marketing Experience
-            </p>
-          </motion.div>
+          {/* LEFT FLANKING CALLOUT — desktop/tablet only, restacked below on mobile */}
+          {!isMobile && (
+            <m.div
+              initial={{ opacity: 0, x: -28 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: DUR.slow, ease: EASE, delay: 0.3 }}
+              style={{
+                position: 'absolute', left: '0%', bottom: '22%',
+                maxWidth: isTablet ? '200px' : '270px', textAlign: 'left', zIndex: 15,
+              }}
+            >
+              <span style={{ fontSize: '2.8rem', lineHeight: 0.8, color: '#1A0808', fontFamily: 'serif', display: 'block', fontWeight: 700, marginBottom: '6px' }}>“</span>
+              <p style={{ fontSize: isTablet ? '0.8rem' : '0.88rem', lineHeight: 1.6, color: '#4A2020', margin: 0, fontFamily: 'var(--font-body)', fontWeight: 500 }}>
+                working under Dhriti, and I can confidently say she is an exceptional marketer and brand strategist
+              </p>
+            </m.div>
+          )}
+
+          {/* RIGHT FLANKING METRIC — desktop/tablet only, restacked below on mobile */}
+          {!isMobile && (
+            <m.div
+              initial={{ opacity: 0, x: 28 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: DUR.slow, ease: EASE, delay: 0.3 }}
+              style={{
+                position: 'absolute', right: '2%', bottom: '25%',
+                maxWidth: isTablet ? '160px' : '210px', textAlign: 'left', zIndex: 15,
+              }}
+            >
+              <div className="font-display" style={{ fontSize: isTablet ? '2.4rem' : '3.2rem', fontWeight: 800, color: '#1A0808', lineHeight: 1 }}>
+                BBA 2025
+              </div>
+              <p className="font-mono" style={{ fontSize: '0.78rem', color: '#5C2C2C', margin: '8px 0 0', lineHeight: 1.4, fontWeight: 500 }}>
+                in Brand &amp; Marketing Experience
+              </p>
+            </m.div>
+          )}
 
           {/* HUGE RED DOME ARCH */}
-          <motion.div
+          <m.div
             initial={{ scale: 0.85, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
+            transition={{ duration: DUR.slow, ease: EASE, delay: 0.2 }}
             style={{
-              position: 'absolute', bottom: 0, width: '680px', height: '360px',
+              position: 'absolute', bottom: 0,
+              width: isMobile ? 'min(400px, 94vw)' : isTablet ? 'min(560px, 82vw)' : '680px',
+              height: isMobile ? 'clamp(200px, 52vw, 280px)' : isTablet ? '310px' : '360px',
               borderTopLeftRadius: '350px', borderTopRightRadius: '350px',
               background: 'linear-gradient(180deg, #DC2626 0%, #EF4444 50%, #9B1C1C 100%)',
               boxShadow: '0 20px 60px rgba(220, 38, 38, 0.35)',
@@ -408,94 +880,104 @@ function Hero() {
           />
 
           {/* PURE TRANSPARENT CUTOUT PORTRAIT (No background rectangle!) */}
-          <div style={{ position: 'relative', zIndex: 5, width: '420px', height: '520px', display: 'flex', justifyContent: 'center', alignItems: 'flex-end', marginBottom: '0px' }}>
-            <motion.img
+          <div style={{
+            position: 'relative', zIndex: 5,
+            width: isMobile ? 'min(270px, 68vw)' : isTablet ? '360px' : '420px',
+            height: isMobile ? 'clamp(340px, 88vw, 430px)' : isTablet ? '450px' : '520px',
+            display: 'flex', justifyContent: 'center', alignItems: 'flex-end', marginBottom: '0px',
+          }}>
+            <m.img
               initial={{ y: 50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.25 }}
+              transition={{ duration: DUR.slow, ease: EASE, delay: 0.25 }}
               src={dhritiTransparentImg}
               alt="Dhriti Arora"
               decoding="async"
               fetchPriority="high"
               style={{
-                width: '400px', height: '500px', objectFit: 'cover', objectPosition: 'top',
+                width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top',
                 filter: 'drop-shadow(0 15px 30px rgba(0,0,0,0.25))',
               }}
             />
 
             {/* FLOATING BLACK PILLS */}
             {/* Pill 1: Top Left - Marketing */}
-            <motion.div
-              animate={{ y: [0, -8, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-              style={{
-                position: 'absolute', top: '35%', left: '-30px', zIndex: 20,
-                background: '#1A0808', color: '#fff', padding: '8px 20px', borderRadius: '999px',
-                fontFamily: 'var(--font-display)', fontSize: '0.82rem', fontWeight: 600,
-                display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
-              }}
+            <m.div
+              {...bob(-8, 4)}
+              style={{ ...pillStyle, top: '32%', left: isMobile ? '-22px' : '-30px' }}
             >
               <span>📣</span> Marketing
-            </motion.div>
+            </m.div>
 
             {/* Pill 2: Bottom Left - Brand */}
-            <motion.div
-              animate={{ y: [0, 8, 0] }}
-              transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-              style={{
-                position: 'absolute', bottom: '22%', left: '-10px', zIndex: 20,
-                background: '#1A0808', color: '#fff', padding: '8px 20px', borderRadius: '999px',
-                fontFamily: 'var(--font-display)', fontSize: '0.82rem', fontWeight: 600,
-                display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
-              }}
+            <m.div
+              {...bob(8, 5, 0.5)}
+              style={{ ...pillStyle, bottom: '22%', left: isMobile ? '-14px' : '-10px' }}
             >
               <span>🌟</span> Brand
-            </motion.div>
+            </m.div>
 
             {/* Pill 3: Top Right - Ads */}
-            <motion.div
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 0.2 }}
-              style={{
-                position: 'absolute', top: '42%', right: '-35px', zIndex: 20,
-                background: '#1A0808', color: '#fff', padding: '8px 20px', borderRadius: '999px',
-                fontFamily: 'var(--font-display)', fontSize: '0.82rem', fontWeight: 600,
-                display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
-              }}
+            <m.div
+              {...bob(-10, 4.5, 0.2)}
+              style={{ ...pillStyle, top: '42%', right: isMobile ? '-20px' : '-35px' }}
             >
               <span>🚀</span> Ads
-            </motion.div>
+            </m.div>
 
             {/* Pill 4: Bottom Right - Social Media */}
-            <motion.div
-              animate={{ y: [0, 8, 0] }}
-              transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut', delay: 0.7 }}
-              style={{
-                position: 'absolute', bottom: '15%', right: '-25px', zIndex: 20,
-                background: '#1A0808', color: '#fff', padding: '8px 20px', borderRadius: '999px',
-                fontFamily: 'var(--font-display)', fontSize: '0.82rem', fontWeight: 600,
-                display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
-              }}
+            <m.div
+              {...bob(8, 5.5, 0.7)}
+              style={{ ...pillStyle, bottom: '13%', right: isMobile ? '-24px' : '-25px' }}
             >
               <span>🤳</span> Social Media
-            </motion.div>
+            </m.div>
           </div>
 
         </div>
 
+        {/* MOBILE: quote + credential restacked beneath the portrait */}
+        {isMobile && (
+          <m.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: DUR.slow, ease: EASE, delay: 0.35 }}
+            style={{
+              display: 'flex', flexDirection: 'column', gap: '1.5rem',
+              textAlign: 'left', marginTop: '2rem', width: '100%',
+            }}
+          >
+            <div>
+              <span style={{ fontSize: '2.4rem', lineHeight: 0.8, color: '#1A0808', fontFamily: 'serif', display: 'block', fontWeight: 700, marginBottom: '6px' }}>“</span>
+              <p style={{ fontSize: '0.9rem', lineHeight: 1.6, color: '#4A2020', margin: 0, fontFamily: 'var(--font-body)', fontWeight: 500 }}>
+                working under Dhriti, and I can confidently say she is an exceptional marketer and brand strategist
+              </p>
+            </div>
+
+            <div>
+              <div className="font-display" style={{ fontSize: '2.6rem', fontWeight: 800, color: '#1A0808', lineHeight: 1 }}>
+                BBA 2025
+              </div>
+              <p className="font-mono" style={{ fontSize: '0.78rem', color: '#5C2C2C', margin: '8px 0 0', lineHeight: 1.4, fontWeight: 500 }}>
+                in Brand &amp; Marketing Experience
+              </p>
+            </div>
+          </m.div>
+        )}
+
         {/* BOTTOM FLOATING ACTION BAR */}
-        <motion.div
+        <m.div
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          style={{ position: 'relative', zIndex: 25, marginTop: '-20px', marginBottom: '2.5rem', display: 'flex', justifyContent: 'center' }}
+          transition={{ duration: DUR.slow, ease: EASE, delay: 0.4 }}
+          style={{ position: 'relative', zIndex: 25, marginTop: isMobile ? '2rem' : '-20px', marginBottom: '2.5rem', display: 'flex', justifyContent: 'center' }}
         >
           <div style={{
             background: '#1A0808', padding: '5px 6px', borderRadius: '999px',
             display: 'inline-flex', alignItems: 'center', gap: '8px',
             boxShadow: '0 12px 36px rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.15)',
           }}>
-            <motion.a
+            <m.a
               href="#contact"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -507,8 +989,8 @@ function Hero() {
               }}
             >
               Resume ↗
-            </motion.a>
-            <motion.a
+            </m.a>
+            <m.a
               href="#contact"
               whileHover={{ color: '#fff' }}
               style={{
@@ -516,10 +998,10 @@ function Hero() {
                 fontSize: '0.8rem', fontWeight: 500, textDecoration: 'none',
               }}
             >
-              Hire me
-            </motion.a>
+              Let's Connect
+            </m.a>
           </div>
-        </motion.div>
+        </m.div>
 
       </div>
     </section>
@@ -528,27 +1010,42 @@ function Hero() {
 
 /* ─── Slanted Ticker Ribbon ─────────────────────────────── */
 function SlantedTicker() {
+  const { isMobile } = useBreakpoint()
+  const ref = useRef<HTMLDivElement>(null)
+  // A 32s infinite transform keeps the compositor busy even far off-screen.
+  const inView = useInView(ref, { amount: 0 })
+
   const items = ['UX Design', '✦', 'Brand Strategy', '✦', 'Marketing', '✦', 'Social Media', '✦', 'Growth Strategy', '✦', 'Content Creation', '✦', 'Analytics', '✦']
   const doubled = [...items, ...items, ...items, ...items]
   return (
-    <div style={{
+    <div ref={ref} style={{
       width: '110vw',
       marginLeft: '-5vw',
-      transform: 'rotate(-2.5deg)',
+      transform: isMobile ? 'rotate(-2deg)' : 'rotate(-2.5deg)',
       background: '#ffffff',
       borderTop: '1px solid rgba(0,0,0,0.08)',
       borderBottom: '1px solid rgba(0,0,0,0.08)',
-      padding: '18px 0',
+      padding: isMobile ? '12px 0' : '18px 0',
       overflow: 'hidden',
       boxShadow: '0 8px 30px rgba(0,0,0,0.04)',
-      marginBottom: '4.5rem',
+      marginBottom: isMobile ? '2.5rem' : '4.5rem',
       position: 'relative',
       zIndex: 10,
     }}>
-      <div className="animate-marquee" style={{ display: 'flex', gap: '3rem', whiteSpace: 'nowrap', width: 'max-content', alignItems: 'center' }}>
+      <div
+        className="animate-marquee"
+        style={{
+          display: 'flex',
+          gap: isMobile ? '1.75rem' : '3rem',
+          whiteSpace: 'nowrap',
+          width: 'max-content',
+          alignItems: 'center',
+          animationPlayState: inView ? 'running' : 'paused',
+        }}
+      >
         {doubled.map((item, i) => (
           <span key={i} className="font-display" style={{
-            fontSize: '1.4rem',
+            fontSize: isMobile ? '1rem' : '1.4rem',
             fontWeight: 700,
             color: item === '✦' ? '#DC2626' : '#1A0808',
             letterSpacing: '-0.02em',
@@ -563,10 +1060,12 @@ function SlantedTicker() {
 
 /* ─── About Section ─────────────────────────────────────── */
 function About() {
+  const { isMobile, isCompact } = useBreakpoint()
+
   return (
     <section id="about-detail" style={{
       background: '#FFFBFB',
-      padding: '10px 0 100px',
+      padding: isMobile ? '10px 0 70px' : '10px 0 100px',
       position: 'relative',
       overflow: 'hidden',
     }}>
@@ -574,15 +1073,20 @@ function About() {
       <SlantedTicker />
 
       {/* Main Content Container */}
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2.5rem', position: 'relative', zIndex: 1 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.15fr 0.85fr', gap: '4.5rem', alignItems: 'center' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: isMobile ? '0 1.25rem' : '0 2.5rem', position: 'relative', zIndex: 1 }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: isCompact ? '1fr' : '1.15fr 0.85fr',
+          gap: isMobile ? '2.5rem' : '4.5rem',
+          alignItems: 'center',
+        }}>
           
           {/* Left Column: Text Content */}
-          <motion.div
-            initial={{ opacity: 0, x: -40 }}
+          <m.div
+            initial={{ opacity: 0, x: -28 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
+            viewport={VIEWPORT}
+            transition={{ duration: DUR.slow, ease: EASE }}
           >
             <h2 className="font-display" style={{
               fontSize: 'clamp(4rem, 8vw, 6rem)',
@@ -592,7 +1096,7 @@ function About() {
               marginBottom: '2rem',
               lineHeight: 0.95,
             }}>
-              about.
+              <RevealHeading>about.</RevealHeading>
             </h2>
 
             <div style={{ fontSize: '1.05rem', lineHeight: 1.85, color: '#374151', fontFamily: 'var(--font-body)' }}>
@@ -612,22 +1116,28 @@ function About() {
                 I am deeply committed to transforming ideas into results, whether it's crafting marketing and business strategies, brand campaigns, and optimizing audience growth performance.
               </p>
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Right Column: Image with Red Semi-Circle Arch */}
-          <motion.div
-            initial={{ opacity: 0, x: 40 }}
+          <m.div
+            initial={{ opacity: 0, x: 28 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'flex-end', minHeight: '460px' }}
+            viewport={VIEWPORT}
+            transition={{ duration: DUR.slow, ease: EASE, delay: 0.2 }}
+            style={{
+              position: 'relative',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'flex-end',
+              minHeight: isMobile ? 'clamp(360px, 92vw, 470px)' : '460px',
+            }}
           >
             {/* Solid Clean Red/Coral Semi-Circle Arch (Matching Reference Screenshot) */}
             <div style={{
               position: 'absolute',
               bottom: 0,
-              width: '460px',
-              height: '260px',
+              width: isMobile ? 'min(340px, 88vw)' : '460px',
+              height: isMobile ? 'clamp(180px, 46vw, 260px)' : '260px',
               borderTopLeftRadius: '230px',
               borderTopRightRadius: '230px',
               background: '#F87171',
@@ -643,14 +1153,14 @@ function About() {
               style={{
                 position: 'relative',
                 zIndex: 5,
-                width: '370px',
-                height: '470px',
+                width: isMobile ? 'min(280px, 72vw)' : '370px',
+                height: isMobile ? 'clamp(360px, 92vw, 470px)' : '470px',
                 objectFit: 'cover',
                 objectPosition: 'top',
                 filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.08))',
               }}
             />
-          </motion.div>
+          </m.div>
 
         </div>
       </div>
@@ -660,6 +1170,8 @@ function About() {
 
 /* ─── Skills, Tools & Education Section (Reference Replica with Real Content) ─── */
 function SkillsToolsEducation() {
+  const { isMobile, isCompact } = useBreakpoint()
+
   const skillPillsLine1 = [
     'Brand Strategy',
     'Growth Marketing',
@@ -780,37 +1292,41 @@ function SkillsToolsEducation() {
   ]
 
   return (
-    <section id="skills-tools" style={{ padding: '80px 1.5rem 100px', background: '#FFFBFB' }}>
+    <section id="skills-tools" style={{ padding: isMobile ? '60px 1.25rem 70px' : '80px 1.5rem 100px', background: '#FFFBFB' }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-        
+
         {/* TOP BLOCK: *skills. */}
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
+        <m.div
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          style={{ textAlign: 'center', marginBottom: '4rem', position: 'relative' }}
+          viewport={VIEWPORT}
+          transition={{ duration: DUR.slow, ease: EASE }}
+          style={{ textAlign: 'center', marginBottom: isMobile ? '2.5rem' : '4rem', position: 'relative' }}
         >
           {/* Hand-drawn Radiating Arc Sparks on Left & Right */}
-          <div style={{ position: 'relative', display: 'inline-block' }}>
+          <div style={{ position: 'relative', display: 'inline-block', maxWidth: '100%' }}>
             {/* Left Radiating Curved Arcs */}
-            <svg style={{ position: 'absolute', left: '-60px', top: '-25px' }} width="50" height="50" viewBox="0 0 50 50" fill="none">
-              <path d="M42 45C30 40 18 36 6 38" stroke="#DC2626" strokeWidth="3.5" strokeLinecap="round" />
-              <path d="M45 28C28 22 14 18 4 20" stroke="#DC2626" strokeWidth="3.5" strokeLinecap="round" />
-              <path d="M48 10C36 18 28 30 30 42" stroke="#DC2626" strokeWidth="3.5" strokeLinecap="round" />
-            </svg>
+            {!isMobile && (
+              <svg style={{ position: 'absolute', left: '-60px', top: '-25px' }} width="50" height="50" viewBox="0 0 50 50" fill="none">
+                <path d="M42 45C30 40 18 36 6 38" stroke="#DC2626" strokeWidth="3.5" strokeLinecap="round" />
+                <path d="M45 28C28 22 14 18 4 20" stroke="#DC2626" strokeWidth="3.5" strokeLinecap="round" />
+                <path d="M48 10C36 18 28 30 30 42" stroke="#DC2626" strokeWidth="3.5" strokeLinecap="round" />
+              </svg>
+            )}
 
             {/* Right Radiating Curved Arcs */}
-            <svg style={{ position: 'absolute', right: '-60px', top: '-25px' }} width="50" height="50" viewBox="0 0 50 50" fill="none">
-              <path d="M8 45C20 40 32 36 44 38" stroke="#DC2626" strokeWidth="3.5" strokeLinecap="round" />
-              <path d="M5 28C22 22 36 18 46 20" stroke="#DC2626" strokeWidth="3.5" strokeLinecap="round" />
-              <path d="M2 10C14 18 22 30 20 42" stroke="#DC2626" strokeWidth="3.5" strokeLinecap="round" />
-            </svg>
+            {!isMobile && (
+              <svg style={{ position: 'absolute', right: '-60px', top: '-25px' }} width="50" height="50" viewBox="0 0 50 50" fill="none">
+                <path d="M8 45C20 40 32 36 44 38" stroke="#DC2626" strokeWidth="3.5" strokeLinecap="round" />
+                <path d="M5 28C22 22 36 18 46 20" stroke="#DC2626" strokeWidth="3.5" strokeLinecap="round" />
+                <path d="M2 10C14 18 22 30 20 42" stroke="#DC2626" strokeWidth="3.5" strokeLinecap="round" />
+              </svg>
+            )}
 
             {/* Title with Hand-Drawn Doodle Star SVG & Red Period Accent */}
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
               {/* Hand-Drawn Doodle Star SVG */}
-              <svg width="48" height="48" viewBox="0 0 40 40" fill="none" style={{ marginTop: '-8px' }}>
+              <svg width={isMobile ? 34 : 48} height={isMobile ? 34 : 48} viewBox="0 0 40 40" fill="none" style={{ marginTop: '-8px', flexShrink: 0 }}>
                 <path
                   d="M20 2 C20.8 11.2, 22.5 18, 38 20 C22.5 22, 20.8 28.8, 20 38 C19.2 28.8, 17.5 22, 2 20 C17.5 18, 19.2 11.2, 20 2 Z"
                   fill="#000000"
@@ -827,7 +1343,7 @@ function SkillsToolsEducation() {
                 margin: 0,
                 display: 'inline',
               }}>
-                skills
+                <RevealHeading>skills</RevealHeading>
               </h2>
 
               <span style={{
@@ -845,18 +1361,20 @@ function SkillsToolsEducation() {
           {/* Skill Pills Container */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center', marginTop: '2.5rem' }}>
             {/* Line 1 */}
-            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <m.div variants={stagger(0.05)} initial="hidden" whileInView="show" viewport={VIEWPORT} style={{ display: 'flex', gap: isMobile ? '0.6rem' : '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
               {skillPillsLine1.map((skill) => (
-                <motion.span
+                <m.span
                   key={skill}
+                  variants={fadeUp}
                   whileHover={{ scale: 1.06, y: -2, borderColor: '#DC2626' }}
+                  whileTap={{ scale: 0.96, borderColor: '#DC2626' }}
                   className="font-display"
                   style={{
                     background: '#ffffff',
                     border: '1.5px solid #1A0808',
-                    padding: '8px 24px',
+                    padding: isMobile ? '7px 16px' : '8px 24px',
                     borderRadius: '999px',
-                    fontSize: '1rem',
+                    fontSize: isMobile ? '0.85rem' : '1rem',
                     fontWeight: 600,
                     color: '#1A0808',
                     boxShadow: '0 4px 14px rgba(0,0,0,0.04)',
@@ -865,23 +1383,25 @@ function SkillsToolsEducation() {
                   }}
                 >
                   {skill}
-                </motion.span>
+                </m.span>
               ))}
-            </div>
+            </m.div>
 
             {/* Line 2 */}
-            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <m.div variants={stagger(0.05)} initial="hidden" whileInView="show" viewport={VIEWPORT} style={{ display: 'flex', gap: isMobile ? '0.6rem' : '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
               {skillPillsLine2.map((skill) => (
-                <motion.span
+                <m.span
                   key={skill}
+                  variants={fadeUp}
                   whileHover={{ scale: 1.06, y: -2, borderColor: '#DC2626' }}
+                  whileTap={{ scale: 0.96, borderColor: '#DC2626' }}
                   className="font-display"
                   style={{
                     background: '#ffffff',
                     border: '1.5px solid #1A0808',
-                    padding: '8px 24px',
+                    padding: isMobile ? '7px 16px' : '8px 24px',
                     borderRadius: '999px',
-                    fontSize: '1rem',
+                    fontSize: isMobile ? '0.85rem' : '1rem',
                     fontWeight: 600,
                     color: '#1A0808',
                     boxShadow: '0 4px 14px rgba(0,0,0,0.04)',
@@ -890,25 +1410,30 @@ function SkillsToolsEducation() {
                   }}
                 >
                   {skill}
-                </motion.span>
+                </m.span>
               ))}
-            </div>
+            </m.div>
           </div>
-        </motion.div>
+        </m.div>
 
         {/* BOTTOM GRID: tools. (Left) & education. (Right) */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: '2.5rem', alignItems: 'stretch' }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: isCompact ? '1fr' : '1.1fr 0.9fr',
+          gap: isMobile ? '1.5rem' : '2.5rem',
+          alignItems: 'stretch',
+        }}>
           
           {/* LEFT CARD: tools. */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
+          <m.div
+            initial={{ opacity: 0, x: -28 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
+            viewport={VIEWPORT}
+            transition={{ duration: DUR.slow, ease: EASE }}
             style={{
               background: '#ffffff',
-              borderRadius: '28px',
-              padding: '3rem 2.5rem',
+              borderRadius: isMobile ? '22px' : '28px',
+              padding: isMobile ? '2rem 1.4rem' : '3rem 2.5rem',
               boxShadow: '0 12px 48px rgba(0, 0, 0, 0.05)',
               border: '1px solid rgba(0, 0, 0, 0.07)',
               display: 'flex',
@@ -924,7 +1449,7 @@ function SkillsToolsEducation() {
                 margin: 0,
                 lineHeight: 1.0,
               }}>
-                tools
+                <RevealHeading>tools</RevealHeading>
               </h3>
               <span style={{
                 display: 'inline-block',
@@ -937,7 +1462,7 @@ function SkillsToolsEducation() {
             </div>
 
             {/* 4 Quadrants Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2.5rem 2rem', flex: 1 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: isMobile ? '1.75rem 1rem' : '2.5rem 2rem', flex: 1 }}>
               {toolCategories.map((cat) => (
                 <div key={cat.title}>
                   {/* Real Company Logos Row */}
@@ -968,18 +1493,18 @@ function SkillsToolsEducation() {
                 </div>
               ))}
             </div>
-          </motion.div>
+          </m.div>
 
           {/* RIGHT CARD: education. */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
+          <m.div
+            initial={{ opacity: 0, x: 28 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
+            viewport={VIEWPORT}
+            transition={{ duration: DUR.slow, ease: EASE }}
             style={{
               background: '#ffffff',
-              borderRadius: '28px',
-              padding: '3rem 2.5rem',
+              borderRadius: isMobile ? '22px' : '28px',
+              padding: isMobile ? '2rem 1.4rem' : '3rem 2.5rem',
               boxShadow: '0 12px 48px rgba(0, 0, 0, 0.05)',
               border: '1px solid rgba(0, 0, 0, 0.07)',
               display: 'flex',
@@ -995,7 +1520,7 @@ function SkillsToolsEducation() {
                 margin: 0,
                 lineHeight: 1.0,
               }}>
-                education
+                <RevealHeading>education</RevealHeading>
               </h3>
               <span style={{
                 display: 'inline-block',
@@ -1111,7 +1636,7 @@ function SkillsToolsEducation() {
               </div>
 
             </div>
-          </motion.div>
+          </m.div>
 
         </div>
 
@@ -1122,6 +1647,9 @@ function SkillsToolsEducation() {
 
 /* ─── Experience Section (Reference Replica) ─────────────────────────── */
 function Experience() {
+  const { isMobile } = useBreakpoint()
+  const reduced = useReducedMotion()
+
   const experiences = [
     {
       role: 'Brand and Digital Marketing Trainee',
@@ -1197,35 +1725,35 @@ function Experience() {
 
   return (
     <section id="experience" style={{
-      padding: '80px 1.5rem 100px',
+      padding: isMobile ? '60px 1.25rem 70px' : '80px 1.5rem 100px',
       background: '#FFFBFB',
     }}>
       <div style={{ maxWidth: '1040px', margin: '0 auto' }}>
-        
+
         {/* Main Card Container */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
+        <m.div
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
+          viewport={VIEWPORT}
+          transition={{ duration: DUR.slow, ease: EASE }}
           style={{
             background: '#ffffff',
-            borderRadius: '28px',
-            padding: '3.5rem 3rem',
+            borderRadius: isMobile ? '22px' : '28px',
+            padding: isMobile ? '2.25rem 1.4rem' : '3.5rem 3rem',
             boxShadow: '0 12px 48px rgba(0, 0, 0, 0.05)',
             border: '1px solid rgba(0, 0, 0, 0.07)',
           }}
         >
           {/* Section Title */}
           <h2 className="font-display" style={{
-            fontSize: 'clamp(3rem, 6vw, 4.8rem)',
+            fontSize: 'clamp(2.6rem, 6vw, 4.8rem)',
             fontWeight: 800,
             color: '#000000',
             letterSpacing: '-0.04em',
-            marginBottom: '3.5rem',
+            marginBottom: isMobile ? '2.25rem' : '3.5rem',
             lineHeight: 1.0,
           }}>
-            experience.
+            <RevealHeading>experience.</RevealHeading>
           </h2>
 
           {/* Timeline List */}
@@ -1233,21 +1761,27 @@ function Experience() {
             {experiences.map((exp, index) => {
               const isLast = index === experiences.length - 1
               return (
-                <motion.div
+                <m.div
                   key={exp.role + exp.company}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  style={{ display: 'flex', gap: '2rem', position: 'relative', paddingBottom: isLast ? '0' : '2.75rem' }}
+                  viewport={VIEWPORT}
+                  transition={{ duration: DUR.base, ease: EASE, delay: index * (isMobile ? 0.04 : 0.1) }}
+                  style={{ display: 'flex', gap: isMobile ? '1rem' : '2rem', position: 'relative', paddingBottom: isLast ? '0' : isMobile ? '1.75rem' : '2.75rem' }}
                 >
                   {/* Left Column: Logo Badge & Connector Line */}
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', flexShrink: 0 }}>
                     {/* Brand Logo Badge */}
-                    <div style={{
-                      width: '64px',
-                      height: '64px',
-                      borderRadius: '16px',
+                    <m.div
+                      initial={{ scale: 0.6, opacity: 0 }}
+                      whileInView={{ scale: 1, opacity: 1 }}
+                      viewport={{ once: true, amount: 0.6 }}
+                      transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+                      whileHover={{ scale: 1.08, rotate: -3 }}
+                      style={{
+                      width: isMobile ? '48px' : '64px',
+                      height: isMobile ? '48px' : '64px',
+                      borderRadius: isMobile ? '13px' : '16px',
                       background: exp.bg,
                       border: exp.border || '2px solid #ffffff',
                       color: exp.textColor || '#ffffff',
@@ -1265,31 +1799,43 @@ function Experience() {
                         <img
                           src={exp.logoImg}
                           alt={exp.company}
-                          style={{ width: '44px', height: '44px', objectFit: 'contain' }}
+                          loading="lazy"
+                          decoding="async"
+                          style={{ width: isMobile ? '32px' : '44px', height: isMobile ? '32px' : '44px', objectFit: 'contain' }}
                         />
                       ) : (
                         exp.logoText
                       )}
-                    </div>
+                    </m.div>
 
-                    {/* Connecting Vertical Line */}
+                    {/* Connecting Vertical Line — draws downward as it enters view.
+                        The line is structural, so when motion is reduced it renders
+                        plainly rather than depending on an animation to become visible. */}
                     {!isLast && (
-                      <div style={{
-                        width: '3.5px',
-                        flex: 1,
-                        background: '#3182CE',
-                        marginTop: '6px',
-                        marginBottom: '-6px',
-                        borderRadius: '2px',
-                      }} />
+                      <m.div
+                        initial={reduced ? false : { scaleY: 0 }}
+                        whileInView={reduced ? undefined : { scaleY: 1 }}
+                        viewport={{ once: true, amount: 0.4 }}
+                        transition={{ duration: 0.7, ease: EASE, delay: 0.15 }}
+                        style={{
+                          width: '3.5px',
+                          flex: 1,
+                          background: '#3182CE',
+                          marginTop: '6px',
+                          marginBottom: '-6px',
+                          borderRadius: '2px',
+                          transformOrigin: 'top center',
+                          willChange: 'transform',
+                        }}
+                      />
                     )}
                   </div>
 
                   {/* Right Column: Experience Details */}
-                  <div style={{ flex: 1, paddingTop: '2px' }}>
+                  <div style={{ flex: 1, minWidth: 0, paddingTop: '2px' }}>
                     {/* Line 1: Role Title */}
                     <h3 className="font-display" style={{
-                      fontSize: '1.2rem',
+                      fontSize: isMobile ? '1.05rem' : '1.2rem',
                       fontWeight: 800,
                       color: '#000000',
                       margin: 0,
@@ -1322,15 +1868,20 @@ function Experience() {
                     </p>
 
                     {/* Line 4: Description Paragraph */}
-                    <p style={{
-                      fontSize: '0.94rem',
-                      lineHeight: 1.68,
-                      color: '#334155',
-                      margin: '0 0 12px',
-                      fontFamily: 'var(--font-body)',
-                    }}>
-                      {exp.description}
-                    </p>
+                    <div style={{ marginBottom: '12px' }}>
+                      <ExpandableText
+                        text={exp.description}
+                        clamp={isMobile}
+                        lines={3}
+                        style={{
+                          fontSize: isMobile ? '0.88rem' : '0.94rem',
+                          lineHeight: 1.62,
+                          color: '#334155',
+                          margin: isMobile ? 0 : '0 0 12px',
+                          fontFamily: 'var(--font-body)',
+                        }}
+                      />
+                    </div>
 
                     {/* Line 5: Skill Badges (Matching LinkedIn Diamond Badge) */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
@@ -1356,12 +1907,12 @@ function Experience() {
                     </div>
 
                   </div>
-                </motion.div>
+                </m.div>
               )
             })}
           </div>
 
-        </motion.div>
+        </m.div>
 
       </div>
     </section>
@@ -1370,35 +1921,39 @@ function Experience() {
 
 /* ─── Projects Section ───────────────────────────────────── */
 function Projects() {
+  const { isMobile, isCompact } = useBreakpoint()
+
   return (
-    <section id="projects" style={{ background: '#FFFBFB', paddingBottom: '100px' }}>
-      
+    <section id="projects" style={{ background: '#FFFBFB', paddingBottom: isMobile ? '70px' : '100px' }}>
+
       {/* Dark Divider Segregation Banner: 00 notable Projects */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0, scale: 0.98 }}
         whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.7 }}
+        viewport={VIEWPORT}
+        transition={{ duration: DUR.slow, ease: EASE }}
         style={{
           background: '#121214',
-          padding: '6rem 2rem 6.5rem',
+          padding: isMobile ? '3.5rem 1.25rem 3.75rem' : '6rem 2rem 6.5rem',
           display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '2.5rem',
+          gap: isMobile ? '0.5rem' : '2.5rem',
           color: '#ffffff',
-          marginBottom: '5.5rem',
+          marginBottom: isMobile ? '3rem' : '5.5rem',
           boxShadow: '0 25px 60px rgba(0,0,0,0.3)',
           position: 'relative',
+          textAlign: 'center',
         }}
       >
         {/* 00 Stroked Number */}
         <span className="font-display" style={{
-          fontSize: 'clamp(5.5rem, 12vw, 10.5rem)',
+          fontSize: 'clamp(4rem, 12vw, 10.5rem)',
           fontWeight: 900,
           fontStyle: 'italic',
           color: 'transparent',
-          WebkitTextStroke: '3px #ffffff',
+          WebkitTextStroke: isMobile ? '2px #ffffff' : '3px #ffffff',
           lineHeight: 0.9,
           letterSpacing: '-0.04em',
         }}>
@@ -1407,26 +1962,26 @@ function Projects() {
 
         {/* Main Heading Text: notable Projects */}
         <h2 className="font-display" style={{
-          fontSize: 'clamp(4.2rem, 9.5vw, 8.5rem)',
+          fontSize: 'clamp(2.6rem, 9.5vw, 8.5rem)',
           fontWeight: 900,
           letterSpacing: '-0.05em',
           margin: 0,
           color: '#ffffff',
           lineHeight: 0.95,
         }}>
-          notable <span style={{ fontStyle: 'italic', color: '#DC2626' }}>Projects</span>
+          <RevealHeading>notable <span style={{ fontStyle: 'italic', color: '#DC2626' }}>Projects</span></RevealHeading>
         </h2>
-      </motion.div>
+      </m.div>
 
       {/* Main Project 01 Container */}
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 1.5rem' }}>
+      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: isMobile ? '0 1.25rem' : '0 1.5rem' }}>
         
         {/* Project 01 Card: Voice of Doctors */}
-        <motion.div
-          initial={{ opacity: 0, y: 35 }}
+        <m.div
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
+          viewport={VIEWPORT}
+          transition={{ duration: DUR.slow, ease: EASE }}
           style={{
             background: '#FAF6ED',
             borderRadius: '28px',
@@ -1438,12 +1993,13 @@ function Projects() {
           {/* Top Banner Ribbon: 01. Projects | voice of doctors, season 2 */}
           <div style={{
             background: '#D9CB9E',
-            padding: '1.5rem 3rem',
+            padding: isMobile ? '1.15rem 1.4rem' : '1.5rem 3rem',
             display: 'flex',
             justifyContent: 'space-between',
-            alignItems: 'center',
+            alignItems: isMobile ? 'flex-start' : 'center',
+            flexDirection: isMobile ? 'column' : 'row',
             flexWrap: 'wrap',
-            gap: '1rem',
+            gap: isMobile ? '0.35rem' : '1rem',
             borderBottom: '1px solid rgba(0,0,0,0.08)',
           }}>
             <h3 className="font-display" style={{
@@ -1456,7 +2012,7 @@ function Projects() {
               01. Projects
             </h3>
             <span style={{
-              fontSize: '1.2rem',
+              fontSize: isMobile ? '0.95rem' : '1.2rem',
               fontWeight: 800,
               color: '#000000',
               fontFamily: 'var(--font-display)',
@@ -1467,7 +2023,13 @@ function Projects() {
           </div>
 
           {/* Card Body */}
-          <div style={{ padding: '3.5rem 3rem', display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: '3rem', alignItems: 'center' }}>
+          <div style={{
+            padding: isMobile ? '2rem 1.4rem' : '3.5rem 3rem',
+            display: 'grid',
+            gridTemplateColumns: isCompact ? '1fr' : '1.1fr 0.9fr',
+            gap: isMobile ? '2rem' : '3rem',
+            alignItems: 'center',
+          }}>
             
             {/* Left Column: Role & Deliverables */}
             <div>
@@ -1500,21 +2062,25 @@ function Projects() {
                 Managing Healthcare Dialogues &amp; National Medical Series
               </h4>
 
-              <p style={{
-                fontSize: '1rem',
-                lineHeight: 1.7,
-                color: '#4A5568',
-                marginBottom: '2rem',
-                fontFamily: 'var(--font-body)',
-              }}>
-                Spearheaded end-to-end event strategy, virtual session broadcasts, medical speaker onboarding, and stage coordination for Voice of Doctors (Season 2). Oversaw multi-channel promotion across social media and doctor communities.
-              </p>
+              <div style={{ marginBottom: isMobile ? '1.25rem' : '2rem' }}>
+                <ExpandableText
+                  text="Spearheaded end-to-end event strategy, virtual session broadcasts, medical speaker onboarding, and stage coordination for Voice of Doctors (Season 2). Oversaw multi-channel promotion across social media and doctor communities."
+                  clamp={isMobile}
+                  lines={3}
+                  style={{
+                    fontSize: isMobile ? '0.9rem' : '1rem',
+                    lineHeight: 1.65,
+                    color: '#4A5568',
+                    fontFamily: 'var(--font-body)',
+                  }}
+                />
+              </div>
 
               {/* Highlight Metrics Grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: isMobile ? '0.6rem' : '1rem', marginBottom: isMobile ? '1.25rem' : '2rem' }}>
                 <div style={{ background: '#ffffff', padding: '1rem 1.25rem', borderRadius: '14px', border: '1px solid rgba(0,0,0,0.06)' }}>
                   <span className="font-display" style={{ fontSize: '1.6rem', fontWeight: 800, color: '#DC2626', display: 'block' }}>
-                    50+
+                    <CountUp value="50+" />
                   </span>
                   <span style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: 600 }}>
                     Doctors &amp; Speakers Coordinated
@@ -1522,7 +2088,7 @@ function Projects() {
                 </div>
                 <div style={{ background: '#ffffff', padding: '1rem 1.25rem', borderRadius: '14px', border: '1px solid rgba(0,0,0,0.06)' }}>
                   <span className="font-display" style={{ fontSize: '1.6rem', fontWeight: 800, color: '#000000', display: 'block' }}>
-                    100%
+                    <CountUp value="100%" />
                   </span>
                   <span style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: 600 }}>
                     Seamless Event Execution
@@ -1553,16 +2119,17 @@ function Projects() {
             </div>
 
             {/* Right Column: Overlapping 3D Polaroid Photo Cards with Paperclips */}
-            <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '380px' }}>
-              
+            <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: isMobile ? '330px' : '380px', width: '100%' }}>
+
               {/* Polaroid 1 (Tilted Left) */}
-              <motion.div
+              <m.div
                 whileHover={{ rotate: -2, scale: 1.04, zIndex: 10 }}
+                whileTap={{ rotate: -2, scale: 1.04, zIndex: 10 }}
                 style={{
                   position: 'absolute',
-                  left: '10px',
-                  top: '20px',
-                  width: '250px',
+                  left: isMobile ? '0px' : '10px',
+                  top: isMobile ? '10px' : '20px',
+                  width: isMobile ? 'min(195px, 54vw)' : '250px',
                   background: '#ffffff',
                   padding: '12px 12px 30px 12px',
                   borderRadius: '4px',
@@ -1592,7 +2159,7 @@ function Projects() {
                   decoding="async"
                   style={{
                     width: '100%',
-                    height: '200px',
+                    height: isMobile ? '150px' : '200px',
                     objectFit: 'cover',
                     borderRadius: '2px',
                   }}
@@ -1600,16 +2167,17 @@ function Projects() {
                 <span className="font-mono" style={{ fontSize: '0.72rem', color: '#64748B', display: 'block', textAlign: 'center', marginTop: '10px', fontWeight: 600 }}>
                   Doctor Dialogue Stage 📸
                 </span>
-              </motion.div>
+              </m.div>
 
               {/* Polaroid 2 (Tilted Right) */}
-              <motion.div
+              <m.div
                 whileHover={{ rotate: 3, scale: 1.04, zIndex: 10 }}
+                whileTap={{ rotate: 3, scale: 1.04, zIndex: 10 }}
                 style={{
                   position: 'absolute',
-                  right: '10px',
-                  bottom: '10px',
-                  width: '250px',
+                  right: isMobile ? '0px' : '10px',
+                  bottom: isMobile ? '0px' : '10px',
+                  width: isMobile ? 'min(195px, 54vw)' : '250px',
                   background: '#ffffff',
                   padding: '12px 12px 30px 12px',
                   borderRadius: '4px',
@@ -1639,7 +2207,7 @@ function Projects() {
                   decoding="async"
                   style={{
                     width: '100%',
-                    height: '200px',
+                    height: isMobile ? '150px' : '200px',
                     objectFit: 'cover',
                     borderRadius: '2px',
                   }}
@@ -1647,38 +2215,39 @@ function Projects() {
                 <span className="font-mono" style={{ fontSize: '0.72rem', color: '#64748B', display: 'block', textAlign: 'center', marginTop: '10px', fontWeight: 600 }}>
                   Season 2 Highlights ✨
                 </span>
-              </motion.div>
+              </m.div>
 
             </div>
 
           </div>
 
-        </motion.div>
+        </m.div>
 
         {/* Project 02 Card: Drone Rangers */}
-        <motion.div
-          initial={{ opacity: 0, y: 35 }}
+        <m.div
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.2 }}
+          viewport={VIEWPORT}
+          transition={{ duration: DUR.slow, ease: EASE, delay: 0.2 }}
           style={{
             background: '#FAFBF4',
-            borderRadius: '28px',
+            borderRadius: isMobile ? '22px' : '28px',
             overflow: 'hidden',
             boxShadow: '0 16px 48px rgba(0,0,0,0.06)',
             border: '1px solid rgba(0,0,0,0.08)',
-            marginTop: '4rem',
+            marginTop: isMobile ? '2rem' : '4rem',
           }}
         >
           {/* Top Banner Ribbon: 02. Projects | drone rangers, content creator */}
           <div style={{
             background: '#D9CB9E',
-            padding: '1.5rem 3rem',
+            padding: isMobile ? '1.15rem 1.4rem' : '1.5rem 3rem',
             display: 'flex',
             justifyContent: 'space-between',
-            alignItems: 'center',
+            alignItems: isMobile ? 'flex-start' : 'center',
+            flexDirection: isMobile ? 'column' : 'row',
             flexWrap: 'wrap',
-            gap: '1rem',
+            gap: isMobile ? '0.35rem' : '1rem',
             borderBottom: '1px solid rgba(0,0,0,0.08)',
           }}>
             <h3 className="font-display" style={{
@@ -1691,7 +2260,7 @@ function Projects() {
               02. Projects
             </h3>
             <span style={{
-              fontSize: '1.2rem',
+              fontSize: isMobile ? '0.95rem' : '1.2rem',
               fontWeight: 800,
               color: '#000000',
               fontFamily: 'var(--font-display)',
@@ -1702,11 +2271,11 @@ function Projects() {
           </div>
 
           {/* Card Body: Info Header & 5 Staggered Reel Cards */}
-          <div style={{ padding: '3.5rem 2.5rem 5rem' }}>
-            
+          <div style={{ padding: isMobile ? '2rem 1.25rem 2.5rem' : '3.5rem 2.5rem 5rem' }}>
+
             {/* Role Header Info */}
-            <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', marginBottom: '1rem' }}>
+            <div style={{ textAlign: 'center', marginBottom: isMobile ? '2rem' : '3.5rem' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', marginBottom: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                 <span className="font-display" style={{
                   background: '#DC2626',
                   color: '#ffffff',
@@ -1732,17 +2301,31 @@ function Projects() {
               }}>
                 Social Media Reels &amp; Promotional Campaigns
               </h4>
-              <p style={{ fontSize: '0.95rem', color: '#4A5568', margin: 0, fontFamily: 'var(--font-body)' }}>
-                Hover over any reel to preview the auto-playing promotional content &amp; engagement metrics.
+              <p style={{ fontSize: isMobile ? '0.88rem' : '0.95rem', color: '#4A5568', margin: 0, fontFamily: 'var(--font-body)' }}>
+                {isMobile
+                  ? 'Swipe through the reels to preview the auto-playing promotional content & engagement metrics.'
+                  : 'Hover over any reel to preview the auto-playing promotional content & engagement metrics.'}
               </p>
             </div>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(5, 1fr)',
-              gap: '1.25rem',
+            <div className={isMobile ? 'snap-tray' : undefined} style={{
+              // On phones the 9:16 cards stack into a very tall grid, so they
+              // become a snap-scrolling tray instead — one row, swipeable.
+              display: isMobile ? 'flex' : 'grid',
+              gridTemplateColumns: isCompact ? 'repeat(3, 1fr)' : 'repeat(5, 1fr)',
+              gap: isMobile ? '0.75rem' : '1.25rem',
               alignItems: 'center',
               maxWidth: '1000px',
               margin: '0 auto',
+              ...(isMobile && {
+                overflowX: 'auto',
+                scrollSnapType: 'x mandatory',
+                WebkitOverflowScrolling: 'touch',
+                scrollbarWidth: 'none',
+                paddingBottom: '4px',
+                // let cards bleed to the card edge rather than stopping at padding
+                marginInline: '-1.25rem',
+                paddingInline: '1.25rem',
+              }),
             }}>
               {[
                 { img: reelImg1, title: 'FPV Flight Shoot', views: '32.4k', offset: '-24px' },
@@ -1751,23 +2334,29 @@ function Projects() {
                 { img: reelImg4, title: 'Behind The Scenes', views: '29.3k', offset: '24px' },
                 { img: reelImg5, title: 'Drone Unboxing', views: '41.8k', offset: '-24px' },
               ].map((reel, index) => (
-                <motion.div
+                <m.div
                   key={reel.title}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  viewport={VIEWPORT}
+                  transition={{ duration: DUR.base, ease: EASE, delay: index * (isMobile ? 0.05 : 0.1) }}
                   whileHover={{ scale: 1.05, y: -5, zIndex: 10 }}
+                  whileTap={{ scale: 1.05, y: -5, zIndex: 10 }}
                   style={{
-                    transform: `translateY(${reel.offset})`,
+                    // The alternating vertical stagger only reads well in a single row
+                    transform: isCompact ? 'none' : `translateY(${reel.offset})`,
                     position: 'relative',
-                    borderRadius: '24px',
+                    borderRadius: isMobile ? '18px' : '24px',
                     overflow: 'hidden',
                     background: '#18181B',
                     boxShadow: '0 14px 35px rgba(0,0,0,0.18)',
                     aspectRatio: '9/16',
                     cursor: 'pointer',
                     border: '2px solid rgba(255,255,255,0.8)',
+                    ...(isMobile && {
+                      flex: '0 0 46%',
+                      scrollSnapAlign: 'center',
+                    }),
                   }}
                 >
                   {/* Background Reel Cover Image */}
@@ -1850,37 +2439,38 @@ function Projects() {
                       </span>
                     </div>
                   </div>
-                </motion.div>
+                </m.div>
               ))}
             </div>
           </div>
 
-        </motion.div>
+        </m.div>
 
         {/* Project 03 Card: Personal Branding & What Others Say */}
-        <motion.div
-          initial={{ opacity: 0, y: 35 }}
+        <m.div
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.3 }}
+          viewport={VIEWPORT}
+          transition={{ duration: DUR.slow, ease: EASE, delay: 0.3 }}
           style={{
             background: '#FAFBF4',
-            borderRadius: '28px',
+            borderRadius: isMobile ? '22px' : '28px',
             overflow: 'hidden',
             boxShadow: '0 16px 48px rgba(0,0,0,0.06)',
             border: '1px solid rgba(0,0,0,0.08)',
-            marginTop: '4rem',
+            marginTop: isMobile ? '2rem' : '4rem',
           }}
         >
           {/* Header Ribbon: 03. Projects | Personal Branding & Recommendations */}
           <div style={{
             background: '#D9CB9E',
-            padding: '1.5rem 3rem',
+            padding: isMobile ? '1.15rem 1.4rem' : '1.5rem 3rem',
             display: 'flex',
             justifyContent: 'space-between',
-            alignItems: 'center',
+            alignItems: isMobile ? 'flex-start' : 'center',
+            flexDirection: isMobile ? 'column' : 'row',
             flexWrap: 'wrap',
-            gap: '1rem',
+            gap: isMobile ? '0.35rem' : '1rem',
             borderBottom: '1px solid rgba(0,0,0,0.08)',
           }}>
             <h3 className="font-display" style={{
@@ -1893,7 +2483,7 @@ function Projects() {
               03. Projects
             </h3>
             <span style={{
-              fontSize: '1.2rem',
+              fontSize: isMobile ? '0.95rem' : '1.2rem',
               fontWeight: 800,
               color: '#000000',
               fontFamily: 'var(--font-display)',
@@ -1904,53 +2494,56 @@ function Projects() {
           </div>
 
           {/* Card Body Container */}
-          <div style={{ padding: '3.5rem 2.5rem 4.5rem', display: 'flex', flexDirection: 'column', gap: '4rem' }}>
+          <div style={{ padding: isMobile ? '2rem 1.25rem 2.5rem' : '3.5rem 2.5rem 4.5rem', display: 'flex', flexDirection: 'column', gap: isMobile ? '2rem' : '4rem' }}>
             
             {/* ─── SLIDE 1: PERSONAL BRANDING ─── */}
             <div style={{
               background: '#ffffff',
-              borderRadius: '24px',
-              padding: '3rem 2.5rem',
+              borderRadius: isMobile ? '18px' : '24px',
+              padding: isMobile ? '1.75rem 1.15rem' : '3rem 2.5rem',
               border: '1px solid rgba(0,0,0,0.06)',
               boxShadow: '0 8px 30px rgba(0,0,0,0.03)',
             }}>
               {/* Slide 1 Header */}
               <h4 className="font-display" style={{
-                fontSize: 'clamp(2rem, 3.5vw, 2.8rem)',
+                fontSize: 'clamp(1.6rem, 3.5vw, 2.8rem)',
                 fontWeight: 800,
                 color: '#000000',
                 textAlign: 'center',
-                marginBottom: '2.5rem',
+                marginBottom: isMobile ? '1.5rem' : '2.5rem',
                 letterSpacing: '-0.03em',
               }}>
                 Personal Branding
               </h4>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.1fr', gap: '2.5rem', alignItems: 'center' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isCompact ? '1fr' : '1fr 1.1fr', gap: isMobile ? '1.5rem' : '2.5rem', alignItems: 'center' }}>
                 
                 {/* Left Card: OBJECTIVES, MY SCOPE, STRATEGY */}
                 <div style={{
                   background: '#F8FAFC',
                   borderRadius: '20px',
-                  padding: '2.25rem 2rem',
+                  padding: isMobile ? '1.5rem 1.25rem' : '2.25rem 2rem',
                   border: '1px solid #E2E8F0',
                 }}>
                   {/* OBJECTIVES */}
-                  <div style={{ marginBottom: '1.75rem' }}>
-                    <h5 className="font-display" style={{ fontSize: '1.2rem', fontWeight: 900, color: '#000000', margin: '0 0 0.5rem', letterSpacing: '-0.02em' }}>
+                  <div style={{ marginBottom: isMobile ? '1.25rem' : '1.75rem' }}>
+                    <h5 className="font-display" style={{ fontSize: isMobile ? '1.05rem' : '1.2rem', fontWeight: 900, color: '#000000', margin: '0 0 0.5rem', letterSpacing: '-0.02em' }}>
                       OBJECTIVES
                     </h5>
-                    <p style={{ fontSize: '0.92rem', lineHeight: 1.6, color: '#475569', margin: 0, fontFamily: 'var(--font-body)' }}>
-                      Career-focused personal branding &amp; community growth strategy by creating valuable content, fostering audience engagement, and building digital authority across TikTok, LinkedIn, and Instagram.
-                    </p>
+                    <ExpandableText
+                      text="Career-focused personal branding & community growth strategy by creating valuable content, fostering audience engagement, and building digital authority across TikTok, LinkedIn, and Instagram."
+                      clamp={isMobile}
+                      lines={3}
+                      style={{ fontSize: isMobile ? '0.88rem' : '0.92rem', lineHeight: 1.6, color: '#475569', margin: 0, fontFamily: 'var(--font-body)' }}
+                    />
                   </div>
 
                   {/* MY SCOPE */}
-                  <div style={{ marginBottom: '1.75rem' }}>
-                    <h5 className="font-display" style={{ fontSize: '1.2rem', fontWeight: 900, color: '#000000', margin: '0 0 0.5rem', letterSpacing: '-0.02em' }}>
+                  <div style={{ marginBottom: isMobile ? '1.25rem' : '1.75rem' }}>
+                    <h5 className="font-display" style={{ fontSize: isMobile ? '1.05rem' : '1.2rem', fontWeight: 900, color: '#000000', margin: '0 0 0.5rem', letterSpacing: '-0.02em' }}>
                       MY SCOPE
                     </h5>
-                    <ul style={{ margin: 0, paddingLeft: '1.2rem', color: '#334155', fontSize: '0.9rem', lineHeight: 1.7, fontFamily: 'var(--font-body)' }}>
+                    <ul style={{ margin: 0, paddingLeft: '1.2rem', color: '#334155', fontSize: isMobile ? '0.85rem' : '0.9rem', lineHeight: isMobile ? 1.55 : 1.7, fontFamily: 'var(--font-body)' }}>
                       <li>Ads Strategy and Optimization</li>
                       <li>Visual Ad Content and Creative Direction</li>
                       <li>Campaign Execution and Management</li>
@@ -1960,10 +2553,10 @@ function Projects() {
 
                   {/* STRATEGY */}
                   <div>
-                    <h5 className="font-display" style={{ fontSize: '1.2rem', fontWeight: 900, color: '#000000', margin: '0 0 0.5rem', letterSpacing: '-0.02em' }}>
+                    <h5 className="font-display" style={{ fontSize: isMobile ? '1.05rem' : '1.2rem', fontWeight: 900, color: '#000000', margin: '0 0 0.5rem', letterSpacing: '-0.02em' }}>
                       STRATEGY
                     </h5>
-                    <ul style={{ margin: 0, paddingLeft: '1.2rem', color: '#334155', fontSize: '0.9rem', lineHeight: 1.7, fontFamily: 'var(--font-body)' }}>
+                    <ul style={{ margin: 0, paddingLeft: '1.2rem', color: '#334155', fontSize: isMobile ? '0.85rem' : '0.9rem', lineHeight: isMobile ? 1.55 : 1.7, fontFamily: 'var(--font-body)' }}>
                       <li>Conducted end-to-end research to understand audience needs and industry trends.</li>
                       <li>Designed and implemented a structured content strategy for consistent growth and engagement.</li>
                     </ul>
@@ -1978,7 +2571,7 @@ function Projects() {
                     borderRadius: '16px',
                     overflow: 'hidden',
                     boxShadow: '0 12px 32px rgba(0,0,0,0.12)',
-                    marginBottom: '2rem',
+                    marginBottom: isMobile ? '1.25rem' : '2rem',
                     border: '1px solid rgba(0,0,0,0.1)',
                   }}>
                     <img
@@ -1986,7 +2579,7 @@ function Projects() {
                       alt="Personal Branding Analytics Dashboard"
                       loading="lazy"
                       decoding="async"
-                      style={{ width: '100%', height: '240px', objectFit: 'cover' }}
+                      style={{ width: '100%', height: isMobile ? '170px' : '240px', objectFit: 'cover' }}
                     />
                     <div style={{
                       position: 'absolute',
@@ -2024,19 +2617,19 @@ function Projects() {
                       {/* Metric 1 */}
                       <div style={{ background: '#ffffff', padding: '8px 14px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.05)' }}>
                         <span style={{ fontSize: '0.7rem', color: '#64748B', display: 'block', fontWeight: 600 }}>Organic Followers</span>
-                        <span className="font-display" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#10B981' }}>4.6K++ ↑</span>
+                        <span className="font-display" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#10B981' }}><CountUp value="4.6K++" /> ↑</span>
                       </div>
 
                       {/* Metric 2 */}
                       <div style={{ background: '#ffffff', padding: '8px 14px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.05)' }}>
                         <span style={{ fontSize: '0.7rem', color: '#64748B', display: 'block', fontWeight: 600 }}>Impressions</span>
-                        <span className="font-display" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#10B981' }}>500K ↑</span>
+                        <span className="font-display" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#10B981' }}><CountUp value="500K" /> ↑</span>
                       </div>
 
                       {/* Metric 3 */}
                       <div style={{ background: '#ffffff', padding: '8px 14px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.05)' }}>
                         <span style={{ fontSize: '0.7rem', color: '#64748B', display: 'block', fontWeight: 600 }}>Profile Views</span>
-                        <span className="font-display" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#10B981' }}>4,159% ↑</span>
+                        <span className="font-display" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#10B981' }}><CountUp value="4,159%" /> ↑</span>
                       </div>
                     </div>
                   </div>
@@ -2049,38 +2642,38 @@ function Projects() {
             {/* ─── SLIDE 2: WHAT OTHERS SAY (LINKEDIN RECOMMENDATIONS) ─── */}
             <div style={{
               background: '#ffffff',
-              borderRadius: '24px',
-              padding: '3rem 2.5rem',
+              borderRadius: isMobile ? '18px' : '24px',
+              padding: isMobile ? '1.75rem 1.15rem' : '3rem 2.5rem',
               border: '1px solid rgba(0,0,0,0.06)',
               boxShadow: '0 8px 30px rgba(0,0,0,0.03)',
             }}>
               {/* Slide 2 Header */}
               <h4 className="font-display" style={{
-                fontSize: 'clamp(2rem, 3.5vw, 2.8rem)',
+                fontSize: 'clamp(1.6rem, 3.5vw, 2.8rem)',
                 fontWeight: 800,
                 color: '#000000',
                 textAlign: 'center',
-                marginBottom: '2.5rem',
+                marginBottom: isMobile ? '1.5rem' : '2.5rem',
                 letterSpacing: '-0.03em',
               }}>
                 What others Say!
               </h4>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1.25fr 0.75fr', gap: '2.5rem', alignItems: 'center' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isCompact ? '1fr' : '1.25fr 0.75fr', gap: isMobile ? '1.5rem' : '2.5rem', alignItems: 'center' }}>
                 
                 {/* Left Card: LinkedIn Recommendations Quotes Container */}
                 <div style={{
                   background: '#FAF6ED',
                   borderRadius: '20px',
-                  padding: '2.25rem 2rem',
+                  padding: isMobile ? '1.25rem 1rem' : '2.25rem 2rem',
                   border: '2px solid #8B5CF6',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '1.5rem',
+                  gap: isMobile ? '0.85rem' : '1.5rem',
                   boxShadow: '0 8px 24px rgba(139,92,246,0.08)',
                 }}>
                   {/* Quote 1 */}
-                  <div style={{ background: '#ffffff', borderRadius: '14px', padding: '1.25rem 1.5rem', boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
+                  <div style={{ background: '#ffffff', borderRadius: '14px', padding: isMobile ? '0.9rem 1rem' : '1.25rem 1.5rem', boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#F97316', color: '#ffffff', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' }}>
@@ -2099,7 +2692,7 @@ function Projects() {
                   </div>
 
                   {/* Quote 2 */}
-                  <div style={{ background: '#ffffff', borderRadius: '14px', padding: '1.25rem 1.5rem', boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
+                  <div style={{ background: '#ffffff', borderRadius: '14px', padding: isMobile ? '0.9rem 1rem' : '1.25rem 1.5rem', boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#3B82F6', color: '#ffffff', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' }}>
@@ -2118,7 +2711,7 @@ function Projects() {
                   </div>
 
                   {/* Quote 3 */}
-                  <div style={{ background: '#ffffff', borderRadius: '14px', padding: '1.25rem 1.5rem', boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
+                  <div style={{ background: '#ffffff', borderRadius: '14px', padding: isMobile ? '0.9rem 1rem' : '1.25rem 1.5rem', boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#059669', color: '#ffffff', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' }}>
@@ -2180,7 +2773,7 @@ function Projects() {
 
           </div>
 
-        </motion.div>
+        </m.div>
 
       </div>
     </section>
@@ -2231,9 +2824,9 @@ function ReelCard({ label, sublabel, hint }: { label: string; sublabel: string; 
   }
 
   return (
-    <motion.div
+    <m.div
       whileHover={{ y: -6, scale: 1.02 }}
-      transition={{ duration: 0.25 }}
+      transition={{ duration: DUR.fast, ease: EASE }}
       style={{
         flex: '1 1 0',
         minWidth: 0,
@@ -2378,7 +2971,7 @@ function ReelCard({ label, sublabel, hint }: { label: string; sublabel: string; 
           )}
         </div>
       </div>
-    </motion.div>
+    </m.div>
   )
 }
 
@@ -2387,11 +2980,11 @@ function CreativeWork() {
     <section id="creative-work" style={{ padding: '100px 2.5rem', background: '#0F0505' }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
         {/* Header */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          viewport={VIEWPORT}
+          transition={{ duration: DUR.slow, ease: EASE }}
           style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '3.5rem' }}
         >
           <div>
@@ -2406,7 +2999,7 @@ function CreativeWork() {
           <p style={{ color: 'rgba(255,245,245,0.4)', fontSize: '0.88rem', lineHeight: 1.65, maxWidth: '320px', margin: 0, fontFamily: 'var(--font-mono)', letterSpacing: '0.04em' }}>
             Upload your reels, brand videos, and campaign clips directly — or paste a YouTube link to embed.
           </p>
-        </motion.div>
+        </m.div>
 
         {/* Five equal portrait cards */}
         <div style={{
@@ -2434,27 +3027,27 @@ function Leadership() {
   return (
     <section id="leadership" style={{ padding: '100px 2.5rem', background: '#FFF5F5' }}>
       <div style={{ maxWidth: '760px', margin: '0 auto' }}>
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          viewport={VIEWPORT}
+          transition={{ duration: DUR.slow, ease: EASE }}
         >
           <div className="section-chip" style={{ marginBottom: '0.75rem' }}>Beyond Work</div>
           <h2 className="font-display" style={{ fontSize: 'clamp(2rem,5vw,3rem)', color: '#1A0808', marginBottom: '0.75rem' }}>
             Leadership &amp; <span style={{ color: '#DC2626', fontStyle: 'italic' }}>Initiatives</span>
           </h2>
           <p style={{ color: '#5C2C2C', fontSize: '0.95rem', marginBottom: '2.5rem' }}>Roles that shaped my ability to lead, collaborate, and deliver under pressure.</p>
-        </motion.div>
+        </m.div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {LEADERSHIP.map((l, i) => (
-            <motion.div
+            <m.div
               key={l.org}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
+              viewport={VIEWPORT}
+              transition={{ duration: DUR.base, ease: EASE, delay: i * 0.1 }}
               onClick={() => setOpen(open === i ? null : i)}
               style={{
                 border: `1.5px solid ${open === i ? '#DC2626' : '#FECACA'}`,
@@ -2469,33 +3062,33 @@ function Leadership() {
                   <span style={{ color: '#DC2626', fontWeight: 700, fontSize: '0.95rem' }}>{l.org}</span>
                   <span style={{ color: '#1A0808', fontSize: '0.92rem', marginLeft: '10px' }}>· {l.title}</span>
                 </div>
-                <motion.span animate={{ rotate: open === i ? 180 : 0 }} transition={{ duration: 0.2 }} style={{ color: '#DC2626', fontSize: '1.1rem', display: 'inline-block' }}>▾</motion.span>
+                <m.span animate={{ rotate: open === i ? 180 : 0 }} transition={{ duration: DUR.fast, ease: EASE }} style={{ color: '#DC2626', fontSize: '1.1rem', display: 'inline-block' }}>▾</m.span>
               </div>
               <AnimatePresence>
                 {open === i && (
-                  <motion.div
+                  <m.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
+                    transition={{ duration: DUR.fast, ease: EASE }}
                     style={{ overflow: 'hidden' }}
                   >
                     <div style={{ padding: '0 1.5rem 1.25rem' }}>
                       <p style={{ fontSize: '0.9rem', lineHeight: 1.65, color: '#4A2020', margin: 0 }}>{l.desc}</p>
                     </div>
-                  </motion.div>
+                  </m.div>
                 )}
               </AnimatePresence>
-            </motion.div>
+            </m.div>
           ))}
         </div>
 
         {/* Award */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
+        <m.div
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          viewport={VIEWPORT}
+          transition={{ duration: DUR.slow, ease: EASE }}
           style={{ marginTop: '3rem', background: 'linear-gradient(135deg,#9B1C1C,#DC2626)', borderRadius: '14px', padding: '2rem', color: '#fff' }}
         >
           <div className="font-mono" style={{ fontSize: '0.68rem', letterSpacing: '0.12em', color: '#FCA5A5', textTransform: 'uppercase', marginBottom: '0.75rem' }}>🏆 Academic Award</div>
@@ -2505,14 +3098,14 @@ function Leadership() {
           <p style={{ fontSize: '0.85rem', color: '#FCA5A5', marginTop: '0.75rem', margin: '0.75rem 0 0' }}>
             National Conference on Innovation and Knowledge Management · Poornima University, Jaipur
           </p>
-        </motion.div>
+        </m.div>
 
         {/* Education */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
+        <m.div
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.1 }}
+          viewport={VIEWPORT}
+          transition={{ duration: DUR.slow, ease: EASE, delay: 0.1 }}
           style={{ marginTop: '1.5rem', background: '#fff', border: '1.5px solid #FECACA', borderRadius: '14px', padding: '1.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}
         >
           <div>
@@ -2521,7 +3114,7 @@ function Leadership() {
             <p style={{ fontSize: '0.9rem', color: '#5C2C2C', margin: '4px 0 0' }}>BBA · Specialization in Digital Marketing</p>
           </div>
           <span className="font-mono" style={{ fontSize: '0.72rem', color: '#9B1C1C', background: '#FEE2E2', padding: '4px 14px', borderRadius: '6px' }}>Jaipur, Rajasthan</span>
-        </motion.div>
+        </m.div>
       </div>
     </section>
   )
@@ -2530,6 +3123,7 @@ function Leadership() {
 /* ─── Contact ────────────────────────────────────────────── */
 function Contact() {
   const [copied, setCopied] = useState(false)
+  const { isMobile } = useBreakpoint()
   const copy = () => {
     navigator.clipboard.writeText('dhriti.career@gmail.com')
     setCopied(true)
@@ -2543,20 +3137,20 @@ function Contact() {
   return (
     <section id="contact" style={{
       background: '#121214',
-      padding: '100px 1.5rem 60px',
+      padding: isMobile ? '64px 1.25rem 50px' : '100px 1.5rem 60px',
       color: '#ffffff',
       position: 'relative',
       overflow: 'hidden',
     }}>
       <div style={{ maxWidth: '1080px', margin: '0 auto' }}>
-        
+
         {/* Header Title with Star Decorator */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          style={{ marginBottom: '4rem' }}
+          viewport={VIEWPORT}
+          transition={{ duration: DUR.slow, ease: EASE }}
+          style={{ marginBottom: isMobile ? '2.5rem' : '4rem' }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem' }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="#DC2626">
@@ -2581,24 +3175,24 @@ function Contact() {
             lineHeight: 1.0,
             color: '#ffffff',
           }}>
-            let’s work <span style={{ fontStyle: 'italic', color: '#DC2626' }}>together.</span>
+            <RevealHeading>let’s work <span style={{ fontStyle: 'italic', color: '#DC2626' }}>together.</span></RevealHeading>
           </h2>
-        </motion.div>
+        </m.div>
 
         {/* Main Grid: Left Details & Right Action Card */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '2.5rem',
-          marginBottom: '5rem',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))',
+          gap: isMobile ? '1.75rem' : '2.5rem',
+          marginBottom: isMobile ? '3rem' : '5rem',
         }}>
           
           {/* Left Column: Pitch & Contact Channels */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            viewport={VIEWPORT}
+            transition={{ duration: DUR.slow, ease: EASE }}
             style={{
               background: '#1A1A1E',
               borderRadius: '24px',
@@ -2632,7 +3226,7 @@ function Contact() {
             {/* Direct Contact Links */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               {/* Email Copy Trigger */}
-              <motion.div
+              <m.div
                 onClick={copy}
                 whileHover={{ scale: 1.02, backgroundColor: 'rgba(220,38,38,0.15)', borderColor: '#DC2626' }}
                 whileTap={{ scale: 0.98 }}
@@ -2682,10 +3276,10 @@ function Contact() {
                 }}>
                   {copied ? '✓ Copied!' : 'Click to copy'}
                 </span>
-              </motion.div>
+              </m.div>
 
               {/* Phone Link */}
-              <motion.a
+              <m.a
                 href="tel:+918000488008"
                 whileHover={{ scale: 1.02, backgroundColor: 'rgba(255,255,255,0.08)' }}
                 style={{
@@ -2726,7 +3320,7 @@ function Contact() {
                 </div>
 
                 <span style={{ fontSize: '0.85rem', color: '#9CA3AF' }}>Call ↗</span>
-              </motion.a>
+              </m.a>
 
               {/* Location Badge */}
               <div style={{
@@ -2760,14 +3354,14 @@ function Contact() {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Right Column: Status Card & CTA Actions */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            viewport={VIEWPORT}
+            transition={{ duration: DUR.slow, ease: EASE }}
             style={{
               background: '#1A1A1E',
               borderRadius: '24px',
@@ -2825,7 +3419,7 @@ function Contact() {
 
             {/* Quick CTAs Grid */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <motion.a
+              <m.a
                 href="mailto:dhriti.career@gmail.com"
                 whileHover={{ scale: 1.03, backgroundColor: '#B91C1C' }}
                 whileTap={{ scale: 0.97 }}
@@ -2846,9 +3440,9 @@ function Contact() {
                 }}
               >
                 <span>✉</span> Send Email Directly
-              </motion.a>
+              </m.a>
 
-              <motion.a
+              <m.a
                 href="https://linkedin.com/in/dhriti_arora"
                 target="_blank"
                 rel="noreferrer"
@@ -2870,9 +3464,9 @@ function Contact() {
                 }}
               >
                 <span>in</span> Connect on LinkedIn ↗
-              </motion.a>
+              </m.a>
             </div>
-          </motion.div>
+          </m.div>
 
         </div>
 
@@ -2905,7 +3499,7 @@ function Contact() {
               © 2026 Dhriti Arora. All rights reserved.
             </span>
             
-            <motion.button
+            <m.button
               onClick={scrollToTop}
               whileHover={{ scale: 1.1, backgroundColor: '#DC2626' }}
               whileTap={{ scale: 0.9 }}
@@ -2926,7 +3520,7 @@ function Contact() {
               title="Back to Top"
             >
               ↑
-            </motion.button>
+            </m.button>
           </div>
         </div>
 
@@ -2938,15 +3532,28 @@ function Contact() {
 /* ─── App ────────────────────────────────────────────────── */
 export default function App() {
   return (
-    <div style={{ fontFamily: 'var(--font-body)' }}>
-      <ScrollProgress />
-      <Navbar />
-      <Hero />
-      <About />
-      <Experience />
-      <SkillsToolsEducation />
-      <Projects />
-      <Contact />
-    </div>
+    /**
+     * LazyMotion + `m` ships only the DOM animation feature set instead of the
+     * full `motion` bundle. `strict` makes the build fail loudly if a plain
+     * `motion.*` component ever sneaks back in and silently undoes the saving.
+     *
+     * MotionConfig sets the house transition once, and `reducedMotion="user"`
+     * lets framer-motion drop transform/layout animation for people who ask
+     * for it — keeping opacity fades — instead of a blunt CSS override.
+     */
+    <LazyMotion features={domAnimation} strict>
+      <MotionConfig reducedMotion="user" transition={{ duration: DUR.base, ease: EASE }}>
+        <div style={{ fontFamily: 'var(--font-body)' }}>
+          <ScrollProgress />
+          <Navbar />
+          <Hero />
+          <About />
+          <Experience />
+          <SkillsToolsEducation />
+          <Projects />
+          <Contact />
+        </div>
+      </MotionConfig>
+    </LazyMotion>
   )
 }

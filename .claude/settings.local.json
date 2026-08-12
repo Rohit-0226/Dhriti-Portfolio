@@ -7,7 +7,12 @@
       "Bash(node -e ' *)",
       "Bash(npx tsc *)",
       "Bash(npm run *)",
-      "Bash(curl -s \"http://localhost:8443/src/App.tsx\")"
+      "Bash(curl -s \"http://localhost:8443/src/App.tsx\")",
+      "Bash(node \"C:\\\\Users\\\\rohit\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-rohit-OneDrive-Desktop-Marketing-Portfolio-Design\\\\b9a5338e-be77-4cca-bbaf-31d6f5b65049\\\\scratchpad\\\\motion-codemod.mjs\")",
+      "Bash(python3 -)",
+      "Bash(grep -n \"^\\\\s*about\\\\.$\\\\|^\\\\s*experience\\\\.$\\\\|^\\\\s*skills$\\\\|^\\\\s*tools$\\\\|^\\\\s*education$\\\\|notable <span\\\\|let’s work <span\" src/App.tsx)",
+      "Bash(npx vite *)",
+      "Bash(curl -s -o /dev/null -w \"prod server: %{http_code}\\\\n\" http://localhost:4599)"
     ]
   }
 }
