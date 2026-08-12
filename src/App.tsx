@@ -818,22 +818,22 @@ function Hero() {
         <div ref={stageRef} style={{
           position: 'relative',
           width: '100%',
-          maxWidth: '1050px',
+          maxWidth: '1200px',
           margin: '0 auto',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'flex-end',
           height: isMobile ? 'clamp(340px, 88vw, 430px)' : isTablet ? '430px' : '480px',
         }}>
-          {/* RIGHT FLANKING HERO TAGLINE — Single horizontal line for IDEAS -> EXECUTION */}
+          {/* RIGHT FLANKING HERO TAGLINE — anchored right: 0rem on pure white dot grid background */}
           {!isMobile && (
             <m.div
               initial={{ opacity: 0, x: 28 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: DUR.slow, ease: EASE, delay: 0.3 }}
               style={{
-                position: 'absolute', right: '2%', bottom: '18%',
-                textAlign: 'center', zIndex: 15, pointerEvents: 'none',
+                position: 'absolute', right: '0rem', bottom: '22%',
+                textAlign: 'right', zIndex: 15, pointerEvents: 'none',
               }}
             >
               <div className="font-display" style={{
@@ -899,11 +899,11 @@ function Hero() {
               }}
             />
 
-            {/* FLOATING BLACK PILLS - Positioned outward to NEVER overlap Dhriti's cutout portrait */}
+            {/* FLOATING BLACK PILLS */}
             {/* Pill 1: Top Left - Marketing */}
             <m.div
               {...bob(-8, 4)}
-              style={{ ...pillStyle, top: '26%', left: isMobile ? '-25px' : '-135px' }}
+              style={{ ...pillStyle, top: '28%', left: isMobile ? '-20px' : '-70px' }}
             >
               <span style={{ fontSize: isMobile ? '0.95rem' : '1.2rem' }}>📣</span> Marketing
             </m.div>
@@ -911,7 +911,7 @@ function Hero() {
             {/* Pill 2: Bottom Left - Brand Management */}
             <m.div
               {...bob(8, 5, 0.5)}
-              style={{ ...pillStyle, bottom: '22%', left: isMobile ? '-20px' : '-145px' }}
+              style={{ ...pillStyle, bottom: '18%', left: isMobile ? '-15px' : '-80px' }}
             >
               <span style={{ fontSize: isMobile ? '0.95rem' : '1.2rem' }}>🌟</span> Brand Management
             </m.div>
@@ -919,7 +919,7 @@ function Hero() {
             {/* Pill 3: Top Right - Personal Branding */}
             <m.div
               {...bob(-10, 4.5, 0.2)}
-              style={{ ...pillStyle, top: '28%', right: isMobile ? '-25px' : '-145px' }}
+              style={{ ...pillStyle, top: '28%', right: isMobile ? '-20px' : '-80px' }}
             >
               <span style={{ fontSize: isMobile ? '0.95rem' : '1.2rem' }}>✨</span> Personal Branding
             </m.div>
@@ -927,7 +927,7 @@ function Hero() {
             {/* Pill 4: Bottom Right - Social Media */}
             <m.div
               {...bob(8, 5.5, 0.7)}
-              style={{ ...pillStyle, bottom: '12%', right: isMobile ? '-20px' : '-135px' }}
+              style={{ ...pillStyle, bottom: '10%', right: isMobile ? '-15px' : '-70px' }}
             >
               <span style={{ fontSize: isMobile ? '0.95rem' : '1.2rem' }}>🤳</span> Social Media
             </m.div>
