@@ -1911,6 +1911,138 @@ function Experience() {
   )
 }
 
+/* ─── Recommendation Card Item Component ───────────────────────────── */
+function RecommendationCardItem({ rec, isMobile }: { rec: any; isMobile: boolean }) {
+  const [expanded, setExpanded] = useState(false)
+  const isLong = rec.paragraphs.length > 2 || rec.paragraphs.join(' ').length > 280
+
+  return (
+    <div
+      style={{
+        background: '#ffffff',
+        borderRadius: '20px',
+        padding: isMobile ? '1.25rem 1.15rem' : '1.75rem 1.5rem',
+        boxShadow: '0 8px 24px rgba(0,0,0,0.04)',
+        border: '1.5px solid rgba(0,0,0,0.07)',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        height: 'fit-content',
+        transition: 'all 0.25s ease',
+      }}
+    >
+      <div>
+        {/* Header: Avatar, Name & Role */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.15rem', gap: '8px' }}>
+          <a
+            href={rec.linkedinUrl}
+            target="_blank"
+            rel="noreferrer"
+            style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none', color: 'inherit' }}
+          >
+            <img
+              src={rec.avatar}
+              alt={rec.name}
+              style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: '50%',
+                objectFit: 'cover',
+                border: '2px solid #ffffff',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+                flexShrink: 0,
+              }}
+            />
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <h4 className="font-display" style={{ fontWeight: 800, fontSize: '1.05rem', color: '#000000', margin: 0, lineHeight: 1.2 }}>
+                  {rec.name}
+                </h4>
+                <span style={{ color: '#0A66C2', fontSize: '0.85rem', fontWeight: 800 }} title="Verified Connection on LinkedIn">✓</span>
+              </div>
+              <span style={{ fontSize: '0.74rem', color: '#475569', fontWeight: 600, display: 'block', marginTop: '2px', lineHeight: 1.3 }}>
+                {rec.role}
+              </span>
+              <span style={{ fontSize: '0.68rem', color: '#94A3B8', fontWeight: 500, display: 'block', marginTop: '1px' }}>
+                {rec.meta}
+              </span>
+            </div>
+          </a>
+        </div>
+
+        {/* Paragraphs */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          {(expanded ? rec.paragraphs : rec.paragraphs.slice(0, 2)).map((p: string, idx: number) => (
+            <p key={idx} style={{
+              fontSize: isMobile ? '0.86rem' : '0.89rem',
+              lineHeight: 1.65,
+              color: '#334155',
+              margin: 0,
+              fontFamily: 'var(--font-body)',
+            }}>
+              "{p}"
+            </p>
+          ))}
+        </div>
+
+        {/* Read More / Read Less Toggle */}
+        {isLong && (
+          <button
+            onClick={() => setExpanded(!expanded)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#0A66C2',
+              fontWeight: 700,
+              fontSize: '0.78rem',
+              padding: '6px 0 0',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              marginTop: '6px',
+              fontFamily: 'var(--font-body)',
+            }}
+          >
+            {expanded ? 'Show Less ▴' : `Read Full Recommendation (${rec.paragraphs.length} paragraphs) ▾`}
+          </button>
+        )}
+      </div>
+
+      {/* Bottom Direct LinkedIn Verification Link */}
+      <a
+        href={rec.linkedinUrl}
+        target="_blank"
+        rel="noreferrer"
+        style={{
+          marginTop: '1.25rem',
+          paddingTop: '1rem',
+          borderTop: '1px dashed #E2E8F0',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          textDecoration: 'none',
+        }}
+      >
+        <span style={{
+          background: rec.badgeBg,
+          color: rec.badgeColor,
+          fontSize: '0.7rem',
+          fontWeight: 700,
+          padding: '3px 10px',
+          borderRadius: '999px',
+          fontFamily: 'var(--font-mono)',
+        }}>
+          {rec.degree || '1st Degree Connection'}
+        </span>
+        <span style={{ fontSize: '0.78rem', color: '#0A66C2', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
+          Verify on LinkedIn ↗
+        </span>
+      </a>
+    </div>
+  )
+}
+
 /* ─── Projects Section ───────────────────────────────────── */
 function Projects() {
   const { isMobile, isCompact } = useBreakpoint()
@@ -2800,7 +2932,7 @@ function Projects() {
             </div>
 
             <a
-              href="https://www.linkedin.com/in/dhriti-pareek-78b17326a/"
+              href="https://www.linkedin.com/in/dhriti-arora-a53a24290/"
               target="_blank"
               rel="noreferrer"
               style={{
@@ -2818,7 +2950,7 @@ function Projects() {
                 transition: 'transform 0.2s',
               }}
             >
-              <span>View LinkedIn Profile</span>
+              <span>View Dhriti's LinkedIn Profile</span>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M7 17L17 7M17 7H7M17 7V17"/>
               </svg>
@@ -2831,7 +2963,7 @@ function Projects() {
               display: 'grid',
               gridTemplateColumns: isCompact ? '1fr' : 'repeat(3, 1fr)',
               gap: isMobile ? '1.25rem' : '1.75rem',
-              alignItems: 'stretch',
+              alignItems: 'start',
             }}>
               {[
                 {
@@ -2880,105 +3012,7 @@ function Projects() {
                   ],
                 },
               ].map((rec) => (
-                <div
-                  key={rec.name}
-                  style={{
-                    background: '#ffffff',
-                    borderRadius: '20px',
-                    padding: isMobile ? '1.25rem 1.15rem' : '1.75rem 1.5rem',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.04)',
-                    border: '1.5px solid rgba(0,0,0,0.07)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <div>
-                    {/* Header: Avatar, Name & Role */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.15rem', gap: '8px' }}>
-                      <a
-                        href={rec.linkedinUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none', color: 'inherit' }}
-                      >
-                        <img
-                          src={rec.avatar}
-                          alt={rec.name}
-                          style={{
-                            width: '48px',
-                            height: '48px',
-                            borderRadius: '50%',
-                            objectFit: 'cover',
-                            border: '2px solid #ffffff',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
-                            flexShrink: 0,
-                          }}
-                        />
-                        <div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <h4 className="font-display" style={{ fontWeight: 800, fontSize: '1.05rem', color: '#000000', margin: 0, lineHeight: 1.2 }}>
-                              {rec.name}
-                            </h4>
-                            <span style={{ color: '#0A66C2', fontSize: '0.85rem', fontWeight: 800 }} title="Verified Connection on LinkedIn">✓</span>
-                          </div>
-                          <span style={{ fontSize: '0.74rem', color: '#475569', fontWeight: 600, display: 'block', marginTop: '2px', lineHeight: 1.3 }}>
-                            {rec.role}
-                          </span>
-                          <span style={{ fontSize: '0.68rem', color: '#94A3B8', fontWeight: 500, display: 'block', marginTop: '1px' }}>
-                            {rec.meta}
-                          </span>
-                        </div>
-                      </a>
-                    </div>
-
-                    {/* Paragraphs */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                      {rec.paragraphs.map((p, idx) => (
-                        <p key={idx} style={{
-                          fontSize: isMobile ? '0.86rem' : '0.89rem',
-                          lineHeight: 1.65,
-                          color: '#334155',
-                          margin: 0,
-                          fontFamily: 'var(--font-body)',
-                        }}>
-                          "{p}"
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Bottom Direct LinkedIn Verification Link */}
-                  <a
-                    href={rec.linkedinUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{
-                      marginTop: '1.5rem',
-                      paddingTop: '1rem',
-                      borderTop: '1px dashed #E2E8F0',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      textDecoration: 'none',
-                    }}
-                  >
-                    <span style={{
-                      background: rec.badgeBg,
-                      color: rec.badgeColor,
-                      fontSize: '0.7rem',
-                      fontWeight: 700,
-                      padding: '3px 10px',
-                      borderRadius: '999px',
-                      fontFamily: 'var(--font-mono)',
-                    }}>
-                      {rec.degree || '1st Degree Connection'}
-                    </span>
-                    <span style={{ fontSize: '0.78rem', color: '#0A66C2', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      Verify on LinkedIn ↗
-                    </span>
-                  </a>
-                </div>
+                <RecommendationCardItem key={rec.name} rec={rec} isMobile={isMobile} />
               ))}
             </div>
           </div>
@@ -3745,7 +3779,7 @@ function Contact() {
               </m.a>
 
               <m.a
-                href="https://linkedin.com/in/dhriti_arora"
+                href="https://www.linkedin.com/in/dhriti-arora-a53a24290/"
                 target="_blank"
                 rel="noreferrer"
                 whileHover={{ scale: 1.03, backgroundColor: '#004182' }}
