@@ -1139,7 +1139,7 @@ function About() {
             </div>
           </m.div>
 
-          {/* Right Column: Image embedded inside Pure Black Semi-Circle Arch */}
+          {/* Right Column: Image popping out of compact Pure Black Semi-Circle Arch */}
           <m.div
             initial={{ opacity: 0, x: 28 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -1150,33 +1150,66 @@ function About() {
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'flex-end',
+              width: isMobile ? 'min(340px, 88vw)' : '440px',
+              height: isMobile ? 'clamp(360px, 90vw, 460px)' : '460px',
             }}
           >
-            {/* Pure Black Semi-Circle Arch (Framing the image inside with overflow hidden) */}
+            {/* BLACK SEMI-CIRCLE ARCH STAGE (Height 240px - compact dome arch!) */}
             <div style={{
-              position: 'relative',
-              width: isMobile ? 'min(330px, 86vw)' : '440px',
-              height: isMobile ? 'clamp(320px, 80vw, 420px)' : '440px',
+              position: 'absolute',
+              bottom: 0,
+              width: '100%',
+              height: isMobile ? 'clamp(170px, 44vw, 240px)' : '240px',
               borderTopLeftRadius: '220px',
               borderTopRightRadius: '220px',
+              borderBottomLeftRadius: 0,
+              borderBottomRightRadius: 0,
               background: '#000000',
-              boxShadow: '0 25px 50px rgba(0, 0, 0, 0.35)',
+              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.25)',
               overflow: 'hidden',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'flex-end',
-              zIndex: 1,
+              zIndex: 2,
             }}>
               <img
                 src={dhritiAboutImg}
-                alt="Dhriti Arora About"
+                alt="Dhriti Arora About Base"
                 loading="lazy"
                 decoding="async"
                 style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  objectPosition: 'center 10%',
+                  position: 'absolute',
+                  bottom: 0,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: isMobile ? 'min(330px, 84vw)' : '420px',
+                  height: isMobile ? 'clamp(360px, 90vw, 460px)' : '460px',
+                  objectFit: 'contain',
+                  objectPosition: 'bottom center',
+                }}
+              />
+            </div>
+
+            {/* UNCLIPPED TOP HEAD & TORSO (Pops out high above the black arch!) */}
+            <div style={{
+              position: 'absolute',
+              bottom: 0,
+              width: '100%',
+              height: '100%',
+              pointerEvents: 'none',
+              zIndex: 3,
+            }}>
+              <img
+                src={dhritiAboutImg}
+                alt="Dhriti Arora About Popout"
+                loading="lazy"
+                decoding="async"
+                style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: isMobile ? 'min(330px, 84vw)' : '420px',
+                  height: isMobile ? 'clamp(360px, 90vw, 460px)' : '460px',
+                  objectFit: 'contain',
+                  objectPosition: 'bottom center',
                   filter: 'drop-shadow(0 15px 30px rgba(0,0,0,0.25))',
                 }}
               />
