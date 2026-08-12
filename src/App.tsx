@@ -1614,61 +1614,11 @@ function SkillsToolsEducation() {
                   </div>
 
                   <p style={{ fontSize: '0.8rem', color: '#64748B', margin: '4px 0 8px', fontWeight: 500, fontFamily: 'var(--font-body)' }}>
-                    2021 – 2025 · Jaipur, Rajasthan
+                    2023 – 2026 · Jaipur, Rajasthan
                   </p>
 
                   <p style={{ fontSize: '0.88rem', color: '#475569', margin: 0, lineHeight: 1.6, fontFamily: 'var(--font-body)' }}>
                     Specialization in Brand Strategy, Growth Marketing, Content Creation &amp; Campaign Management. Head of Cultural &amp; NGO Initiatives.
-                  </p>
-                </div>
-              </div>
-
-              {/* Item 2: Learn and Build Bootcamp */}
-              <div style={{ display: 'flex', gap: '1.25rem' }}>
-                <div style={{
-                  width: '56px',
-                  height: '56px',
-                  borderRadius: '14px',
-                  background: '#ffffff',
-                  border: '1.5px solid #00A3FF',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                  boxShadow: '0 6px 16px rgba(0,163,255,0.12)',
-                  overflow: 'hidden',
-                }}>
-                  <img
-                    src={learnAndBuildLogoImg}
-                    alt="Learn and Build"
-                    style={{ width: '40px', height: '40px', objectFit: 'contain' }}
-                  />
-                </div>
-
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                    <h4 className="font-display" style={{ fontSize: '1.1rem', fontWeight: 800, color: '#000000', margin: 0 }}>
-                      Learn and Build
-                    </h4>
-                    <span style={{
-                      background: '#CCFBF1',
-                      color: '#0F766E',
-                      fontSize: '0.72rem',
-                      fontWeight: 700,
-                      padding: '2px 10px',
-                      borderRadius: '999px',
-                      fontFamily: 'var(--font-body)',
-                    }}>
-                      Growth &amp; BDE Certification
-                    </span>
-                  </div>
-
-                  <p style={{ fontSize: '0.8rem', color: '#64748B', margin: '4px 0 8px', fontWeight: 500, fontFamily: 'var(--font-body)' }}>
-                    May 2025 – July 2025 · Practical Experience
-                  </p>
-
-                  <p style={{ fontSize: '0.88rem', color: '#475569', margin: 0, lineHeight: 1.6, fontFamily: 'var(--font-body)' }}>
-                    Led marketing outreach and campus activations resulting in +40% enrollment growth through audience segmentation and performance insights.
                   </p>
                 </div>
               </div>
