@@ -1009,7 +1009,7 @@ function SlantedTicker() {
   // A 32s infinite transform keeps the compositor busy even far off-screen.
   const inView = useInView(ref, { amount: 0 })
 
-  const items = ['UX Design', '✦', 'Brand Strategy', '✦', 'Marketing', '✦', 'Social Media', '✦', 'Growth Strategy', '✦', 'Content Creation', '✦', 'Analytics', '✦']
+  const items = ['Personal Branding', '✦', 'Brand Strategy', '✦', 'Marketing', '✦', 'Social Media', '✦', 'Growth Strategy', '✦', 'Content Creation', '✦', 'Event Management', '✦']
   const doubled = [...items, ...items, ...items, ...items]
   return (
     <div ref={ref} style={{
