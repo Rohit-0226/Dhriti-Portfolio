@@ -1731,7 +1731,7 @@ function Experience() {
       logoImg: droneRangersLogoImg,
       logoText: 'DR',
       description: 'At Drone Rangers, I worked as a content creator where I was responsible for developing engaging digital content to market products and strengthen brand presence. My role involved creating on-camera promotional material, designing creative campaigns, and presenting products in a way that connected with the target audience. I leveraged my skills in public speaking, digital storytelling, and social media marketing to deliver impactful content that enhanced audience engagement and product visibility.',
-      skills: ['Business Development Support', 'Social Media Management', 'Public Speaking'],
+      skills: ['Content Creation', 'Social Media Management', 'Public Speaking'],
     },
     {
       role: 'Business Development Intern',
