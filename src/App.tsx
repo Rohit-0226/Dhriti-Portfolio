@@ -960,7 +960,7 @@ function Hero() {
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: isMobile ? '84px 1.1rem 50px' : '100px 1.5rem 50px',
+      padding: isMobile ? '84px 1.1rem 20px' : '100px 1.5rem 30px',
       position: 'relative',
     }}>
       {/* Background Dot Grid */}
@@ -1202,7 +1202,7 @@ function Hero() {
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: DUR.slow, ease: EASE, delay: HERO_T.actions }}
-          style={{ position: 'relative', zIndex: 25, marginTop: isMobile ? '2rem' : '-20px', marginBottom: '2.5rem', display: 'flex', justifyContent: 'center' }}
+          style={{ position: 'relative', zIndex: 25, marginTop: isMobile ? '2rem' : '-20px', marginBottom: isMobile ? '1rem' : '1.5rem', display: 'flex', justifyContent: 'center' }}
         >
           <div style={{
             background: '#1A0808', padding: '5px 6px', borderRadius: '999px',
