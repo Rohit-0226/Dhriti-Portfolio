@@ -954,11 +954,13 @@ function Hero() {
 
   return (
     <section id="about" style={{
+      minHeight: '100svh',
       background: '#FFFBFB',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      padding: isMobile ? '84px 1.1rem 0px' : '100px 1.5rem 0px',
+      justifyContent: 'center',
+      padding: isMobile ? '84px 1.1rem 50px' : '100px 1.5rem 50px',
       position: 'relative',
     }}>
       {/* Background Dot Grid */}
@@ -971,7 +973,7 @@ function Hero() {
       }} />
 
       {/* Main Container */}
-      <div style={{ maxWidth: '1180px', width: '100%', margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ maxWidth: '1180px', width: '100%', margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         
         {/* Top Header Block - Flex Column enforces vertical stacking on all screen resolutions */}
         <div style={{
@@ -980,7 +982,7 @@ function Hero() {
           alignItems: 'center',
           justifyContent: 'center',
           width: '100%',
-          marginBottom: '1.5rem',
+          marginBottom: 0,
         }}>
           {/* Centered Rotating Multi-Language Hello Badge */}
           <m.div
@@ -1054,7 +1056,7 @@ function Hero() {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'flex-end',
-          marginTop: isMobile ? '2.5rem' : '4rem',
+          marginTop: isMobile ? 'clamp(0.5rem, 3vw, 1.5rem)' : '3rem',
           height: isMobile ? 'clamp(340px, 88vw, 430px)' : isTablet ? '430px' : '480px',
         }}>
           {/* RIGHT FLANKING HERO TAGLINE — anchored right: 0rem on pure white dot grid background */}
@@ -1137,7 +1139,7 @@ function Hero() {
             {/* Pill 1: Top Left - Marketing */}
             <m.div
               {...bob(-8, 4, 0, 0)}
-              style={{ ...pillStyle, top: isMobile ? '8%' : '28%', left: isMobile ? '-30px' : '-70px' }}
+              style={{ ...pillStyle, top: isMobile ? '8%' : '28%', left: isMobile ? 'clamp(-30px, -5vw, -10px)' : '-70px' }}
             >
               <Megaphone size={pillIcon} strokeWidth={2.25} color="#DC2626" aria-hidden />
               Marketing
@@ -1146,7 +1148,7 @@ function Hero() {
             {/* Pill 2: Bottom Left - Brand Management */}
             <m.div
               {...bob(8, 5, 0.5, 1)}
-              style={{ ...pillStyle, bottom: isMobile ? '28%' : '18%', left: isMobile ? '-40px' : '-80px' }}
+              style={{ ...pillStyle, bottom: isMobile ? '28%' : '18%', left: isMobile ? 'clamp(-40px, -7vw, -20px)' : '-80px' }}
             >
               <Gem size={pillIcon} strokeWidth={2.25} color="#DC2626" aria-hidden />
               Brand Management
@@ -1155,7 +1157,7 @@ function Hero() {
             {/* Pill 3: Top Right - Personal Branding */}
             <m.div
               {...bob(-10, 4.5, 0.2, 2)}
-              style={{ ...pillStyle, top: isMobile ? '8%' : '28%', right: isMobile ? '-30px' : isTablet ? '-95px' : '-125px' }}
+              style={{ ...pillStyle, top: isMobile ? '8%' : '28%', right: isMobile ? 'clamp(-30px, -5vw, -10px)' : isTablet ? '-95px' : '-125px' }}
             >
               <Sparkles size={pillIcon} strokeWidth={2.25} color="#DC2626" aria-hidden />
               Personal Branding
@@ -1164,7 +1166,7 @@ function Hero() {
             {/* Pill 4: Bottom Right - Social Media */}
             <m.div
               {...bob(8, 5.5, 0.7, 3)}
-              style={{ ...pillStyle, bottom: isMobile ? '20%' : '10%', right: isMobile ? '-30px' : '-70px' }}
+              style={{ ...pillStyle, bottom: isMobile ? '20%' : '10%', right: isMobile ? 'clamp(-30px, -5vw, -10px)' : '-70px' }}
             >
               <Share2 size={pillIcon} strokeWidth={2.25} color="#DC2626" aria-hidden />
               Social Media
