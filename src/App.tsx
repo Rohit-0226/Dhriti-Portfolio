@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useId } from 'react'
 import {
   LazyMotion,
   domAnimation,
@@ -21,16 +21,18 @@ import { Megaphone, Gem, Sparkles, Share2, Maximize2, X, Presentation, Palette, 
 
 /** Canva — gradient disc with the wordmark C. */
 function CanvaLogo({ size = 24 }: { size?: number }) {
+  const uid = useId()
+  const gid = `canvaG${uid}`
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+    <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Canva">
       <defs>
-        <linearGradient id="canvaG" x1="0" y1="0" x2="1" y2="1">
+        <linearGradient id={gid} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#7D2AE8" />
           <stop offset="50%" stopColor="#00C4CC" />
           <stop offset="100%" stopColor="#01C3CC" />
         </linearGradient>
       </defs>
-      <circle cx="12" cy="12" r="11" fill="url(#canvaG)" />
+      <circle cx="12" cy="12" r="11" fill={`url(#${gid})`} />
       <path
         d="M15.4 14.6c-.8 1.2-2.1 2-3.5 2-2 0-3.4-1.6-3.4-3.9 0-3 1.9-5.6 4.1-5.6 1 0 1.7.6 1.7 1.5 0 .5-.2 1-.5 1.3-.2.2-.5.1-.5-.2 0-.6-.3-1-.8-1-1.1 0-2.1 1.7-2.1 3.6 0 1.4.6 2.3 1.6 2.3.9 0 1.7-.6 2.3-1.5.2-.3.6-.1.6.2 0 .4-.1.8-.5 1.3z"
         fill="#fff"
@@ -1567,52 +1569,52 @@ function SkillsToolsEducation() {
     {
       title: 'Visual Design & Presentation',
       renderLogos: () => (
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
-          <ToolTile title="Canva"><CanvaLogo size={26} /></ToolTile>
-          <ToolTile title="Presentation Design">
+        <m.div variants={stagger(0.05)} initial="hidden" whileInView="show" viewport={VIEWPORT} style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
+          <m.div variants={fadeUp}><ToolTile title="Canva"><CanvaLogo size={26} /></ToolTile></m.div>
+          <m.div variants={fadeUp}><ToolTile title="Presentation Design">
             <Presentation size={21} strokeWidth={2.1} color="#DC2626" />
-          </ToolTile>
-          <ToolTile title="Visual Communication">
+          </ToolTile></m.div>
+          <m.div variants={fadeUp}><ToolTile title="Visual Communication">
             <Palette size={21} strokeWidth={2.1} color="#DC2626" />
-          </ToolTile>
-        </div>
+          </ToolTile></m.div>
+        </m.div>
       ),
       tools: ['Canva', 'Presentation Design', 'Visual Communication'],
     },
     {
       title: 'Productivity & Office Suites',
       renderLogos: () => (
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
-          <ToolTile title="Microsoft Office"><MicrosoftLogo size={21} /></ToolTile>
-          <ToolTile title="Google Workspace"><GoogleLogo size={21} /></ToolTile>
-        </div>
+        <m.div variants={stagger(0.05)} initial="hidden" whileInView="show" viewport={VIEWPORT} style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
+          <m.div variants={fadeUp}><ToolTile title="Microsoft Office"><MicrosoftLogo size={21} /></ToolTile></m.div>
+          <m.div variants={fadeUp}><ToolTile title="Google Workspace"><GoogleLogo size={21} /></ToolTile></m.div>
+        </m.div>
       ),
       tools: ['Microsoft Office (Excel, PowerPoint, Word)', 'Google Workspace (Docs, Sheets, Slides, Drive)'],
     },
     {
       title: 'Content & Marketing Tech',
       renderLogos: () => (
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
-          <ToolTile title="Mailchimp"><MailchimpLogo size={26} /></ToolTile>
-          <ToolTile title="WATI — WhatsApp Business API"><WhatsAppLogo size={24} /></ToolTile>
-          <ToolTile title="Content Strategy & Ghostwriting">
+        <m.div variants={stagger(0.05)} initial="hidden" whileInView="show" viewport={VIEWPORT} style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
+          <m.div variants={fadeUp}><ToolTile title="Mailchimp"><MailchimpLogo size={26} /></ToolTile></m.div>
+          <m.div variants={fadeUp}><ToolTile title="WATI — WhatsApp Business API"><WhatsAppLogo size={24} /></ToolTile></m.div>
+          <m.div variants={fadeUp}><ToolTile title="Content Strategy & Ghostwriting">
             <PenLine size={20} strokeWidth={2.1} color="#DC2626" />
-          </ToolTile>
-        </div>
+          </ToolTile></m.div>
+        </m.div>
       ),
       tools: ['Content Strategy & Storytelling', 'Ghostwriting', 'Mailchimp', 'WATI (WhatsApp Business API)'],
     },
     {
       title: 'Management & Strategy',
       renderLogos: () => (
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
-          <ToolTile title="Event Management">
+        <m.div variants={stagger(0.05)} initial="hidden" whileInView="show" viewport={VIEWPORT} style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
+          <m.div variants={fadeUp}><ToolTile title="Event Management">
             <CalendarCheck size={20} strokeWidth={2.1} color="#DC2626" />
-          </ToolTile>
-          <ToolTile title="Social Media Management">
+          </ToolTile></m.div>
+          <m.div variants={fadeUp}><ToolTile title="Social Media Management">
             <Megaphone size={20} strokeWidth={2.1} color="#DC2626" />
-          </ToolTile>
-        </div>
+          </ToolTile></m.div>
+        </m.div>
       ),
       tools: ['Event Management', 'Social Media Management'],
     },
@@ -3184,8 +3186,8 @@ function Projects() {
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={VIEWPORT}
-              transition={{ duration: DUR.base, ease: EASE, delay: i * 0.1 }}
-              whileHover={{ y: -6, boxShadow: '0 20px 40px rgba(0,0,0,0.08)', borderColor: '#DC2626' }}
+              transition={{ duration: 0.2, ease: [0.33, 1, 0.68, 1], delay: i * 0.1 }}
+              whileHover={{ y: -4, boxShadow: '0 12px 32px rgba(0,0,0,0.10)' }}
               style={{
                 background: '#ffffff',
                 borderRadius: isMobile ? '20px' : '24px',
@@ -3696,8 +3698,9 @@ function ReelCard({ label, sublabel, hint }: { label: string; sublabel: string; 
 }
 
 function CreativeWork() {
+  const { isMobile } = useBreakpoint()
   return (
-    <section id="creative-work" style={{ padding: '100px 2.5rem', background: '#0F0505' }}>
+    <section id="creative-work" style={{ padding: isMobile ? '60px 1.25rem 70px' : '100px 2.5rem', background: '#0F0505' }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
         {/* Header */}
         <m.div
@@ -3722,15 +3725,27 @@ function CreativeWork() {
         </m.div>
 
         {/* Five equal portrait cards */}
-        <div style={{
-          display: 'flex',
-          gap: '1.25rem',
-          alignItems: 'stretch',
-        }}>
+        <m.div
+          variants={stagger(0.1)}
+          initial="hidden"
+          whileInView="show"
+          viewport={VIEWPORT}
+          style={{
+            display: 'flex',
+            gap: isMobile ? '1rem' : '1.25rem',
+            alignItems: 'stretch',
+            overflowX: isMobile ? 'auto' : 'visible',
+            scrollSnapType: isMobile ? 'x mandatory' : 'none',
+            WebkitOverflowScrolling: 'touch',
+            paddingBottom: isMobile ? '12px' : 0,
+          }}
+        >
           {REEL_SLOTS.map(slot => (
-            <ReelCard key={slot.label} label={slot.label} sublabel={slot.sublabel} hint={slot.hint} />
+            <m.div key={slot.label} variants={fadeUp}>
+              <ReelCard label={slot.label} sublabel={slot.sublabel} hint={slot.hint} />
+            </m.div>
           ))}
-        </div>
+        </m.div>
 
         {/* Footer hint */}
         <p className="font-mono" style={{ textAlign: 'center', fontSize: '0.65rem', color: 'rgba(255,245,245,0.18)', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: '2rem' }}>
@@ -3744,8 +3759,9 @@ function CreativeWork() {
 /* ─── Leadership ─────────────────────────────────────────── */
 function Leadership() {
   const [open, setOpen] = useState<number | null>(null)
+  const { isMobile } = useBreakpoint()
   return (
-    <section id="leadership" style={{ padding: '100px 2.5rem', background: '#FFF5F5' }}>
+    <section id="leadership" style={{ padding: isMobile ? '60px 1.25rem 70px' : '100px 2.5rem', background: '#FFF5F5' }}>
       <div style={{ maxWidth: '760px', margin: '0 auto' }}>
         <m.div
           initial={{ opacity: 0, y: 20 }}
@@ -3777,7 +3793,7 @@ function Leadership() {
                 transition: 'all 0.2s',
               }}
             >
-              <div style={{ padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ padding: isMobile ? '1rem 1.15rem' : '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                   <span style={{ color: '#DC2626', fontWeight: 700, fontSize: '0.95rem' }}>{l.org}</span>
                   <span style={{ color: '#1A0808', fontSize: '0.92rem', marginLeft: '10px' }}>· {l.title}</span>
