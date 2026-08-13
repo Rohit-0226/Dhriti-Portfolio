@@ -954,15 +954,12 @@ function Hero() {
 
   return (
     <section id="about" style={{
-      minHeight: isMobile ? 'auto' : '100vh',
       background: '#FFFBFB',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      justifyContent: 'space-between',
       padding: isMobile ? '84px 1.1rem 0px' : '100px 1.5rem 0px',
       position: 'relative',
-      overflow: 'hidden',
     }}>
       {/* Background Dot Grid */}
       <div style={{
@@ -970,10 +967,11 @@ function Hero() {
         backgroundImage: 'radial-gradient(rgba(220, 38, 38, 0.07) 1.2px, transparent 1.2px)',
         backgroundSize: '26px 26px',
         pointerEvents: 'none',
+        overflow: 'hidden',
       }} />
 
       {/* Main Container */}
-      <div style={{ maxWidth: '1180px', width: '100%', margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      <div style={{ maxWidth: '1180px', width: '100%', margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column' }}>
         
         {/* Top Header Block - Flex Column enforces vertical stacking on all screen resolutions */}
         <div style={{
@@ -1056,6 +1054,7 @@ function Hero() {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'flex-end',
+          marginTop: isMobile ? '2.5rem' : '4rem',
           height: isMobile ? 'clamp(340px, 88vw, 430px)' : isTablet ? '430px' : '480px',
         }}>
           {/* RIGHT FLANKING HERO TAGLINE — anchored right: 0rem on pure white dot grid background */}
@@ -1297,7 +1296,7 @@ function About() {
 
   // Single source of truth for the dome height — the arch, the clipped base
   // image and the pop-out mask all have to line up on the same edge.
-  const archH = isMobile ? 'clamp(170px, 44vw, 240px)' : '240px'
+  const archH = isMobile ? 'clamp(170px, 44vw, 240px)' : '270px'
 
   return (
     <section id="about-detail" style={{
@@ -1359,9 +1358,6 @@ function About() {
 
             {/* Premium Editorial Body Paragraphs */}
             <div style={{ fontSize: '1.04rem', lineHeight: 1.8, color: '#374151', fontFamily: 'var(--font-body)' }}>
-              <p style={{ marginBottom: '1.35rem', fontWeight: 700, color: '#1A0808', fontSize: '1.14rem', lineHeight: 1.6 }}>
-                I'm Dhriti — a brand &amp; marketing creative who is fascinated by why people notice, remember and connect with things.
-              </p>
 
               <p style={{ marginBottom: '1.35rem', color: '#4A2020' }}>
                 I love exploring the space where creativity, communication, culture and strategy meet — from understanding brand analytics and human psychology to crafting stories, building personal brands and creating content that actually feels like something.
@@ -1404,8 +1400,8 @@ function About() {
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'flex-end',
-              width: '440px',
-              height: '460px',
+              width: '490px',
+              height: '510px',
             }}
           >
             {/* BLACK SEMI-CIRCLE ARCH */}
@@ -1414,8 +1410,8 @@ function About() {
               bottom: 0,
               width: '100%',
               height: archH,
-              borderTopLeftRadius: '220px',
-              borderTopRightRadius: '220px',
+              borderTopLeftRadius: '245px',
+              borderTopRightRadius: '245px',
               borderBottomLeftRadius: 0,
               borderBottomRightRadius: 0,
               background: '#000000',
@@ -1442,8 +1438,8 @@ function About() {
                   bottom: 0,
                   left: '50%',
                   transform: 'translateX(-50%)',
-                  width: '365px',
-                  height: '440px',
+                  width: '405px',
+                  height: '490px',
                   objectFit: 'contain',
                   objectPosition: 'bottom center',
                   filter: 'drop-shadow(0 18px 34px rgba(0,0,0,0.30))',
@@ -1458,7 +1454,7 @@ function About() {
             whileInView="show"
             viewport={VIEWPORT}
             style={{
-              width: '400px',
+              width: '450px',
               display: 'grid',
               gridTemplateColumns: 'repeat(3, 1fr)',
               gap: '0.5rem',
@@ -1621,7 +1617,7 @@ function SkillsToolsEducation() {
   ]
 
   return (
-    <section id="skills-tools" style={{ padding: isMobile ? '60px 1.25rem 70px' : '80px 1.5rem 100px', background: '#FFFBFB' }}>
+    <section id="skills-tools" style={{ padding: isMobile ? '40px 1.25rem 50px' : '80px 1.5rem 100px', background: '#FFFBFB' }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
 
         {/* TOP BLOCK: *skills. */}
@@ -2004,7 +2000,7 @@ function Experience() {
 
   return (
     <section id="experience" style={{
-      padding: isMobile ? '60px 1.25rem 70px' : '80px 1.5rem 100px',
+      padding: isMobile ? '40px 1.25rem 50px' : '80px 1.5rem 100px',
       background: '#FFFBFB',
     }}>
       <div style={{ maxWidth: '1040px', margin: '0 auto' }}>
@@ -2018,7 +2014,7 @@ function Experience() {
           style={{
             background: '#ffffff',
             borderRadius: isMobile ? '22px' : '28px',
-            padding: isMobile ? '2.25rem 1.4rem' : '3.5rem 3rem',
+            padding: isMobile ? '1.5rem 1.25rem' : '3.5rem 3rem',
             boxShadow: '0 12px 48px rgba(0, 0, 0, 0.05)',
             border: '1px solid rgba(0, 0, 0, 0.07)',
           }}
@@ -2046,7 +2042,7 @@ function Experience() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={VIEWPORT}
                   transition={{ duration: DUR.base, ease: EASE, delay: index * (isMobile ? 0.04 : 0.1) }}
-                  style={{ display: 'flex', gap: isMobile ? '1rem' : '2rem', position: 'relative', paddingBottom: isLast ? '0' : isMobile ? '1.75rem' : '2.75rem' }}
+                  style={{ display: 'flex', gap: isMobile ? '0.85rem' : '2rem', position: 'relative', paddingBottom: isLast ? '0' : isMobile ? '1.5rem' : '2.75rem' }}
                 >
                   {/* Left Column: Logo Badge & Connector Line */}
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', flexShrink: 0 }}>
@@ -2578,7 +2574,7 @@ function Projects() {
   ]
 
   return (
-    <section id="projects" style={{ background: '#FFFBFB', paddingBottom: isMobile ? '70px' : '100px' }}>
+    <section id="projects" style={{ background: '#FFFBFB', paddingBottom: isMobile ? '50px' : '100px' }}>
 
       {/* Dark Divider Segregation Banner: 00 notable Projects */}
       <m.div
@@ -3700,7 +3696,7 @@ function ReelCard({ label, sublabel, hint }: { label: string; sublabel: string; 
 function CreativeWork() {
   const { isMobile } = useBreakpoint()
   return (
-    <section id="creative-work" style={{ padding: isMobile ? '60px 1.25rem 70px' : '100px 2.5rem', background: '#0F0505' }}>
+    <section id="creative-work" style={{ padding: isMobile ? '40px 1.25rem 50px' : '100px 2.5rem', background: '#0F0505' }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
         {/* Header */}
         <m.div
@@ -3741,7 +3737,7 @@ function CreativeWork() {
           }}
         >
           {REEL_SLOTS.map(slot => (
-            <m.div key={slot.label} variants={fadeUp}>
+            <m.div key={slot.label} variants={fadeUp} style={{ flex: '1 1 0' }}>
               <ReelCard label={slot.label} sublabel={slot.sublabel} hint={slot.hint} />
             </m.div>
           ))}
@@ -3761,7 +3757,7 @@ function Leadership() {
   const [open, setOpen] = useState<number | null>(null)
   const { isMobile } = useBreakpoint()
   return (
-    <section id="leadership" style={{ padding: isMobile ? '60px 1.25rem 70px' : '100px 2.5rem', background: '#FFF5F5' }}>
+    <section id="leadership" style={{ padding: isMobile ? '40px 1.25rem 50px' : '100px 2.5rem', background: '#FFF5F5' }}>
       <div style={{ maxWidth: '760px', margin: '0 auto' }}>
         <m.div
           initial={{ opacity: 0, y: 20 }}
@@ -3967,51 +3963,61 @@ function Contact() {
                 whileHover={{ scale: 1.02, backgroundColor: 'rgba(220,38,38,0.15)', borderColor: '#DC2626' }}
                 whileTap={{ scale: 0.98 }}
                 style={{
-                  padding: '1.1rem 1.25rem',
+                  padding: isMobile ? '1rem' : '1.1rem 1.25rem',
                   background: 'rgba(255,255,255,0.04)',
                   border: '1px solid rgba(255,255,255,0.1)',
                   borderRadius: '16px',
                   display: 'flex',
-                  alignItems: 'center',
+                  flexDirection: isMobile ? 'column' : 'row',
+                  alignItems: isMobile ? 'stretch' : 'center',
                   justifyContent: 'space-between',
+                  gap: isMobile ? '0.75rem' : '0.5rem',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
                   <div style={{
-                    width: '42px',
-                    height: '42px',
+                    width: isMobile ? '38px' : '42px',
+                    height: isMobile ? '38px' : '42px',
                     borderRadius: '12px',
                     background: '#DC2626',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     color: '#ffffff',
-                    fontSize: '1.2rem',
+                    fontSize: isMobile ? '1rem' : '1.2rem',
+                    flexShrink: 0,
                   }}>
                     ✉
                   </div>
-                  <div>
+                  <div style={{ minWidth: 0 }}>
                     <div style={{ fontSize: '0.72rem', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>
                       Direct Email
                     </div>
-                    <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#ffffff' }}>
+                    <div style={{ fontSize: isMobile ? '0.82rem' : '0.95rem', fontWeight: 700, color: '#ffffff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       dhriti.career@gmail.com
                     </div>
                   </div>
                 </div>
 
-                <span style={{
-                  fontSize: '0.8rem',
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.4rem',
+                  fontSize: '0.78rem',
                   fontWeight: 700,
-                  color: copied ? '#4ADE80' : '#FCA5A5',
-                  background: copied ? 'rgba(74,222,128,0.15)' : 'rgba(220,38,38,0.2)',
-                  padding: '5px 12px',
-                  borderRadius: '8px',
+                  color: copied ? '#4ADE80' : '#ffffff',
+                  background: copied ? 'rgba(74,222,128,0.15)' : 'rgba(220,38,38,0.25)',
+                  border: copied ? '1px solid rgba(74,222,128,0.3)' : '1px solid rgba(220,38,38,0.4)',
+                  padding: isMobile ? '0.6rem 1rem' : '5px 12px',
+                  borderRadius: '10px',
+                  flexShrink: 0,
+                  transition: 'all 0.25s ease',
                 }}>
-                  {copied ? '✓ Copied!' : 'Click to copy'}
-                </span>
+                  {copied ? '✓ Copied!' : '📋 Tap to copy'}
+                </div>
               </m.div>
 
               {/* Phone Link */}
@@ -4019,43 +4025,61 @@ function Contact() {
                 href="tel:+918000488008"
                 whileHover={{ scale: 1.02, backgroundColor: 'rgba(255,255,255,0.08)' }}
                 style={{
-                  padding: '1.1rem 1.25rem',
+                  padding: isMobile ? '1rem' : '1.1rem 1.25rem',
                   background: 'rgba(255,255,255,0.04)',
                   border: '1px solid rgba(255,255,255,0.1)',
                   borderRadius: '16px',
                   display: 'flex',
-                  alignItems: 'center',
+                  flexDirection: isMobile ? 'column' : 'row',
+                  alignItems: isMobile ? 'stretch' : 'center',
                   justifyContent: 'space-between',
+                  gap: isMobile ? '0.75rem' : '0.5rem',
                   textDecoration: 'none',
                   color: '#ffffff',
                   transition: 'all 0.2s ease',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
                   <div style={{
-                    width: '42px',
-                    height: '42px',
+                    width: isMobile ? '38px' : '42px',
+                    height: isMobile ? '38px' : '42px',
                     borderRadius: '12px',
                     background: 'rgba(255,255,255,0.1)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     color: '#ffffff',
-                    fontSize: '1.1rem',
+                    fontSize: isMobile ? '1rem' : '1.1rem',
+                    flexShrink: 0,
                   }}>
                     📞
                   </div>
-                  <div>
+                  <div style={{ minWidth: 0 }}>
                     <div style={{ fontSize: '0.72rem', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>
                       Phone / Mobile
                     </div>
-                    <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#ffffff' }}>
+                    <div style={{ fontSize: isMobile ? '0.82rem' : '0.95rem', fontWeight: 700, color: '#ffffff' }}>
                       +91 80004 88008
                     </div>
                   </div>
                 </div>
 
-                <span style={{ fontSize: '0.85rem', color: '#9CA3AF' }}>Call ↗</span>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.4rem',
+                  fontSize: '0.78rem',
+                  fontWeight: 600,
+                  color: '#9CA3AF',
+                  background: 'rgba(255,255,255,0.06)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  padding: isMobile ? '0.6rem 1rem' : '5px 12px',
+                  borderRadius: '10px',
+                  flexShrink: 0,
+                }}>
+                  📲 Call Now
+                </div>
               </m.a>
 
               {/* Location Badge */}
