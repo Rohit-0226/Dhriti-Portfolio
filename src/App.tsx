@@ -11,7 +11,107 @@ import {
   useInView,
   type Variants,
 } from 'framer-motion'
-import { Megaphone, Gem, Sparkles, Share2 } from 'lucide-react'
+import { Megaphone, Gem, Sparkles, Share2, Maximize2, X, Presentation, Palette, PenLine, CalendarCheck, Compass, Lightbulb, Target, Rocket } from 'lucide-react'
+
+/* ─── Brand marks ───────────────────────────────────────────
+ * lucide removed brand icons, so real product logos are inline SVG in their
+ * official colours. Anything that is a skill rather than a product uses a
+ * lucide line icon in the site red instead — same treatment as the hero pills.
+ * ---------------------------------------------------------- */
+
+/** Canva — gradient disc with the wordmark C. */
+function CanvaLogo({ size = 24 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+      <defs>
+        <linearGradient id="canvaG" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#7D2AE8" />
+          <stop offset="50%" stopColor="#00C4CC" />
+          <stop offset="100%" stopColor="#01C3CC" />
+        </linearGradient>
+      </defs>
+      <circle cx="12" cy="12" r="11" fill="url(#canvaG)" />
+      <path
+        d="M15.4 14.6c-.8 1.2-2.1 2-3.5 2-2 0-3.4-1.6-3.4-3.9 0-3 1.9-5.6 4.1-5.6 1 0 1.7.6 1.7 1.5 0 .5-.2 1-.5 1.3-.2.2-.5.1-.5-.2 0-.6-.3-1-.8-1-1.1 0-2.1 1.7-2.1 3.6 0 1.4.6 2.3 1.6 2.3.9 0 1.7-.6 2.3-1.5.2-.3.6-.1.6.2 0 .4-.1.8-.5 1.3z"
+        fill="#fff"
+      />
+    </svg>
+  )
+}
+
+/** Microsoft — the four-square mark in its official palette. */
+function MicrosoftLogo({ size = 22 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+      <rect x="1.5" y="1.5" width="9.5" height="9.5" fill="#F25022" />
+      <rect x="13" y="1.5" width="9.5" height="9.5" fill="#7FBA00" />
+      <rect x="1.5" y="13" width="9.5" height="9.5" fill="#00A4EF" />
+      <rect x="13" y="13" width="9.5" height="9.5" fill="#FFB900" />
+    </svg>
+  )
+}
+
+/** Google — the G in its official four colours. */
+function GoogleLogo({ size = 22 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
+      <path fill="#4285F4" d="M45.1 24.5c0-1.6-.1-2.7-.4-3.9H24v7.1h12.1c-.2 1.8-1.6 4.5-4.5 6.3l6.9 5.4c4.1-3.8 6.6-9.3 6.6-14.9z" />
+      <path fill="#34A853" d="M24 46c5.9 0 10.9-2 14.5-5.3l-6.9-5.4c-1.9 1.3-4.4 2.2-7.6 2.2-5.8 0-10.7-3.8-12.5-9.1l-7.1 5.5C8.1 41.1 15.5 46 24 46z" />
+      <path fill="#FBBC05" d="M11.5 28.4c-.5-1.4-.7-2.9-.7-4.4s.3-3 .7-4.4l-7.1-5.5C2.9 17 2 20.4 2 24s.9 7 2.4 9.9l7.1-5.5z" />
+      <path fill="#EA4335" d="M24 10.2c4.1 0 6.9 1.8 8.5 3.3l6.1-6C34.9 4.1 29.9 2 24 2 15.5 2 8.1 6.9 4.4 14.1l7.1 5.5c1.8-5.3 6.7-9.4 12.5-9.4z" />
+    </svg>
+  )
+}
+
+/** Mailchimp — brand yellow with an envelope; Freddie is too intricate to
+ *  redraw faithfully, and a bad approximation looks worse than none. */
+function MailchimpLogo({ size = 24 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+      <circle cx="12" cy="12" r="11" fill="#FFE01B" />
+      <path
+        d="M6.5 8.5h11a.8.8 0 01.8.8v5.4a.8.8 0 01-.8.8h-11a.8.8 0 01-.8-.8V9.3a.8.8 0 01.8-.8z"
+        fill="none"
+        stroke="#241C15"
+        strokeWidth="1.5"
+      />
+      <path d="M6 9.2l6 4 6-4" fill="none" stroke="#241C15" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+/** WhatsApp — used for the WATI Business API entry. */
+function WhatsAppLogo({ size = 24 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+      <path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.08L2 22l5.05-1.33A9.94 9.94 0 0012 22c5.52 0 10-4.48 10-10S17.52 2 12 2z" fill="#25D366" />
+      <path d="M8.5 9.5c.2-.4.5-.4.8-.4h.5c.2 0 .4.1.5.4.3.7.8 1.8.9 2 .1.2.1.3 0 .5-.1.2-.2.3-.4.5-.1.1-.3.3-.2.5.3.6.9 1.5 1.7 2.1.8.6 1.6.9 2.2 1.1.2.1.4 0 .5-.2.2-.3.6-.8.8-1 .1-.2.3-.2.5-.1.2.1 1.4.7 1.6.8.2.1.4.2.4.4 0 .6-.4 1.4-1 1.6-.6.2-1.4.3-3.8-.6-2.9-1.2-4.8-4.2-5-4.4-.2-.2-1.3-1.7-1.3-3.2 0-1.5.8-2.3 1.1-2.6z" fill="#FFFFFF" />
+    </svg>
+  )
+}
+
+/** Shared tile so every logo sits in an identical frame. */
+function ToolTile({ children, title }: { children: React.ReactNode; title: string }) {
+  return (
+    <div
+      title={title}
+      style={{
+        width: '44px',
+        height: '44px',
+        borderRadius: '13px',
+        background: '#ffffff',
+        border: '1px solid rgba(0,0,0,0.08)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        boxShadow: '0 3px 10px rgba(0,0,0,0.05)',
+        flexShrink: 0,
+      }}
+    >
+      {children}
+    </div>
+  )
+}
 
 /** Instagram glyph — lucide dropped brand icons, so this is inline. */
 function InstagramIcon({ size = 17 }: { size?: number }) {
@@ -1234,21 +1334,26 @@ function About() {
               <RevealHeading>about.</RevealHeading>
             </h2>
 
-            {/* Premium Styled Subheading */}
-            <div className="font-display" style={{
-              fontSize: 'clamp(1.3rem, 2.4vw, 1.9rem)',
-              fontWeight: 800,
+            {/* Handwritten intro — the one personal, human note before the
+                editorial body copy takes over. */}
+            <p style={{
+              fontFamily: 'var(--font-hand)',
+              fontSize: 'clamp(1.5rem, 2.8vw, 2.05rem)',
+              fontWeight: 600,
               color: '#DC2626',
-              letterSpacing: '-0.02em',
-              lineHeight: 1.3,
-              marginBottom: '1.75rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
+              lineHeight: 1.4,
+              margin: '0 0 1.75rem',
+              // Wide enough to break across two lines rather than three
+              maxWidth: isMobile ? '100%' : '46ch',
             }}>
-              <span style={{ display: 'inline-block', width: '28px', height: '3px', background: '#DC2626', borderRadius: '99px', flexShrink: 0 }} />
-              <span>Just a curious kid with too many ideas.</span>
-            </div>
+              Hi, I&rsquo;m Dhriti — a brand &amp; marketing creative who likes turning ideas into{' '}
+              <span style={{
+                borderBottom: '2px solid rgba(220,38,38,0.45)',
+                paddingBottom: '2px',
+              }}>
+                things people notice.
+              </span>
+            </p>
 
             {/* Premium Editorial Body Paragraphs */}
             <div style={{ fontSize: '1.04rem', lineHeight: 1.8, color: '#374151', fontFamily: 'var(--font-body)' }}>
@@ -1277,9 +1382,16 @@ function About() {
                 You'll probably find me journaling, dancing Kathak, exploring a new skill or getting lost in some random idea. ✨
               </p>
             </div>
+
           </m.div>
 
-          {/* Right Column: Image popping out of compact Pure Black Semi-Circle Arch */}
+          {!isMobile && (
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            width: 'auto',
+          }}>
           <m.div
             initial={{ opacity: 0, x: 28 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -1290,14 +1402,11 @@ function About() {
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'flex-end',
-              width: isMobile ? 'min(340px, 88vw)' : '440px',
-              height: isMobile ? 'clamp(360px, 90vw, 460px)' : '460px',
+              width: '440px',
+              height: '460px',
             }}
           >
-            {/* BLACK SEMI-CIRCLE ARCH — sits behind the portrait as a backdrop.
-                Deliberately a single layer: overlaying a second clipped copy of
-                the photo and cross-fading them double-composites the overlap
-                into a visible washed band across her torso. */}
+            {/* BLACK SEMI-CIRCLE ARCH */}
             <div style={{
               position: 'absolute',
               bottom: 0,
@@ -1312,9 +1421,7 @@ function About() {
               zIndex: 1,
             }} />
 
-            {/* PORTRAIT — one image, in front of the dome. Kept narrower than
-                the arch so her silhouette stays inside the dome's curve instead
-                of spilling past its edges. */}
+            {/* PORTRAIT */}
             <div style={{
               position: 'absolute',
               bottom: 0,
@@ -1333,8 +1440,8 @@ function About() {
                   bottom: 0,
                   left: '50%',
                   transform: 'translateX(-50%)',
-                  width: isMobile ? 'min(280px, 74vw)' : '365px',
-                  height: isMobile ? 'clamp(340px, 86vw, 440px)' : '440px',
+                  width: '365px',
+                  height: '440px',
                   objectFit: 'contain',
                   objectPosition: 'bottom center',
                   filter: 'drop-shadow(0 18px 34px rgba(0,0,0,0.30))',
@@ -1342,8 +1449,98 @@ function About() {
               />
             </div>
           </m.div>
+          {/* HOW SHE WORKS — three beats under the portrait */}
+          <m.div
+            variants={stagger(0.1)}
+            initial="hidden"
+            whileInView="show"
+            viewport={VIEWPORT}
+            style={{
+              width: '400px',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: '0.5rem',
+              marginTop: '-52px',
+              position: 'relative',
+              zIndex: 5,
+              background: '#ffffff',
+              border: '1px solid rgba(0,0,0,0.07)',
+              borderRadius: '18px',
+              padding: '1.15rem 1rem',
+              boxShadow: '0 16px 40px rgba(0,0,0,0.12)',
+            }}
+          >
+            {[
+              { icon: Lightbulb, label: 'Ideas', line: 'I imagine.' },
+              { icon: Target, label: 'Strategy', line: 'I plan.' },
+              { icon: Rocket, label: 'Execution', line: 'I make it happen.' },
+            ].map(({ icon: Icon, label, line }, i) => (
+              <m.div
+                key={label}
+                variants={fadeUp}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  textAlign: 'center',
+                  gap: '0.4rem',
+                  borderLeft: i > 0 ? '1px solid rgba(0,0,0,0.07)' : 'none',
+                  paddingLeft: i > 0 ? '0.5rem' : 0,
+                }}
+              >
+                <Icon size={19} strokeWidth={2.1} color="#DC2626" />
+                <div>
+                  <span className="font-mono" style={{
+                    fontSize: '0.6rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    color: '#1A0808',
+                    display: 'block',
+                  }}>
+                    {label}
+                  </span>
+                  <span style={{ fontSize: '0.74rem', color: '#5C2C2C', fontWeight: 500 }}>
+                    {line}
+                  </span>
+                </div>
+              </m.div>
+            ))}
+          </m.div>
+          </div>
+          )}
 
         </div>
+
+        {/* Closing strapline — desktop only */}
+        {!isMobile && (
+        <m.div
+          initial={{ opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={VIEWPORT}
+          transition={{ duration: DUR.base, ease: EASE, delay: 0.1 }}
+          className="font-display"
+          style={{
+            marginTop: '2.25rem',
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: '0.75rem 1.25rem',
+            fontSize: '1rem',
+            fontWeight: 800,
+            letterSpacing: '-0.01em',
+            color: '#1A0808',
+            textAlign: 'center',
+          }}
+        >
+          <span>Creative thinking.</span>
+          <span style={{ color: '#DC2626' }}>✦</span>
+          <span>Strategic execution.</span>
+          <span style={{ color: '#DC2626' }}>✦</span>
+          <span>Always <span style={{ color: '#DC2626' }}>curious.</span></span>
+        </m.div>
+        )}
       </div>
     </section>
   )
@@ -1371,22 +1568,13 @@ function SkillsToolsEducation() {
       title: 'Visual Design & Presentation',
       renderLogos: () => (
         <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
-          {/* Canva */}
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#ECFEFF', border: '1px solid #CFFAFE', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-            <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0891B2' }}>C</span>
-          </div>
-          {/* Presentation Design */}
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#FFF1F2', border: '1px solid #FECDD3', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M4 5h16a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1z" stroke="#E11D48" strokeWidth="2"/>
-              <path d="M12 17v4M8 21h8" stroke="#E11D48" strokeWidth="2" strokeLinecap="round"/>
-              <path d="M8 10l3 3 5-5" stroke="#E11D48" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
-          {/* Visual Communication */}
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#F8FAFC', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-            <span style={{ fontSize: '1.2rem' }}>🎨</span>
-          </div>
+          <ToolTile title="Canva"><CanvaLogo size={26} /></ToolTile>
+          <ToolTile title="Presentation Design">
+            <Presentation size={21} strokeWidth={2.1} color="#DC2626" />
+          </ToolTile>
+          <ToolTile title="Visual Communication">
+            <Palette size={21} strokeWidth={2.1} color="#DC2626" />
+          </ToolTile>
         </div>
       ),
       tools: ['Canva', 'Presentation Design', 'Visual Communication'],
@@ -1395,22 +1583,8 @@ function SkillsToolsEducation() {
       title: 'Productivity & Office Suites',
       renderLogos: () => (
         <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
-          {/* Microsoft Office */}
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#FFF1F2', border: '1px solid #FECDD3', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <rect x="3" y="3" width="8" height="8" rx="1.5" fill="#E11D48"/>
-              <rect x="13" y="3" width="8" height="8" rx="1.5" fill="#10B981"/>
-              <rect x="3" y="13" width="8" height="8" rx="1.5" fill="#3B82F6"/>
-              <rect x="13" y="13" width="8" height="8" rx="1.5" fill="#F59E0B"/>
-            </svg>
-          </div>
-          {/* Google Workspace */}
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#F8FAFC', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" stroke="#4285F4" strokeWidth="2" strokeLinejoin="round"/>
-              <path d="M12 12L3 7M12 12l9-5M12 12v10" stroke="#EA4335" strokeWidth="2" strokeLinejoin="round"/>
-            </svg>
-          </div>
+          <ToolTile title="Microsoft Office"><MicrosoftLogo size={21} /></ToolTile>
+          <ToolTile title="Google Workspace"><GoogleLogo size={21} /></ToolTile>
         </div>
       ),
       tools: ['Microsoft Office (Excel, PowerPoint, Word)', 'Google Workspace (Docs, Sheets, Slides, Drive)'],
@@ -1419,21 +1593,11 @@ function SkillsToolsEducation() {
       title: 'Content & Marketing Tech',
       renderLogos: () => (
         <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
-          {/* Mailchimp */}
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#FEFCE8', border: '1px solid #FEF08A', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-            <span style={{ fontSize: '1.2rem' }}>🐵</span>
-          </div>
-          {/* WATI WhatsApp API */}
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#F0FDF4', border: '1px solid #BBF7D0', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.08L2 22l5.05-1.33A9.94 9.94 0 0012 22c5.52 0 10-4.48 10-10S17.52 2 12 2z" fill="#25D366"/>
-              <path d="M8.5 9.5c.2-.4.5-.4.8-.4h.5c.2 0 .4.1.5.4.3.7.8 1.8.9 2 .1.2.1.3 0 .5-.1.2-.2.3-.4.5-.1.1-.3.3-.2.5.3.6.9 1.5 1.7 2.1.8.6 1.6.9 2.2 1.1.2.1.4 0 .5-.2.2-.3.6-.8.8-1 .1-.2.3-.2.5-.1.2.1 1.4.7 1.6.8.2.1.4.2.4.4 0 .6-.4 1.4-1 1.6-.6.2-1.4.3-3.8-.6-2.9-1.2-4.8-4.2-5-4.4-.2-.2-1.3-1.7-1.3-3.2 0-1.5.8-2.3 1.1-2.6z" fill="#FFFFFF"/>
-            </svg>
-          </div>
-          {/* Storytelling */}
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#FAF5FF', border: '1px solid #F3E8FF', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-            <span style={{ fontSize: '1.2rem' }}>✍️</span>
-          </div>
+          <ToolTile title="Mailchimp"><MailchimpLogo size={26} /></ToolTile>
+          <ToolTile title="WATI — WhatsApp Business API"><WhatsAppLogo size={24} /></ToolTile>
+          <ToolTile title="Content Strategy & Ghostwriting">
+            <PenLine size={20} strokeWidth={2.1} color="#DC2626" />
+          </ToolTile>
         </div>
       ),
       tools: ['Content Strategy & Storytelling', 'Ghostwriting', 'Mailchimp', 'WATI (WhatsApp Business API)'],
@@ -1442,14 +1606,12 @@ function SkillsToolsEducation() {
       title: 'Management & Strategy',
       renderLogos: () => (
         <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
-          {/* Event Management */}
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#FFF7ED', border: '1px solid #FFEDD5', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-            <span style={{ fontSize: '1.2rem' }}>🎟️</span>
-          </div>
-          {/* Social Media Management */}
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#EFF6FF', border: '1px solid #BFDBFE', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-            <span style={{ fontSize: '1.2rem' }}>📣</span>
-          </div>
+          <ToolTile title="Event Management">
+            <CalendarCheck size={20} strokeWidth={2.1} color="#DC2626" />
+          </ToolTile>
+          <ToolTile title="Social Media Management">
+            <Megaphone size={20} strokeWidth={2.1} color="#DC2626" />
+          </ToolTile>
         </div>
       ),
       tools: ['Event Management', 'Social Media Management'],
@@ -1834,7 +1996,7 @@ function Experience() {
       logoImg: yougamiLogoImg,
       logoText: 'Yougami',
       description: 'I worked on school partnerships, account management, and social media creation. I led campus ambassador initiatives, managed student ambassadors, and organized engagement activities to boost brand presence. I also handled onboarding and communication with partnered schools, ensuring smooth program execution and client satisfaction. Additionally, I created and scheduled content across social media platforms, tracking performance and optimizing strategies for better reach and engagement.',
-      skills: ['Microsoft Office', 'Project Management', 'Account Management'],
+      skills: ['Microsoft Office', 'Project Management', 'Account Management', 'Campaign Management'],
     },
   ]
 
@@ -2032,6 +2194,173 @@ function Experience() {
   )
 }
 
+/* ─── Reel Card ─────────────────────────────────────────────
+ * Its own component so each card owns a ref to its <video>. The hover
+ * handlers live on the CARD, not on the video: the gradient overlay covers
+ * the video completely, so mouse events never reach the element itself.
+ * ---------------------------------------------------------- */
+function DroneReelCard({
+  reel,
+  index,
+  isMobile,
+  isCompact,
+  onOpen,
+}: {
+  reel: any
+  index: number
+  isMobile: boolean
+  isCompact: boolean
+  onOpen: (reel: any, video?: string, poster?: string) => void
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [hovered, setHovered] = useState(false)
+  const localVideo = findReelAsset(reelVideoFiles, reel.id)
+  const localPoster = findReelAsset(reelPosterFiles, reel.id) ?? reel.img
+
+  const preview = (on: boolean) => {
+    setHovered(on)
+    const v = videoRef.current
+    if (!v) return
+    if (on) {
+      void v.play().catch(() => {})
+    } else {
+      v.pause()
+      v.currentTime = 0
+    }
+  }
+
+  return (
+    <m.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={VIEWPORT}
+      transition={{ duration: DUR.base, ease: EASE, delay: index * (isMobile ? 0.05 : 0.1) }}
+      whileHover={{ scale: 1.04, y: -5, zIndex: 10 }}
+      whileTap={{ scale: 0.98 }}
+      onMouseEnter={() => preview(true)}
+      onMouseLeave={() => preview(false)}
+      onClick={() => onOpen(reel, localVideo, localPoster)}
+      style={{
+        // The zig-zag is done with margins, not `transform`: framer-motion owns
+        // `transform` for whileHover, so an inline translateY gets overwritten
+        // and the whole stagger silently flattens out.
+        marginTop: isCompact ? 0 : index % 2 === 0 ? 0 : '52px',
+        marginBottom: isCompact ? 0 : index % 2 === 0 ? '52px' : 0,
+        position: 'relative',
+        borderRadius: isMobile ? '18px' : '24px',
+        overflow: 'hidden',
+        background: '#09090B',
+        boxShadow: '0 14px 35px rgba(0,0,0,0.18)',
+        aspectRatio: '9/16',
+        cursor: 'pointer',
+        border: '2px solid rgba(255,255,255,0.8)',
+        ...(isMobile && { flex: '0 0 46%', scrollSnapAlign: 'center' }),
+      }}
+    >
+      {localVideo ? (
+        <video
+          ref={videoRef}
+          src={localVideo}
+          poster={localPoster}
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.9)' }}
+        />
+      ) : (
+        <img
+          src={localPoster}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.9)' }}
+        />
+      )}
+
+      {/* Overlay. pointerEvents none so it can never swallow the card's
+          hover — that is exactly what stopped the preview from playing. */}
+      <div
+        // Chrome dims on hover so the clip itself is the focus. Plain CSS
+        // transition rather than a motion value — one less animation to drive
+        // per card, and it degrades to an instant swap rather than sticking.
+        style={{
+          position: 'absolute',
+          inset: 0,
+          pointerEvents: 'none',
+          opacity: hovered ? 0.25 : 1,
+          transition: 'opacity 0.28s cubic-bezier(0.33, 1, 0.68, 1)',
+          background: 'linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.18) 55%, rgba(0,0,0,0.62) 100%)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          padding: '0.85rem 0.75rem',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <span style={{
+            background: 'rgba(0,0,0,0.6)',
+            backdropFilter: 'blur(8px)',
+            color: '#ffffff',
+            fontSize: '0.7rem',
+            fontWeight: 700,
+            padding: '3px 8px',
+            borderRadius: '999px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '4px',
+          }}>
+            ❤️ {reel.views}
+          </span>
+        </div>
+
+        {/* Play badge gets out of the way entirely once the clip is running */}
+        <div
+          style={{
+            opacity: hovered ? 0 : 1,
+            transform: hovered ? 'scale(0.7)' : 'scale(1)',
+            transition: 'opacity 0.28s cubic-bezier(0.33, 1, 0.68, 1), transform 0.28s cubic-bezier(0.33, 1, 0.68, 1)',
+            alignSelf: 'center',
+            width: '46px',
+            height: '46px',
+            borderRadius: '50%',
+            background: 'rgba(220, 38, 38, 0.9)',
+            backdropFilter: 'blur(8px)',
+            border: '2px solid rgba(255,255,255,0.9)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#ffffff',
+            boxShadow: '0 6px 20px rgba(220,38,38,0.4)',
+          }}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </div>
+
+        {/* Expand affordance — titles removed */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <span style={{
+            fontSize: '0.62rem',
+            color: '#ffffff',
+            background: 'rgba(0,0,0,0.55)',
+            backdropFilter: 'blur(8px)',
+            padding: '3px 9px',
+            borderRadius: '999px',
+            fontWeight: 700,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '4px',
+          }}>
+            <Maximize2 size={10} strokeWidth={2.8} /> {isMobile ? 'Tap' : 'Click'} to expand
+          </span>
+        </div>
+      </div>
+    </m.div>
+  )
+}
+
 /* ─── Recommendation Card Item Component ───────────────────────────── */
 function RecommendationCardItem({ rec, isMobile }: { rec: any; isMobile: boolean }) {
   const [expanded, setExpanded] = useState(false)
@@ -2194,8 +2523,9 @@ function Projects() {
     url: string
     embedUrl: string
     title: string
+    localVideo?: string
+    localPoster?: string
   } | null>(null)
-  const [inlineReelId, setInlineReelId] = useState<string | null>(null)
 
   const droneReels = [
     {
@@ -2681,203 +3011,60 @@ function Projects() {
                 paddingInline: '1.25rem',
               }),
             }}>
-              {droneReels.map((reel, index) => {
-                const isInline = inlineReelId === reel.id
-                const localVideo = findReelAsset(reelVideoFiles, reel.id)
-                const localPoster = findReelAsset(reelPosterFiles, reel.id) ?? reel.img
-
-                return (
-                  <m.div
-                    key={reel.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={VIEWPORT}
-                    transition={{ duration: DUR.base, ease: EASE, delay: index * (isMobile ? 0.05 : 0.1) }}
-                    whileHover={{ scale: 1.04, y: -5, zIndex: 10 }}
-                    whileTap={{ scale: 0.98 }}
-                    // A self-hosted clip plays right here; only reels without a
-                    // local file still have to hand off to Instagram.
-                    onClick={() => { if (!localVideo) setActiveReelModal(reel) }}
-                    style={{
-                      // The zig-zag is done with margins, not `transform`.
-                      // framer-motion owns `transform` for whileHover, so an
-                      // inline translateY here gets overwritten and the whole
-                      // stagger silently flattens out.
-                      marginTop: isCompact ? 0 : index % 2 === 0 ? 0 : '52px',
-                      marginBottom: isCompact ? 0 : index % 2 === 0 ? '52px' : 0,
-                      position: 'relative',
-                      borderRadius: isMobile ? '18px' : '24px',
-                      overflow: 'hidden',
-                      background: '#09090B',
-                      boxShadow: '0 14px 35px rgba(0,0,0,0.18)',
-                      aspectRatio: '9/16',
-                      cursor: 'pointer',
-                      border: '2px solid rgba(255,255,255,0.8)',
-                      ...(isMobile && {
-                        flex: '0 0 46%',
-                        scrollSnapAlign: 'center',
-                      }),
-                    }}
-                  >
-                    {isInline ? (
-                      <div style={{ width: '100%', height: '100%', position: 'relative', background: '#000000' }}>
-                        <iframe
-                          src={reel.embedUrl}
-                          title={reel.title}
-                          style={{ width: '100%', height: '100%', border: 'none' }}
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                        />
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            setInlineReelId(null)
-                          }}
-                          style={{
-                            position: 'absolute',
-                            top: '8px',
-                            right: '8px',
-                            background: 'rgba(0,0,0,0.75)',
-                            color: '#ffffff',
-                            border: 'none',
-                            borderRadius: '50%',
-                            width: '26px',
-                            height: '26px',
-                            cursor: 'pointer',
-                            fontSize: '0.75rem',
-                            zIndex: 20,
-                          }}
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    ) : (
-                      <>
-                        {/* Cover: a real self-hosted clip when one exists —
-                            silent hover preview, exactly like Instagram's grid
-                            — otherwise the static cover image. */}
-                        {localVideo ? (
-                          <video
-                            src={localVideo}
-                            poster={localPoster}
-                            muted
-                            loop
-                            playsInline
-                            preload="metadata"
-                            onMouseEnter={(e) => { void e.currentTarget.play().catch(() => {}) }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.pause()
-                              e.currentTarget.currentTime = 0
-                            }}
-                            style={{
-                              width: '100%',
-                              height: '100%',
-                              objectFit: 'cover',
-                              filter: 'brightness(0.9)',
-                            }}
-                          />
-                        ) : (
-                          <img
-                            src={localPoster}
-                            alt={reel.title}
-                            loading="lazy"
-                            decoding="async"
-                            style={{
-                              width: '100%',
-                              height: '100%',
-                              objectFit: 'cover',
-                              filter: 'brightness(0.9)',
-                              transition: 'transform 0.4s ease',
-                            }}
-                          />
-                        )}
-
-                        {/* Gradient Overlay */}
-                        <div style={{
-                          position: 'absolute',
-                          inset: 0,
-                          background: 'linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.88) 100%)',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'space-between',
-                          padding: '1rem 0.85rem',
-                        }}>
-                          {/* Top Engagement Badge */}
-                          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                            <span style={{
-                              background: 'rgba(0,0,0,0.6)',
-                              backdropFilter: 'blur(8px)',
-                              color: '#ffffff',
-                              fontSize: '0.7rem',
-                              fontWeight: 700,
-                              padding: '3px 8px',
-                              borderRadius: '999px',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '4px',
-                            }}>
-                              ❤️ {reel.views}
-                            </span>
-                          </div>
-
-                          {/* Center Play Button Icon */}
-                          <div style={{
-                            alignSelf: 'center',
-                            width: '46px',
-                            height: '46px',
-                            borderRadius: '50%',
-                            background: 'rgba(220, 38, 38, 0.9)',
-                            backdropFilter: 'blur(8px)',
-                            border: '2px solid rgba(255,255,255,0.9)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: '#ffffff',
-                            boxShadow: '0 6px 20px rgba(220,38,38,0.4)',
-                          }}>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                              <path d="M8 5v14l11-7z"/>
-                            </svg>
-                          </div>
-
-                          {/* Bottom Title Label & Action */}
-                          <div>
-                            <span className="font-display" style={{
-                              fontSize: '0.85rem',
-                              fontWeight: 800,
-                              color: '#ffffff',
-                              display: 'block',
-                              lineHeight: 1.25,
-                              textShadow: '0 2px 4px rgba(0,0,0,0.6)',
-                            }}>
-                              {reel.title}
-                            </span>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
-                              {localVideo ? (
-                                <span style={{
-                                  fontSize: '0.65rem',
-                                  color: '#ffffff',
-                                  background: 'rgba(255,255,255,0.25)',
-                                  padding: '2px 8px',
-                                  borderRadius: '999px',
-                                  fontWeight: 700,
-                                }}>
-                                  ▶ {isMobile ? 'Tap to play' : 'Hover to play'}
-                                </span>
-                              ) : (
-                                <span style={{ fontSize: '0.65rem', color: '#FCA5A5', fontWeight: 600 }}>
-                                  ↗ View on Instagram
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </m.div>
-                )
-              })}
+              {droneReels.map((reel, index) => (
+                <DroneReelCard
+                  key={reel.id}
+                  reel={reel}
+                  index={index}
+                  isMobile={isMobile}
+                  isCompact={isCompact}
+                  onOpen={(r, video, poster) => setActiveReelModal({ ...r, localVideo: video, localPoster: poster })}
+                />
+              ))}
             </div>
+
+            {/* Link out to the client's own feed for the rest of the work.
+                Matches the site's primary CTA: red pill, mono, uppercase. */}
+            <m.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={VIEWPORT}
+              transition={{ duration: DUR.base, ease: EASE, delay: 0.15 }}
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                marginTop: isCompact ? '2rem' : '3.25rem',
+              }}
+            >
+              <m.a
+                href="https://www.instagram.com/dronerangers_official/"
+                target="_blank"
+                rel="noreferrer"
+                whileHover={{ scale: 1.04, backgroundColor: '#B91C1C' }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ duration: DUR.fast, ease: EASE_SOFT }}
+                style={{
+                  background: '#DC2626',
+                  color: '#ffffff',
+                  padding: isMobile ? '12px 22px' : '14px 30px',
+                  borderRadius: '999px',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: isMobile ? '0.7rem' : '0.76rem',
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  textDecoration: 'none',
+                  fontWeight: 700,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.6rem',
+                  boxShadow: '0 10px 28px rgba(220,38,38,0.28)',
+                }}
+              >
+                <InstagramIcon size={16} />
+                More Videos on Instagram
+                <span aria-hidden>↗</span>
+              </m.a>
+            </m.div>
           </div>
 
         </m.div>
@@ -3219,10 +3406,14 @@ function Projects() {
               onClick={(e) => e.stopPropagation()}
               style={{
                 position: 'relative',
-                width: isMobile ? 'min(360px, 94vw)' : '380px',
-                height: isMobile ? 'min(640px, 85vh)' : '660px',
+                // Height drives the size and 9/16 derives the width, so the
+                // frame matches the clip exactly — that pillarboxing was the
+                // modal being wider than the video, not the video itself.
+                height: 'min(660px, 86vh)',
+                aspectRatio: '9 / 16',
+                maxWidth: '94vw',
                 background: '#000000',
-                borderRadius: '24px',
+                borderRadius: '20px',
                 overflow: 'hidden',
                 boxShadow: '0 25px 60px rgba(0,0,0,0.6)',
                 border: '1px solid rgba(255,255,255,0.15)',
@@ -3230,56 +3421,77 @@ function Projects() {
                 flexDirection: 'column',
               }}
             >
-              {/* Modal Top Bar */}
-              <div style={{
-                padding: '12px 16px',
-                background: '#121214',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                borderBottom: '1px solid rgba(255,255,255,0.1)',
-                zIndex: 10,
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '1rem' }}>🎥</span>
-                  <span className="font-display" style={{ color: '#ffffff', fontSize: '0.9rem', fontWeight: 700 }}>
-                    {activeReelModal.title}
-                  </span>
-                </div>
-                <button
-                  onClick={() => setActiveReelModal(null)}
-                  style={{
-                    background: 'rgba(255,255,255,0.15)',
-                    border: 'none',
-                    color: '#ffffff',
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '50%',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '1rem',
-                    fontWeight: 700,
-                  }}
-                >
-                  ✕
-                </button>
-              </div>
-
-              {/* Live Playable Instagram Reel Iframe */}
-              <iframe
-                src={activeReelModal.embedUrl}
-                title={activeReelModal.title}
+              {/* Close control floats over the clip — no title bar, so nothing
+                  crops the frame or repeats a title the reel already shows. */}
+              <m.button
+                onClick={() => setActiveReelModal(null)}
+                aria-label="Close video"
+                whileHover={{ scale: 1.1, backgroundColor: 'rgba(220,38,38,0.9)' }}
+                whileTap={{ scale: 0.92 }}
+                transition={{ duration: DUR.fast, ease: EASE_SOFT }}
                 style={{
-                  width: '100%',
-                  height: '100%',
-                  border: 'none',
-                  background: '#000000',
+                  position: 'absolute',
+                  top: '12px',
+                  right: '12px',
+                  zIndex: 20,
+                  width: '34px',
+                  height: '34px',
+                  borderRadius: '50%',
+                  background: 'rgba(0,0,0,0.55)',
+                  backdropFilter: 'blur(10px)',
+                  WebkitBackdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255,255,255,0.25)',
+                  color: '#ffffff',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: 0,
                 }}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              />
+              >
+                <X size={17} strokeWidth={2.6} />
+              </m.button>
+
+              {/* A self-hosted clip plays here with sound and native controls
+                  (which include the browser's own fullscreen button). Only
+                  reels without a local file fall back to Instagram's iframe. */}
+              {activeReelModal.localVideo ? (
+                <video
+                  src={activeReelModal.localVideo}
+                  poster={activeReelModal.localPoster}
+                  controls
+                  autoPlay
+                  loop
+                  playsInline
+                  // Native controls give play/pause, scrubber, volume, playback
+                  // speed, picture-in-picture and fullscreen — no custom player
+                  // needed. `flex: 1` + `minHeight: 0` keeps them on screen.
+                  controlsList="nodownload"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    // `contain`, not `cover`: in fullscreen the element becomes
+                    // landscape, and `cover` crops a 9:16 reel into a zoomed
+                    // horizontal slice. The modal shell is itself 9:16, so this
+                    // still leaves no letterboxing there.
+                    objectFit: 'contain',
+                    background: '#000000',
+                  }}
+                />
+              ) : (
+                <iframe
+                  src={activeReelModal.embedUrl}
+                  title={activeReelModal.title}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    border: 'none',
+                    background: '#000000',
+                  }}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              )}
             </m.div>
           </m.div>
         )}

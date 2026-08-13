@@ -13,7 +13,15 @@
       "Bash(grep -n \"^\\\\s*about\\\\.$\\\\|^\\\\s*experience\\\\.$\\\\|^\\\\s*skills$\\\\|^\\\\s*tools$\\\\|^\\\\s*education$\\\\|notable <span\\\\|let’s work <span\" src/App.tsx)",
       "Bash(npx vite *)",
       "Bash(curl -s -o /dev/null -w \"prod server: %{http_code}\\\\n\" http://localhost:4599)",
-      "Bash(git diff *)"
+      "Bash(git diff *)",
+      "Bash(npm i *)",
+      "Bash(node -e \"console.log\\('binary:', require\\('ffmpeg-static'\\)\\)\")",
+      "Bash(node compress-reels.mjs)",
+      "Bash(sed -i \"s/import { statSync, existsSync, mkdirSync } from 'fs'/import { statSync, existsSync, mkdirSync, renameSync, unlinkSync } from 'fs'/\" compress-reels.mjs)",
+      "Bash(rm -f src/imports/reels/*.mp4 src/imports/reels/*.jpg)",
+      "Bash(awk 'NR>=2836 && /^\\\\s*\\\\\\)\\\\\\)\\\\}\\\\s*$/ {print NR\": \"$0; exit}' src/App.tsx)",
+      "Bash(rm -f src/imports/reels/*.mp4)",
+      "Bash(sort -u -t: -k2)"
     ]
   }
 }

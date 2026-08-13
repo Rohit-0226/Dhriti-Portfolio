@@ -1,10 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Outfit:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Outfit:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=Caveat:wght@500;600;700&display=swap');
 @import 'tailwindcss';
 
 @theme {
   --font-display: 'Plus Jakarta Sans', 'Outfit', sans-serif;
   --font-body: 'Plus Jakarta Sans', 'DM Sans', sans-serif;
   --font-mono: 'DM Mono', monospace;
+  /* Handwritten accent — used sparingly for the personal intro line */
+  --font-hand: 'Caveat', cursive;
 
   --color-red-deep:    #9B1C1C;
   --color-red-vivid:   #DC2626;
@@ -116,6 +118,16 @@ img, svg, video, canvas {
 .reveal-inner.is-revealing {
   will-change: transform;
   animation: revealUp 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* A vertical reel must never be cropped to fill a landscape fullscreen —
+   letterbox it instead. Belt-and-braces alongside the inline object-fit. */
+video:fullscreen,
+video:-webkit-full-screen {
+  object-fit: contain !important;
+  width: 100%;
+  height: 100%;
+  background: #000;
 }
 
 /* Horizontal snap trays (mobile reel row) — hide the scrollbar chrome */
