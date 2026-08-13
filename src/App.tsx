@@ -3000,6 +3000,7 @@ function Projects() {
               margin: '0 auto',
               ...(isMobile && {
                 overflowX: 'auto',
+                overflowY: 'hidden',
                 scrollSnapType: 'x mandatory',
                 WebkitOverflowScrolling: 'touch',
                 scrollbarWidth: 'none',
