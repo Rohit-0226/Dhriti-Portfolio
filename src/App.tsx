@@ -1908,7 +1908,7 @@ function SkillsToolsEducation() {
                   </p>
 
                   <p style={{ fontSize: '0.88rem', color: '#475569', margin: 0, lineHeight: 1.6, fontFamily: 'var(--font-body)' }}>
-                    Specialization in Brand Strategy, Growth Marketing, Content Creation &amp; Campaign Management. Head of Cultural &amp; NGO Initiatives.
+                    Specialized in Digital Marketing, Brand Building, Growth &amp; Content. Student Mentor &amp; Cultural Head with experience leading people, events, creative initiatives and community-driven projects.
                   </p>
                 </div>
               </div>
@@ -1968,7 +1968,7 @@ function Experience() {
       logoImg: learnAndBuildLogoImg,
       logoText: 'L&B',
       description: 'As a BDE Intern at Learn & Build, I drove growth through data-backed marketing and strategic outreach, leading internship campaigns across social media and campus activations. By combining content strategy, audience segmentation, and lead generation, I contributed to a 40% increase in enrollments while continuously optimizing campaigns through research and performance insights, focusing on turning ideas into measurable impact.',
-      skills: ['Microsoft Office', 'Project Management', 'Lead Generation'],
+      skills: ['Microsoft Office', 'Lead Generation'],
     },
     {
       role: 'Captain: Poornima Paathshala',
@@ -1985,7 +1985,7 @@ function Experience() {
       skills: ['Social Media Marketing', 'Teaching', 'Team Leadership'],
     },
     {
-      role: 'Business Development Executive',
+      role: 'Marketing Intern',
       company: 'Yougami',
       type: 'Internship',
       period: 'Apr 2024 – Jun 2024 · 3 mos',
@@ -1996,7 +1996,7 @@ function Experience() {
       logoImg: yougamiLogoImg,
       logoText: 'Yougami',
       description: 'I worked on school partnerships, account management, and social media creation. I led campus ambassador initiatives, managed student ambassadors, and organized engagement activities to boost brand presence. I also handled onboarding and communication with partnered schools, ensuring smooth program execution and client satisfaction. Additionally, I created and scheduled content across social media platforms, tracking performance and optimizing strategies for better reach and engagement.',
-      skills: ['Microsoft Office', 'Project Management', 'Account Management', 'Campaign Management'],
+      skills: ['Microsoft Office', 'Account Management', 'Campaign Management'],
     },
   ]
 
@@ -2297,22 +2297,9 @@ function DroneReelCard({
           padding: '0.85rem 0.75rem',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <span style={{
-            background: 'rgba(0,0,0,0.6)',
-            backdropFilter: 'blur(8px)',
-            color: '#ffffff',
-            fontSize: '0.7rem',
-            fontWeight: 700,
-            padding: '3px 8px',
-            borderRadius: '999px',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '4px',
-          }}>
-            ❤️ {reel.views}
-          </span>
-        </div>
+        {/* Spacer keeps the play badge optically centred now that the
+            like-count badge is gone. */}
+        <div />
 
         {/* Play badge gets out of the way entirely once the clip is running */}
         <div
@@ -3981,15 +3968,15 @@ function Contact() {
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
                   <div style={{
-                    width: isMobile ? '38px' : '42px',
-                    height: isMobile ? '38px' : '42px',
+                    width: isMobile ? '46px' : '52px',
+                    height: isMobile ? '46px' : '52px',
                     borderRadius: '12px',
                     background: '#DC2626',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     color: '#ffffff',
-                    fontSize: isMobile ? '1rem' : '1.2rem',
+                    fontSize: isMobile ? '1.3rem' : '1.55rem',
                     flexShrink: 0,
                   }}>
                     ✉
@@ -4044,15 +4031,15 @@ function Contact() {
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
                   <div style={{
-                    width: isMobile ? '38px' : '42px',
-                    height: isMobile ? '38px' : '42px',
+                    width: isMobile ? '46px' : '52px',
+                    height: isMobile ? '46px' : '52px',
                     borderRadius: '12px',
                     background: 'rgba(255,255,255,0.1)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     color: '#ffffff',
-                    fontSize: isMobile ? '1rem' : '1.1rem',
+                    fontSize: isMobile ? '1.3rem' : '1.55rem',
                     flexShrink: 0,
                   }}>
                     📞
@@ -4096,14 +4083,15 @@ function Contact() {
                 gap: '1rem',
               }}>
                 <div style={{
-                  width: '42px',
-                  height: '42px',
-                  borderRadius: '12px',
+                  width: '52px',
+                  height: '52px',
+                  borderRadius: '14px',
                   background: 'rgba(255,255,255,0.06)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '1.1rem',
+                  fontSize: '1.45rem',
+                  flexShrink: 0,
                 }}>
                   📍
                 </div>
